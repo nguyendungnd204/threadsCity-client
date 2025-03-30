@@ -20,7 +20,6 @@
     "axios": "^1.8.4",
     "react": "19.0.0",
     "react-native": "0.78.1",
-    "react-native-blur": "^3.2.2",
     "react-native-fbsdk-next": "^13.4.1",
     "react-native-gesture-handler": "^2.24.0",
     "react-native-paper": "^5.13.1",
