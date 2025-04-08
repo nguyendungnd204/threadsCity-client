@@ -12,6 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CreateScreens from './src/screens/CreateScreens'
 import TabsNavigation from './src/navigation/TabsNavigation';
 import LoginScreens from './src/screens/Login/LoginScreens';
+import './global.css';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,7 @@ function App(): React.JSX.Element {
     </NavigationContainer>
   );
 }
+
 
 
 export default App;

@@ -1,4 +1,4 @@
-import { View, Button, Alert } from 'react-native';
+import { View, Button, Alert, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
@@ -38,11 +38,15 @@ const LoginScreens = () => {
     }
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Button
-                title="Facebook Sign-In"
-                onPress={onFacebookButtonPress} // Gọi trực tiếp hàm
-            />
+        <View className='flex-1 justify-center items-center bg-black '>
+            <TouchableOpacity 
+            className="bg-[#4267B2] p-3 rounded-lg" 
+                onPress={onFacebookButtonPress}
+            >
+                <Text className="text-black text-[20px] font-bold">
+                Facebook Sign-In
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 }
