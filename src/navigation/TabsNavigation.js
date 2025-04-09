@@ -48,7 +48,7 @@ const TabsNavigation = () => {
     <Tab.Navigator
         screenOptions={{
             tabBarHideOnKeyboard: true,
-            headerShown: true,
+            headerShown: false,
             tabBarShowLabel: false,
             tabBarActiveTintColor: '#000',
             tabBarInactiveTintColor: '#ccc',
