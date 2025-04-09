@@ -48,13 +48,13 @@ const Feed = ( {thread} ) => {
         <View className='flex-1 gap-1 ml-4' >
             <View className='flex-row items-center'>
                 <View className='flex-row items-center flex-1 gap-1'>
-                    <Text className='text-sm font-bold' numberOfLines={1} style={{ flexShrink: 1 }}>{thread.firstName} {thread.lastName}</Text>
-                    <Text className='text-xs text-gray-500' >{thread.date}</Text>    
+                    <Text className='text-base font-bold' numberOfLines={1} style={{ flexShrink: 1 }}>{thread.firstName} {thread.lastName}</Text>
+                    <Text className='text-sm text-gray-500' >{thread.date}</Text>    
                 </View>
                 <Image source={require("./../assets/images/more.png")} className='size-6 self-end' tintColor="gray"/>
             </View>
                {/* <Text className='text-sm text-gray-500'>Được chọn cho bạn</Text> */}
-               <Text className='text-sm mb-3'>{thread.content}</Text>
+               <Text className='text-base mb-3'>{thread.content}</Text>
 
                {thread.mediaFiles && thread.mediaFiles.length > 0 && (
                     <ScrollView 
@@ -77,26 +77,26 @@ const Feed = ( {thread} ) => {
                         {like ? (
                             <>
                                 <Image source={require("./../assets/images/islike.png")} className='size-6' />
-                                <Text className='text-sm font-normal ml-1' >{formatNumber(thread.likeCount + 1)}</Text>
+                                <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount + 1)}</Text>
                             </>
                         ): (
                             <>
                                 <Image source={require("./../assets/images/unlike.png")} className='size-6' />
-                                <Text className='text-sm font-normal ml-1' >{formatNumber(thread.likeCount)}</Text>
+                                <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount)}</Text>
                             </>
                         )}
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
                         <Image source={require("./../assets/images/chat.png")} className='size-6' />
-                        <Text className='text-sm font-normal ml-1' >{formatNumber(thread.commentCount)}</Text>
+                        <Text className='text-base font-normal ml-1' >{formatNumber(thread.commentCount)}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
                         <Image source={require("./../assets/images/repeat.png")} className='size-6' />
-                        <Text className='text-sm font-normal ml-1' >{formatNumber(thread.retweetCount)}</Text>
+                        <Text className='text-base font-normal ml-1' >{formatNumber(thread.retweetCount)}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
                         <Image source={require("./../assets/images/send.png")} className='size-6' />
-                        <Text className='text-sm font-normal ml-1' >{formatNumber(thread.sendCount)}</Text>
+                        <Text className='text-base font-normal ml-1' >{formatNumber(thread.sendCount)}</Text>
                 </TouchableOpacity>
             </View>
         </View>
