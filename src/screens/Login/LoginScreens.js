@@ -2,9 +2,13 @@ import { View, Button, Alert, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
+
 const LoginScreens = () => {
+    
+    const Stack = createNativeStackNavigator();
     const navigation = useNavigation();
 
     async function onFacebookButtonPress() {

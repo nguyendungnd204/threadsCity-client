@@ -19,7 +19,7 @@ const Stack = createNativeStackNavigator();
 function App(): React.JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Login">
+      <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Tabs">
         <Stack.Screen 
           name="Tabs" 
           component={TabsNavigation} 
@@ -28,7 +28,8 @@ function App(): React.JSX.Element {
         <Stack.Screen 
           name="Create" 
           component={CreateScreens}
-          options={{animation: 'slide_from_bottom'}}
+          options={{animation: 'slide_from_bottom', headerShown: true}}
+          
           />
         <Stack.Screen
           name="Login" 
