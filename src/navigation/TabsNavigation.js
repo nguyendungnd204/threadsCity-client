@@ -22,7 +22,8 @@ const TabsNavigation = () => {
             tabBarInactiveTintColor: '#ccc',
             tabBarStyle: styles.tabBarStyle,
             tabBarPressColor: 'transparent',
-        }}
+        }
+        }
     >
         <Tab.Screen 
             name='Home' 
@@ -38,6 +39,7 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
+                headerShown: false,
             }}
             />
         <Tab.Screen 
@@ -74,8 +76,8 @@ const TabsNavigation = () => {
                         onPress={() => navigation.navigate('Create')}
                         style={{
                             flex: 1,
-                            width: 60,
-                            height: 80,
+                            width: 70,
+                            height: 50,
                             backgroundColor: '#f0f0f0',
                             borderRadius: 8,
                             justifyContent: 'center',
@@ -86,7 +88,8 @@ const TabsNavigation = () => {
                             shadowRadius: 4,
                             elevation: 5,
                             marginTop: 10, 
-                            marginLeft: 10,
+                            marginLeft: 5,
+                            marginBottom: 15,
                             zIndex: 10
                         }}
                         activeOpacity={0.8}
