@@ -7,41 +7,9 @@ import SearchScreens from '../screens/SearchScreens'
 import CreateScreens from '../screens/CreateScreens'
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+
 const Tab = createBottomTabNavigator();
-const iconMap = {
-    home: {
-      active: require('../assets/images/home-clicked.png'),
-      inactive: require('../assets/images/home.png'),
-    },
-    user: {
-      active: require('../assets/images/user-clicked.png'),
-      inactive: require('../assets/images/user.png'),
-    },
-    favorite: {
-      active: require('../assets/images/heart-clicked.png'),
-      inactive: require('../assets/images/heart.png'),
-    },
-    create: {
-        active: require('../assets/images/plus.png'),
-        inactive: require('../assets/images/plus.png'),
-    },
-    search: {
-        active: require('../assets/images/search.png'),
-        inactive: require('../assets/images/search.png'),
-    },
-  };
-const IconTabs = ({ focused, color, size, name }) => {
-  const iconSource = focused ? iconMap[name].active : iconMap[name].inactive;
-
-  return (
-    <Image
-      source={iconSource}
-      style={{ width: size, height: size, tintColor: focused ? 'black' : 'gray', }}
-      resizeMode="contain"
-
-    />
-  );
-};
+import IconTabs from '../components/CustomIcon'
 const TabsNavigation = () => {
     const navigation = useNavigation();
   return (
@@ -54,7 +22,8 @@ const TabsNavigation = () => {
             tabBarInactiveTintColor: '#ccc',
             tabBarStyle: styles.tabBarStyle,
             tabBarPressColor: 'transparent',
-        }}
+        }
+        }
     >
         <Tab.Screen 
             name='Home' 
@@ -70,6 +39,7 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
+                headerShown: false,
             }}
             />
         <Tab.Screen 
@@ -95,7 +65,7 @@ const TabsNavigation = () => {
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs 
                         focused={focused} 
-                        color={color} // example custom focused color
+                        color={color} 
                         size={size} 
                         name="create" 
                     />
@@ -106,8 +76,8 @@ const TabsNavigation = () => {
                         onPress={() => navigation.navigate('Create')}
                         style={{
                             flex: 1,
-                            width: 60,
-                            height: 80,
+                            width: 70,
+                            height: 50,
                             backgroundColor: '#f0f0f0',
                             borderRadius: 8,
                             justifyContent: 'center',
@@ -118,7 +88,8 @@ const TabsNavigation = () => {
                             shadowRadius: 4,
                             elevation: 5,
                             marginTop: 10, 
-                            marginLeft: 10,
+                            marginLeft: 5,
+                            marginBottom: 15,
                             zIndex: 10
                         }}
                         activeOpacity={0.8}

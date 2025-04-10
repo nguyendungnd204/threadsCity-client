@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "935009471431",
+    "firebase_url": "https://threads-city-e4853-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "threads-city-e4853",
     "storage_bucket": "threads-city-e4853.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.client"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "935009471431-t2su9qm9vm57j6ot8omf52021h7cnjj5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.client",
+            "certificate_hash": "d875d085efb97fb3dd0402218a78d2320af51972"
+          }
+        },
+        {
+          "client_id": "935009471431-2i7iovd4c37tphf4oshkgnt79saom3d7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCUIL8um7zLYzihYvBrv2gpE34UFxXRoxQ"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "935009471431-2i7iovd4c37tphf4oshkgnt79saom3d7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
