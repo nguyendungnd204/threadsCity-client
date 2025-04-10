@@ -7,6 +7,7 @@ import CreateScreens from './src/screens/CreateScreens';
 import TabsNavigation from './src/navigation/TabsNavigation';
 import LoginScreens from './src/screens/Login/LoginScreens';
 import { AuthProvider, useAuth } from './src/Auth/AuthContext';
+import './global.css';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,7 +17,7 @@ const AppContent = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Tabs">
           <Stack.Screen 
             name="Tabs" 
             component={TabsNavigation} 
