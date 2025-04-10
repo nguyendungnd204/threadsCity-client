@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   FlatList,
   Image,
-  ScrollView,
 } from "react-native";
-import Icon from "react-native-vector-icons/Feather";
+import { createThread } from "../../services/threadService";
 
 const ProfileScreens = () => {
-  const [activeTab, setActiveTab] = useState("threads");
+  const [activeTab, setActiveTab] = useState("Thread");
   const [posts, setPosts] = useState([
     {
       id: 1,
       content: "Tôi là con người !!!!",
       date: "30.03.2023",
-      likes: 0,
-      comments: 0,
-      reposts: 0,
+      likes: 10,
+      comments: 10,
+      reposts: 20,
+      shares: 5,
     },
     {
       id: 2,
@@ -27,8 +27,33 @@ const ProfileScreens = () => {
       likes: 0,
       comments: 0,
       reposts: 0,
+      shares: 0,
     },
   ]);
+
+  const handleCreateThread = async () => {
+    try {
+      const data = {
+        authorId: "dungdep_trai",
+        content: "Một ngày tuyệt vời tại Đà Lạt!",
+        image: "https://example.com/image.jpg", 
+        createdAt: new Date().toISOString(),
+      };
+      
+      console.log("Data to be sent:", data);
+      const response = await createThread(data);
+      console.log("Response:", response);
+      
+      
+    } catch (error) {
+      console.error("Error in handleCreateThread:", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("ProfileScreens component mounted");
+  }, []);
+
 
   const renderTabButton = (label) => (
     <TouchableOpacity
@@ -49,47 +74,57 @@ const ProfileScreens = () => {
       />
       <View className="flex-1">
         <View className="flex-row justify-between">
-          <Text className="font-semibold">Nguyễn Dũng</Text>
-          <Text className="text-xs text-gray-500">{item.date}</Text>
+          <Text className="font-semibold text-base">Nguyễn Dũng</Text>
+          <Text className="text-base text-gray-500">{item.date}</Text>
         </View>
         <Text>{item.content}</Text>
         <View className="flex-row mt-2 space-x-3">
           <TouchableOpacity className="flex-row items-center space-x-1">
-            <Icon name="heart" size={16} color="#999" />
-            <Text className="text-xs text-gray-600">{item.likes}</Text>
+            <Image source={require("../../assets/images/unlike.png")} className="w-5 h-5" resizeMode="contain" />
+            <Text className="text-xl font-normal text-gray-600 ml-1 mr-1">{item.likes}</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center space-x-1">
-            <Icon name="message-circle" size={16} color="#999" />
-            <Text className="text-xs text-gray-600">{item.comments}</Text>
+          <Image source={require("../../assets/images/chat.png")} className="w-5 h-5" resizeMode="contain"/>
+            <Text className="text-xl text-gray-600 ml-1 mr-1">{item.comments}</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center space-x-1">
-            <Icon name="repeat" size={16} color="#999" />
-            <Text className="text-xs text-gray-600">{item.reposts}</Text>
+          <Image source={require("../../assets/images/repeat.png")} className="w-5 h-5" resizeMode="contain"/>
+            <Text className="text-xl text-gray-600 ml-1 mr-1">{item.reposts}</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Icon name="share" size={16} color="#999" />
+          <TouchableOpacity className="flex-row items-center space-x-1">
+          <Image source={require("../../assets/images/send.png")} className="w-5 h-5" resizeMode="contain"/>
+            <Text className="text-xl text-gray-600 ml-1 mr-1">{item.shares}</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 
+  const renderEmptyContent = () => (
+    <View className="items-center p-5">
+      <Text className="text-gray-500">
+        {activeTab === "Thread trả lời" ? "Bạn chưa trả lời thread nào" : "Bạn chưa đăng lại thread nào"}
+      </Text>
+    </View>
+  );
+
+  const dataToShow = activeTab === "Thread" ? posts : [];
+
   return (
     <View className="flex-1 bg-white">
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
-        <Icon name="user" size={20} />
+      <Image source={require("../../assets/images/search.png")} className="w-5 h-5" resizeMode="contain"/>
         <View className="flex-row space-x-2">
-          <Icon name="wifi" size={18} />
-          <Icon name="battery" size={18} />
+        <Image source={require("../../assets/images/more.png")} className="w-5 h-5" resizeMode="contain"/>
         </View>
       </View>
 
-      <View className="flex-row justify-between items-center p-4 ">
+      <View className="flex-row justify-between items-center p-4">
         <View>
-          <Text className="font-bold text-lg">Nguyễn Dũng</Text>
-          <Text className="text-gray-600 text-sm">dung_dep_trai</Text>
-          <Text className="mt-1 text-sm text-gray-700">Tuyệt</Text>
-          <Text className="mt-1 text-sm text-gray-500">0 followers</Text>
+          <Text className="font-bold text-xl">Nguyễn Dũng</Text>
+          <Text className="text-gray-600 text-base">dung_dep_trai</Text>
+          <Text className="mt-1 text-base text-gray-700">Tuyệt</Text>
+          <Text className="mt-1 text-base text-gray-500">0 followers</Text>
         </View>
         <Image
           source={require("../../assets/images/user.png")}
@@ -98,35 +133,27 @@ const ProfileScreens = () => {
       </View>
 
       <View className="flex-row space-x-2 px-4 mt-2 pb-5">
-        <TouchableOpacity className="flex-1 border border-gray-300 p-2 items-center rounded-md">
-          <Text>Follow</Text>
+        <TouchableOpacity onPress={handleCreateThread} className="flex-1 border border-gray-300 p-2 items-center rounded-md">
+          <Text>Chỉnh sửa thông tin</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="flex-1 border border-gray-300 p-2 items-center rounded-md">
-          <Text>Follow</Text>
+        <TouchableOpacity  className="flex-1 border border-gray-300 p-2 items-center rounded-md ml-5">
+          <Text>Chia sẻ trang cá nhân</Text>
         </TouchableOpacity>
       </View>
 
       <View className="flex-row border-b border-gray-300">
-        {renderTabButton("threads")}
-        {renderTabButton("replies")}
-        {renderTabButton("reposts")}
+        {renderTabButton("Thread")}
+        {renderTabButton("Thread trả lời")}
+        {renderTabButton("Bài đăng lại")}
       </View>
 
-      <ScrollView>
-        {activeTab === "threads" ? (
-          <FlatList
-            data={posts}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderPost}
-          />
-        ) : (
-          <View className="items-center p-5">
-            <Text className="text-gray-500">
-              {activeTab === "replies" ? "No replies yet" : "No reposts yet"}
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+      <FlatList
+        data={dataToShow}
+        keyExtractor={(item) => item.id?.toString()}
+        renderItem={renderPost}
+        ListEmptyComponent={renderEmptyContent}
+        contentContainerStyle={{ flexGrow: 1 }}
+      />
     </View>
   );
 };
