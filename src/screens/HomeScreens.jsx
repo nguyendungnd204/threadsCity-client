@@ -5,8 +5,8 @@ import Feed from '../components/Feed';
 
 const HomScreen = () => {
   const TabSelect = ["Dành cho bạn", "Đang theo dõi"];
-
-    const [tab, setTab] = React.useState("Dành cho bạn");
+  const [tab, setTab] = React.useState("Dành cho bạn");
+  
   const Threads = [
     {
         threadid: 1,

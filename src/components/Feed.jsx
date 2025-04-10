@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Text, Image, TouchableOpacity, View, ScrollView } from 'react-native';
-// import { Link } from 'expo-router';
-
+import { Link } from '@react-navigation/native';
 // interface User {
 //     id: number;
 //     username: string;
@@ -63,11 +62,11 @@ const Feed = ( {thread} ) => {
                         contentContainerStyle={{ flexDirection: 'row', gap: 14, paddingRight: 40,}}
                     >
                         {thread.mediaFiles.map((media) => (
-                            // <Link href={'/(tabs)/search'} key={media.id} asChild>
+                            <Link href={'/'} key={media.id} asChild>
                                 <TouchableOpacity>
                                    <Image source={{ uri: media.imageUrl}} className='h-60 w-60 rounded-xl mb-3'/>
                                 </TouchableOpacity>
-                            // </Link>
+                            </Link>
                         )) }
                     </ScrollView>
                )}       
