@@ -2,7 +2,7 @@ import { Image, StyleSheet, View, TouchableOpacity} from 'react-native'
 import React from 'react'
 import HomeScreen from '../screens/HomeScreens'
 import FavoriteScreens from '../screens/FavoriteScreens'
-import ProfileScreens from '../screens/ProfileScreens'
+import ProfileScreens from '../screens/Profile/ProfileScreens'
 import SearchScreens from '../screens/SearchScreens'
 import CreateScreens from '../screens/CreateScreens'
 import { useNavigation } from '@react-navigation/native';
@@ -16,7 +16,7 @@ const TabsNavigation = () => {
     <Tab.Navigator
         screenOptions={{
             tabBarHideOnKeyboard: true,
-            headerShown: true,
+            headerShown: false,
             tabBarShowLabel: false,
             tabBarActiveTintColor: '#000',
             tabBarInactiveTintColor: '#ccc',
@@ -123,6 +123,7 @@ const TabsNavigation = () => {
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs focused={focused} color={color} size={size} name="user" />
                 ),
+                headerShown: false,
                 tabBarButton: (props) => (
                 <TouchableOpacity
                     {...props}
