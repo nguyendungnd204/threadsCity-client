@@ -7,6 +7,7 @@ import {
   Image,
 } from "react-native";
 import { createThread } from "../../services/threadService";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
@@ -111,7 +112,7 @@ const ProfileScreens = () => {
   const dataToShow = activeTab === "Thread" ? posts : [];
 
   return (
-    <View className="flex-1 bg-white">
+    <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
       <Image source={require("../../assets/images/search.png")} className="w-5 h-5" resizeMode="contain"/>
         <View className="flex-row space-x-2">
