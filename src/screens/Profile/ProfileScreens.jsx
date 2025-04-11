@@ -7,10 +7,12 @@ import {
   Image,
 } from "react-native";
 import { createThread } from "../../services/threadService";
+import {useNavigation} from "@react-navigation/native";
 import { icons } from "../../constants/icons";
 
 const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
+  const navigation = useNavigation();
   const [posts, setPosts] = useState([
     {
       id: 1,
@@ -50,10 +52,10 @@ const ProfileScreens = () => {
       console.error("Error in handleCreateThread:", error);
     }
   };
-
-  useEffect(() => {
-    console.log("ProfileScreens component mounted");
-  }, []);
+  const handleLogout = () => {
+    navigation.replace('Login');
+  }
+  
 
 
   const renderTabButton = (label) => (
@@ -114,6 +116,14 @@ const ProfileScreens = () => {
   return (
     <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
+        <Image source={icons.search} className="w-5 h-5" resizeMode="contain"/>
+        <TouchableOpacity onPress={handleLogout}>
+        <Image 
+          source={icons.more} 
+          className="w-5 h-5" 
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
       <Image source={icons.search} className="w-5 h-5" resizeMode="contain"/>
         <View className="flex-row space-x-2">
         <Image source={icons.more} className="w-5 h-5" resizeMode="contain"/>
