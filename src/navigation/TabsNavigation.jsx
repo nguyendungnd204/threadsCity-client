@@ -1,9 +1,9 @@
 import { Image, StyleSheet, View, TouchableOpacity} from 'react-native'
 import React from 'react'
-import HomeScreen from '../screens/HomeScreens'
-import FavoriteScreens from '../screens/FavoriteScreens'
+import HomeScreen from '../screens/Home/HomeScreens'
+import FavoriteScreens from '../screens/Activity/FavoriteScreens'
 import ProfileScreens from '../screens/Profile/ProfileScreens'
-import SearchScreens from '../screens/SearchScreens'
+import SearchScreens from '../screens/Search/SearchScreens'
 import CreateScreens from '../screens/CreateScreens'
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Text, Image, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Link } from '@react-navigation/native';
+import { icons } from '../constants/icons';
 // interface User {
 //     id: number;
 //     username: string;
@@ -29,10 +30,6 @@ import { Link } from '@react-navigation/native';
 //     avatar_path: string,
 // }
 
-// type ThreadProps = {
-//     thread: Threads;
-// }
-
 const formatNumber = (num) => {
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
     if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
@@ -50,7 +47,7 @@ const Feed = ( {thread} ) => {
                     <Text className='text-base font-bold' numberOfLines={1} style={{ flexShrink: 1 }}>{thread.firstName} {thread.lastName}</Text>
                     <Text className='text-sm text-gray-500' >{thread.date}</Text>    
                 </View>
-                <Image source={require("./../assets/images/more.png")} className='size-6 self-end' tintColor="gray"/>
+                <Image source={icons.more} className='size-6 self-end' tintColor="gray"/>
             </View>
                {/* <Text className='text-sm text-gray-500'>Được chọn cho bạn</Text> */}
                <Text className='text-base mb-3'>{thread.content}</Text>
@@ -75,26 +72,26 @@ const Feed = ( {thread} ) => {
                 <TouchableOpacity className="flex-row items-center" onPress={() =>  setLike(!like)}>
                         {like ? (
                             <>
-                                <Image source={require("./../assets/images/islike.png")} className='size-6' />
+                                <Image source={icons.islike} className='size-6' />
                                 <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount + 1)}</Text>
                             </>
                         ): (
                             <>
-                                <Image source={require("./../assets/images/unlike.png")} className='size-6' />
+                                <Image source={icons.unlike} className='size-6' />
                                 <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount)}</Text>
                             </>
                         )}
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
-                        <Image source={require("./../assets/images/chat.png")} className='size-6' />
+                        <Image source={icons.chat} className='size-6' />
                         <Text className='text-base font-normal ml-1' >{formatNumber(thread.commentCount)}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
-                        <Image source={require("./../assets/images/repeat.png")} className='size-6' />
+                        <Image source={icons.repeat} className='size-6' />
                         <Text className='text-base font-normal ml-1' >{formatNumber(thread.retweetCount)}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
-                        <Image source={require("./../assets/images/send.png")} className='size-6' />
+                        <Image source={icons.send} className='size-6' />
                         <Text className='text-base font-normal ml-1' >{formatNumber(thread.sendCount)}</Text>
                 </TouchableOpacity>
             </View>

@@ -1,25 +1,26 @@
 import { Image } from 'react-native';
+import { icons } from '../constants/icons';
 
 const iconMap = {
     home: {
-      active: require('../assets/images/home-clicked.png'),
-      inactive: require('../assets/images/home.png'),
+      active: icons.home_clicked,
+      inactive: icons.home,
     },
     user: {
-      active: require('../assets/images/user-clicked.png'),
-      inactive: require('../assets/images/user.png'),
+      active: icons.user_clicked,
+      inactive: icons.user,
     },
     favorite: {
-      active: require('../assets/images/heart-clicked.png'),
-      inactive: require('../assets/images/heart.png'),
+      active: icons.heart_clicked,
+      inactive: icons.heart,
     },
     create: {
-        active: require('../assets/images/plus.png'),
-        inactive: require('../assets/images/plus.png'),
+        active: icons.plus,
+        inactive: icons.plus,
     },
     search: {
-        active: require('../assets/images/search.png'),
-        inactive: require('../assets/images/search.png'),
+        active: icons.search,
+        inactive: icons.search,
     },
   };
    const IconTabs = ({ focused, color, size, name }) => {

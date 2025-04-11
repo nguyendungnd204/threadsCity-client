@@ -7,7 +7,7 @@ import {
   Image,
 } from "react-native";
 import { createThread } from "../../services/threadService";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { icons } from "../../constants/icons";
 
 const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
@@ -70,7 +70,7 @@ const ProfileScreens = () => {
   const renderPost = ({ item }) => (
     <View className="flex-row p-3 border-b border-gray-100 mt-5">
       <Image
-        source={require("../../assets/images/user.png")}
+        source={icons.user}
         className="w-10 h-10 rounded-full mr-2.5"
       />
       <View className="flex-1">
@@ -81,19 +81,19 @@ const ProfileScreens = () => {
         <Text>{item.content}</Text>
         <View className="flex-row mt-2 space-x-3">
           <TouchableOpacity className="flex-row items-center space-x-1">
-            <Image source={require("../../assets/images/unlike.png")} className="w-5 h-5" resizeMode="contain" />
+            <Image source={icons.unlike} className="w-5 h-5" resizeMode="contain" />
             <Text className="text-xl font-normal text-gray-600 ml-1 mr-1">{item.likes}</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center space-x-1">
-          <Image source={require("../../assets/images/chat.png")} className="w-5 h-5" resizeMode="contain"/>
+          <Image source={icons.chat} className="w-5 h-5" resizeMode="contain"/>
             <Text className="text-xl text-gray-600 ml-1 mr-1">{item.comments}</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center space-x-1">
-          <Image source={require("../../assets/images/repeat.png")} className="w-5 h-5" resizeMode="contain"/>
+          <Image source={icons.repeat} className="w-5 h-5" resizeMode="contain"/>
             <Text className="text-xl text-gray-600 ml-1 mr-1">{item.reposts}</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center space-x-1">
-          <Image source={require("../../assets/images/send.png")} className="w-5 h-5" resizeMode="contain"/>
+          <Image source={icons.send} className="w-5 h-5" resizeMode="contain"/>
             <Text className="text-xl text-gray-600 ml-1 mr-1">{item.shares}</Text>
           </TouchableOpacity>
         </View>
@@ -114,9 +114,9 @@ const ProfileScreens = () => {
   return (
     <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
-      <Image source={require("../../assets/images/search.png")} className="w-5 h-5" resizeMode="contain"/>
+      <Image source={icons.search} className="w-5 h-5" resizeMode="contain"/>
         <View className="flex-row space-x-2">
-        <Image source={require("../../assets/images/more.png")} className="w-5 h-5" resizeMode="contain"/>
+        <Image source={icons.more} className="w-5 h-5" resizeMode="contain"/>
         </View>
       </View>
 

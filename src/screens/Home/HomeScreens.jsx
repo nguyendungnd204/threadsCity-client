@@ -1,7 +1,8 @@
 import { View, Text, Image, TouchableOpacity, FlatList} from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Feed from '../components/Feed';
+import Feed from '../../components/Feed';
+import { icons } from '../../constants/icons';
 
 const HomScreen = () => {
   const TabSelect = ["Dành cho bạn", "Đang theo dõi"];
@@ -102,7 +103,7 @@ const HomScreen = () => {
                 renderItem={({ item }) => <Feed thread={item} />}
                 ListHeaderComponent={
                     <View className='pb-4'>
-                      <Image source={require("./../assets/images/threads-logo-black.png")} className='w-20 h-20 self-center'/>
+                      <Image source={icons.threads_logo_black} className='w-20 h-20 self-center'/>
                       <View className='flex-row flex-1 justify-around py-2'>
                         {TabSelect.map((item) => (
                             <TouchableOpacity

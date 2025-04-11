@@ -1,13 +1,12 @@
 import { View, Text, TextInput, Image, TouchableOpacity, LayoutAnimation, Keyboard, FlatList} from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import Feed from '../components/Feed';
-import ProfileSearchResult from '../components/ProfileSearchResult'
-
+import React, { useEffect } from 'react'
+import ProfileSearchResult from '../../components/ProfileSearchResult'
+import { icons } from '../../constants/icons'
 
 const SearchScreens = () => {
   const [status, setStatus] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const thread = getThread();
 
   const users = [
     {
@@ -47,7 +46,6 @@ const SearchScreens = () => {
       status: false,
     },
   ];
-  
 
   const handleSearch = (searchTerm) => {
       setSearchTerm(searchTerm)
@@ -67,12 +65,12 @@ const SearchScreens = () => {
               Keyboard.dismiss();
             }, 100) 
           }}>
-            <Image source={require("./../assets/images/back.png")} className='size-6 mt-3'/>
+            <Image source={icons.back} className='size-6 mt-3'/>
           </TouchableOpacity>
         )}
         <View className='flex-1 flex-row items-center bg-gray-200 rounded-full px-4 py-2 mt-3 shadow-sm'>
             <Image
-              source={require('./../assets/images/search.png')}
+              source={icons.search}
               className='w-5 h-5'
               resizeMode='contain'
               tintColor='#9ca3af' // xám nhạt

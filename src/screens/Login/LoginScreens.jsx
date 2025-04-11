@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useAuth } from '../../Auth/AuthContext';
 import ButtonLogin from '../../components/ButtonLogin';
+import { icons } from '../../constants/icons';
 
 const LoginScreens = () => {
   const navigation = useNavigation();
@@ -106,7 +107,7 @@ const LoginScreens = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/images/login.png')} style={styles.loginImage} />
+      <Image source={icons.login} style={styles.loginImage} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>How would you like to use Threads?</Text>
 
