@@ -57,8 +57,8 @@ const SearchScreens = () => {
     setStatus(value);
 }
   return (
-    <SafeAreaView className='flex-1 bg-white'>
-      {!status &&  <Text className='px-5 text-3xl font-bold'>SearchScreens</Text> }
+     <View className='flex-1 mt-[50px] bg-white'>
+      {!status &&  <Text className='px-5 py-2 text-3xl font-bold'>Tìm kiếm</Text> }
       <View className='flex-row items-center px-4'>
         {status && ( 
           <TouchableOpacity className='mr-2' onPress={() => { 
@@ -105,7 +105,7 @@ const SearchScreens = () => {
         />
       </View>
       
-    </SafeAreaView>
+    </View>
   )
 }
 

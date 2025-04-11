@@ -94,7 +94,7 @@ const HomScreen = () => {
     },
 ]
   return (
-    <SafeAreaView className='flex-1'>
+    <View className='flex-1 mt-[50px]'>
         <FlatList
                 showsVerticalScrollIndicator={false}
                 data={Threads}
@@ -123,9 +123,9 @@ const HomScreen = () => {
                 ItemSeparatorComponent={() => (
                     <View className='border-b-hairline border-b-gray-400 bg-gray-100' />
                 )} 
-                className='flex-1 bg-white'
+                className='bg-white'
         />
-    </SafeAreaView>
+    </View>
     
   )
 }
