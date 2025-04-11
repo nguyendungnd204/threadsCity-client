@@ -68,7 +68,7 @@ const Activity = () => {
   }, [tabIndex]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-5">
+     <View className='flex-1 mt-[50px] bg-white px-5 '>
       <FlatList
         data={mergedData}
         keyExtractor={(item, index) => `${item.type}-${item.data.id || item.data.threadid || index}`}
@@ -83,7 +83,7 @@ const Activity = () => {
         }}
         ListHeaderComponent={
           <View>
-            <Text className="text-3xl font-bold mb-4">Activity</Text>
+            <Text className="text-3xl font-bold py-2 mb-4">Hoạt động</Text>
 
             {/* Tabs */}
             <FlatList
@@ -105,7 +105,7 @@ const Activity = () => {
                     )} 
                 />
 
-            <Text className="text-xl font-bold mb-2">Trước đó</Text>
+            <Text className="text-xl font-bold mt-2 mb-2">Trước đó</Text>
           </View>
         }
         ItemSeparatorComponent={() => (
@@ -116,7 +116,7 @@ const Activity = () => {
         }
         showsVerticalScrollIndicator={false}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
