@@ -16,7 +16,7 @@ const TabsNavigation = () => {
     <Tab.Navigator
         screenOptions={{
             tabBarHideOnKeyboard: true,
-            headerShown: false,
+            headerShown: true,
             tabBarShowLabel: false,
             tabBarActiveTintColor: '#000',
             tabBarInactiveTintColor: '#ccc',
@@ -56,6 +56,7 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
+                headerShown: false,
             }}
             />
         <Tab.Screen
@@ -114,6 +115,7 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
+                headerShown: false,
             }}
             />
         <Tab.Screen 
@@ -131,6 +133,7 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
+                headerShown: false,
             }}
             />
     </Tab.Navigator>

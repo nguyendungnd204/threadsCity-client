@@ -17,6 +17,10 @@ import threads_logo_black from '../assets/images/threads-logo-black.png';
 import unlike from '../assets/images/unlike.png';
 import user_clicked from '../assets/images/user-clicked.png';
 import user from '../assets/images/user.png';
+import camera from '../assets/images/camera.png';
+import microphone from '../assets/images/microphone.png';
+import gallery from '../assets/images/image-gallery.png';
+import close from '../assets/images/close.png';
 
 export const icons = {
     back,
@@ -37,5 +41,9 @@ export const icons = {
     threads_logo_black,
     unlike,
     user_clicked,
-    user
+    user,
+    camera,
+    microphone,
+    gallery,
+    close
 };

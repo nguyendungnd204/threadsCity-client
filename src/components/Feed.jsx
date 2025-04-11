@@ -102,7 +102,7 @@ const Feed = ( {thread} ) => {
     )
 }
 
-Feed.propTypes = {
+Feed.PropTypes = {
     thread: PropTypes.shape({
       threadid: PropTypes.number.isRequired,
       content: PropTypes.string.isRequired,

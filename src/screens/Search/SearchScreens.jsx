@@ -1,12 +1,11 @@
 import { View, Text, TextInput, Image, TouchableOpacity, LayoutAnimation, Keyboard, FlatList} from 'react-native'
-import React, { useEffect } from 'react'
+import React from 'react'
 import ProfileSearchResult from '../../components/ProfileSearchResult'
 import { icons } from '../../constants/icons'
 
 const SearchScreens = () => {
   const [status, setStatus] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const thread = getThread();
 
   const users = [
     {

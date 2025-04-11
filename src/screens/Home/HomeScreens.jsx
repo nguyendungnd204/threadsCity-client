@@ -3,7 +3,7 @@ import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Feed from '../../components/Feed';
 import { icons } from '../../constants/icons';
-import CreateThreadsComponents from '../components/CreateThreadsComponents';
+import CreateThreadsComponents from '../../components/CreateThreadsComponents';
 const HomScreen = () => {
   const TabSelect = ["Dành cho bạn", "Đang theo dõi"];
   const [tab, setTab] = React.useState("Dành cho bạn");
@@ -118,7 +118,7 @@ const HomScreen = () => {
                             </TouchableOpacity>
                         ))}
                       </View>
-                      <CreateThreadsComponents/>
+                      <CreateThreadsComponents isPreview={true}/>
                     </View>
                   }
                 ItemSeparatorComponent={() => (
