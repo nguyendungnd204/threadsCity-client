@@ -60,8 +60,8 @@ const TabsNavigation = () => {
             }}
             />
         <Tab.Screen
-            name="Create"
-            component={CreateScreens}
+            name="CreateTab"
+            component={() => null}
             options={{
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs 

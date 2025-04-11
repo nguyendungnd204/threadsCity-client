@@ -31,7 +31,7 @@ const CreateThreadsComponents = ({ isPreview }) => {
   return (
     <TouchableOpacity 
       onPress={() => {
-        navigation.navigate('Create')
+        navigation.navigate('Create');
       }}
       style={
         isPreview && {
