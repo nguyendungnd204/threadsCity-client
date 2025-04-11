@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity, FlatList} from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Feed from '../components/Feed';
-
+import CreateThreadsComponents from '../components/CreateThreadsComponents';
 const HomScreen = () => {
   const TabSelect = ["Dành cho bạn", "Đang theo dõi"];
   const [tab, setTab] = React.useState("Dành cho bạn");
@@ -96,34 +96,34 @@ const HomScreen = () => {
   return (
     <SafeAreaView className='flex-1'>
         <FlatList
-                showsVerticalScrollIndicator={false}
-                data={Threads}
-                keyExtractor={(item) => item.threadid.toString()}
-                renderItem={({ item }) => <Feed thread={item} />}
-                ListHeaderComponent={
-                    <View className='pb-4'>
-                      <Image source={require("./../assets/images/threads-logo-black.png")} className='w-20 h-20 self-center'/>
-                      <View className='flex-row flex-1 justify-around py-2'>
-                        {TabSelect.map((item) => (
-                            <TouchableOpacity
-                                key={item}
-                                className='items-center'
-                                onPress={() => setTab(item)}
-                            >
-                                <Text className={`text-base font-bold ${tab === item ? 'text-black' : 'text-gray-300'}`}>
-                                    {item}
-                                </Text>
-                                <View className={`mt-1 h-[2] w-[210] rounded-full ${ tab === item ? 'bg-black' : 'bg-gray-300'}`} />
-                            </TouchableOpacity>
-                        ))}
-                      </View>
-                      {/* {tab === "Dành cho bạn" && <ThreadComposer />} */}
+            className='flex-1 bg-white'
+            showsVerticalScrollIndicator={false}
+            data={Threads}
+            keyExtractor={(item) => item.threadid.toString()}
+            renderItem={({ item }) => <Feed thread={item} />}
+            ListHeaderComponent={
+                <View className='pb-4'>
+                    <Image source={require("./../assets/images/threads-logo-black.png")} className='w-20 h-20 self-center'/>
+                    <View className='flex-row flex-1 justify-around py-2'>
+                    {TabSelect.map((item) => (
+                        <TouchableOpacity
+                            key={item}
+                            className='items-center'
+                            onPress={() => setTab(item)}
+                        >
+                            <Text className={`text-base font-bold ${tab === item ? 'text-black' : 'text-gray-300'}`}>
+                                {item}
+                            </Text>
+                            <View className={`mt-1 h-[2] w-[210] rounded-full ${ tab === item ? 'bg-black' : 'bg-gray-300'}`} />
+                        </TouchableOpacity>
+                    ))}
                     </View>
-                  }
-                ItemSeparatorComponent={() => (
-                    <View className='border-b-hairline border-b-gray-400 bg-gray-100' />
-                )} 
-                className='flex-1 bg-white'
+                    <CreateThreadsComponents/>
+                </View>
+                }
+            ItemSeparatorComponent={() => (
+                <View className='border-b-hairline border-b-gray-400 bg-gray-100' />
+            )} 
         />
     </SafeAreaView>
     

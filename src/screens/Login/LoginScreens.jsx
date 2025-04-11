@@ -17,7 +17,8 @@ import { useNavigation } from '@react-navigation/native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useAuth } from '../../Auth/AuthContext';
 import ButtonLogin from '../../components/ButtonLogin';
-
+import { database } from '../../../FirebaseConfig'; 
+import SimpleToast from 'react-native-simple-toast';
 const LoginScreens = () => {
   const navigation = useNavigation();
   const { setLoading, loading, login, setGuest } = useAuth();
@@ -47,8 +48,8 @@ const LoginScreens = () => {
 
       const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
       const userCredential = await auth().signInWithCredential(facebookCredential);
-      const user = userCredential.user;
       
+      const user = userCredential.user;
       const userData = {
         uid: user.uid,
         displayName: user.displayName,

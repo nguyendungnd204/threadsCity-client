@@ -1,6 +1,5 @@
 // src/Auth/AuthContext.js
 import React, { createContext, useState, useContext } from 'react';
-
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
