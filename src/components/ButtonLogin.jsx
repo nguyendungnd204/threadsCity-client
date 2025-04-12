@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/Ionicons';
-import InstargramIcon from './Icon/InstargramIcon';
+import FacebookIcon from './Icon/FacebookIcon'
 import GoogleIcon from './Icon/GoogleIcon';
 
 const ButtonLogin = ({ style, onPress, disabled, loading, name }) => {
@@ -12,7 +12,7 @@ const ButtonLogin = ({ style, onPress, disabled, loading, name }) => {
         disabled={disabled || loading}
       >
         <View style={styles.loginButtonContent}>
-            {name === 'Facebook' ? <InstargramIcon/> : <GoogleIcon />}
+            {name === 'Facebook' ? <FacebookIcon/> : <GoogleIcon />}
             <Text style={styles.loginButtonText}>
             {name === 'Facebook' ? 'Continue with Facebook' : 'Continue with Google'}
             </Text>

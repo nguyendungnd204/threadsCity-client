@@ -133,7 +133,6 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
-                headerShown: false,
             }}
             />
     </Tab.Navigator>

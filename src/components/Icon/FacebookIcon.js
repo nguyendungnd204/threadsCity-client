@@ -1,10 +1,10 @@
 import { View, Text, Image, StyleSheet } from 'react-native'
 import React from 'react'
 
-const InstargramIcon = () => {
+const FacebookIcon = () => {
   return (
     <Image
-        source={require('../../assets/images/instagram_icon.webp')}
+        source={require('../../assets/images/Facebook-logo.png')}
         style={styles.loginButtonImage}
     />
   )
@@ -15,4 +15,4 @@ const styles = StyleSheet.create({
         height: 50,
     },
 })
-export default InstargramIcon
+export default FacebookIcon

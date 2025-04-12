@@ -2,6 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyCUIL8um7zLYzihYvBrv2gpE34UFxXRoxQ",
   authDomain: "threads-city-e4853.firebaseapp.com",

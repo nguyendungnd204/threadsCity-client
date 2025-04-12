@@ -4,9 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Feed from '../../components/Feed';
 import { icons } from '../../constants/icons';
 import CreateThreadsComponents from '../../components/CreateThreadsComponents';
+import { useAuth } from '../../Auth/AuthContext';
 const HomScreen = () => {
   const TabSelect = ["Dành cho bạn", "Đang theo dõi"];
   const [tab, setTab] = React.useState("Dành cho bạn");
+  const { user } = useAuth();
   
   const Threads = [
     {
@@ -118,7 +120,7 @@ const HomScreen = () => {
                             </TouchableOpacity>
                         ))}
                       </View>
-                      <CreateThreadsComponents isPreview={true}/>
+                      <CreateThreadsComponents isPreview={true} user={user}/>
                     </View>
                   }
                 ItemSeparatorComponent={() => (
