@@ -19,6 +19,7 @@ import { useAuth } from '../../Auth/AuthContext';
 import ButtonLogin from '../../components/ButtonLogin';
 import { database } from '../../../FirebaseConfig'; 
 import SimpleToast from 'react-native-simple-toast';
+import { createUser } from '../../services/userService';
 const LoginScreens = () => {
   const navigation = useNavigation();
   const { setLoading, loading, login, setGuest } = useAuth();
@@ -50,15 +51,23 @@ const LoginScreens = () => {
       const userCredential = await auth().signInWithCredential(facebookCredential);
       
       const user = userCredential.user;
+      const userId = user.uid;
       const userData = {
-        uid: user.uid,
-        displayName: user.displayName,
+        oauthId: user.uid,
+        fullname: user.displayName || '', 
         email: user.email,
-        photoURL: user.photoURL,
-        providerId: user.providerData[0]?.providerId
+        avatar: user.photoURL || '', 
+        oauthProvider: user.providerData[0]?.providerId || 'facebook', 
+        bio: '',
+        status: 'active',
+        role: 'user',
+        followers: [],
+        following: [],
+        createdAt: user.metadata.creationTime || new Date().toISOString(),
+        updatedAt: user.metadata.lastSignInTime || new Date().toISOString(),
       };
-      
-      login(userData);
+      await createUser(userId, userData);
+      await login(userData);
       navigation.navigate('Tabs');
     } catch (error) {
       console.error('Facebook login error:', error);
