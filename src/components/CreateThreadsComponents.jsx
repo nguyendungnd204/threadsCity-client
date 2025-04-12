@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import UserImageIcon from '../components/UserImageIcon';
 import CreateIcons from '../components/CreateIcons';
 import ImagePicker from 'react-native-image-crop-picker';
+import { useNavigation } from '@react-navigation/native';
 
-const CreateThreadsComponents = ({ user }) => {
+const CreateThreadsComponents = ({ user, isPreview=false }) => {
+  const navigation = useNavigation();
   const inputRef = React.useRef(null);
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
@@ -59,76 +61,91 @@ const CreateThreadsComponents = ({ user }) => {
   };
 
   return (
-    <View className='flex-row mt-5 border-b-2 border-gray-300 pb-2 px-3'>
-      <UserImageIcon 
-        source={user?.photoURL ? { uri: user.photoURL } : require('../assets/images/threads-logo-black.png')} 
-        className='self-start'
-      />
-      
-      <View className='flex-1 ml-3'>
-        <Text className='text-[20px] font-bold'>
-          {user?.displayName || 'Người dùng ẩn danh'}
-        </Text>
-        
-        <TextInput
-          placeholder='Có gì mới...'
-          placeholderTextColor='gray'
-          multiline={true}
-          autoFocus={true}
-          className='text-[16px] text-gray-500'
-          onChangeText={setContent}
-          value={content}
-          ref={inputRef}
-          style={{ textAlignVertical: 'top', minHeight: 50 }}
+    <TouchableOpacity 
+      onPress={() => {
+        navigation.navigate('Create');
+      }}
+      style={
+        isPreview && {
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          height: 140,
+          pointerEvents: 'box-only',
+        }}
+    >
+        <View className='flex-row mt-5 border-b-2 border-gray-300 pb-2 px-3'>
+        <UserImageIcon 
+          source={user?.photoURL ? { uri: user.photoURL } : require('../assets/images/threads-logo-black.png')} 
+          className='self-start'
         />
+        
+        <View className='flex-1 ml-3'>
+          <Text className='text-[20px] font-bold'>
+            {user?.displayName || 'Người dùng ẩn danh'}
+          </Text>
+          
+          <TextInput
+            placeholder='Có gì mới...'
+            placeholderTextColor='gray'
+            multiline={true}
+            autoFocus={true}
+            className='text-[16px] text-gray-500'
+            onChangeText={setContent}
+            value={content}
+            ref={inputRef}
+            style={{ textAlignVertical: 'top', minHeight: 50 }}
+          />
 
-        {/* Hiển thị hình ảnh đã chọn */}
-        <View style={{ display: images.length > 0 ? 'flex' : 'none' }} className='flex-row flex-wrap mb-2'>
-            {images.map((image, index) => (
-              <View key={`${image.path}-${index}`} className='relative mr-2 mb-2'>
-                <Image
-                  source={{ uri: image.path }}
-                  className='w-20 h-20 rounded-lg'
-                />
-                <TouchableOpacity 
-                  onPress={() => removeImage(index)}
-                  className='absolute -top-2 -right-2 bg-red-500 rounded-full w-5 h-5 items-center justify-center'
-                >
-                  <Text className='text-white text-xs'>×</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-        </View>
+          {/* Hiển thị hình ảnh đã chọn */}
+          <View style={{ display: images.length > 0 ? 'flex' : 'none' }} className='flex-row flex-wrap mb-2'>
+              {images.map((image, index) => (
+                <View key={`${image.path}-${index}`} className='relative mr-2 mb-2'>
+                  <Image
+                    source={{ uri: image.path }}
+                    className='w-20 h-20 rounded-lg'
+                  />
+                  <TouchableOpacity 
+                    onPress={() => removeImage(index)}
+                    className='absolute -top-2 -right-2 bg-red-500 rounded-full w-5 h-5 items-center justify-center'
+                  >
+                    <Text className='text-white text-xs'>×</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+          </View>
 
-        <View className='flex-row justify-between items-center mt-2'>
-          <View className='flex-row'>
-            <TouchableOpacity 
-              onPress={() => selectImage('gallery')} 
-              className='mr-4'
-              disabled={isUploading}
-            >
-              <CreateIcons source={require('../assets/images/image-gallery.png')}/>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              onPress={() => selectImage('camera')} 
-              className='mr-4'
-              disabled={isUploading}
-            >
-              <CreateIcons source={require('../assets/images/camera.png')}/>
-            </TouchableOpacity>
+          <View className='flex-row justify-between items-center mt-2'>
+            <View className='flex-row'>
+              <TouchableOpacity 
+                onPress={() => selectImage('gallery')} 
+                className='mr-4'
+                disabled={isUploading}
+              >
+                <CreateIcons source={require('../assets/images/image-gallery.png')}/>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                onPress={() => selectImage('camera')} 
+                className='mr-4'
+                disabled={isUploading}
+              >
+                <CreateIcons source={require('../assets/images/camera.png')}/>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
 
-      <TouchableOpacity 
-        onPress={clearAll} 
-        className='ml-2 self-start'
-        disabled={isUploading}
-      >
-        <CreateIcons source={require('../assets/images/close.png')}/>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity 
+          onPress={clearAll} 
+          className='ml-2 self-start'
+          disabled={isUploading}
+        >
+          <CreateIcons source={require('../assets/images/close.png')}/>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>  
   );
 };
 

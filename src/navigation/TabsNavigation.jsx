@@ -1,9 +1,9 @@
 import { Image, StyleSheet, View, TouchableOpacity} from 'react-native'
 import React from 'react'
-import HomeScreen from '../screens/HomeScreens'
-import FavoriteScreens from '../screens/FavoriteScreens'
+import HomeScreen from '../screens/Home/HomeScreens'
+import FavoriteScreens from '../screens/Activity/FavoriteScreens'
 import ProfileScreens from '../screens/Profile/ProfileScreens'
-import SearchScreens from '../screens/SearchScreens'
+import SearchScreens from '../screens/Search/SearchScreens'
 import CreateScreens from '../screens/CreateScreens'
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -16,7 +16,7 @@ const TabsNavigation = () => {
     <Tab.Navigator
         screenOptions={{
             tabBarHideOnKeyboard: true,
-            headerShown: false,
+            headerShown: true,
             tabBarShowLabel: false,
             tabBarActiveTintColor: '#000',
             tabBarInactiveTintColor: '#ccc',
@@ -56,11 +56,12 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
+                headerShown: false,
             }}
             />
         <Tab.Screen
-            name="Create"
-            component={CreateScreens}
+            name="CreateTab"
+            component={() => null}
             options={{
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs 
@@ -114,6 +115,7 @@ const TabsNavigation = () => {
                     style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                 />
                 ),
+                headerShown: false,
             }}
             />
         <Tab.Screen 

@@ -19,6 +19,8 @@ import { useAuth } from '../../Auth/AuthContext';
 import ButtonLogin from '../../components/ButtonLogin';
 import { database } from '../../../FirebaseConfig'; 
 import SimpleToast from 'react-native-simple-toast';
+import { icons } from '../../constants/icons';
+
 import { createUser } from '../../services/userService';
 const LoginScreens = () => {
   const navigation = useNavigation();
@@ -116,7 +118,7 @@ const LoginScreens = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/images/login.png')} style={styles.loginImage} />
+      <Image source={icons.login} style={styles.loginImage} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>How would you like to use Threads?</Text>
 

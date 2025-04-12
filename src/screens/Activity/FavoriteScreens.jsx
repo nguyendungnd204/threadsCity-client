@@ -1,8 +1,7 @@
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import React, { useState, useMemo } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import FollowerActivity from '../components/FollowerActivity';
-import Feed from '../components/Feed';
+import FollowerActivity from '../../components/FollowerActivity';
+import Feed from '../../components/Feed';
 
 const Activity = () => {
   const Tabs = [
