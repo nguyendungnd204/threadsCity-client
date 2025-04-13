@@ -7,10 +7,12 @@ import SearchScreens from '../screens/Search/SearchScreens'
 import CreateScreens from '../screens/CreateScreens'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
+
 const Tab = createBottomTabNavigator();
 import IconTabs from '../components/CustomIcon'
-const TabsNavigation = (navigation) => {
-
+import { useNavigation } from '@react-navigation/native';
+const TabsNavigation = () => {
+    const navigation = useNavigation()
   return (
     <Tab.Navigator
         screenOptions={{

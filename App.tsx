@@ -39,7 +39,6 @@ const AppContent = () => {
               </CheckAuth>
             )}
           </Stack.Screen>
-          />
           <Stack.Screen 
             name="FeedDetail" 
             component={FeedDetailScreen}

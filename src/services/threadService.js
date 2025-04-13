@@ -6,7 +6,6 @@ import {
   remove, onValue, off,
   limitToLast, startAt, endAt
 } from 'firebase/database';
-import { ref, push, set, get, query } from 'firebase/database';
 
 export const createThread = async (data) => {
   try {
@@ -31,24 +30,24 @@ export const createThread = async (data) => {
     return null;
   }
 };
-export const getThreadById = async (threadId) => {
-  try {
-    const threadRef = ref(database, `threads/${threadId}`);
-    const snapshot = await get(threadRef);
+// export const getThreadById = async (threadId) => {
+//   try {
+//     const threadRef = ref(database, `threads/${threadId}`);
+//     const snapshot = await get(threadRef);
     
-    if (snapshot.exists()) {
-      return { 
-        id: threadId,
-        ...snapshot.val()
-      };
-    }
+//     if (snapshot.exists()) {
+//       return { 
+//         id: threadId,
+//         ...snapshot.val()
+//       };
+//     }
     
-    return null;
-  } catch (error) {
-    console.error('Error getting thread by ID:', error);
-    throw error;
-  }
-};
+//     return null;
+//   } catch (error) {
+//     console.error('Error getting thread by ID:', error);
+//     throw error;
+//   }
+// };
 
 export const getUserThreads = async (userId) => {
   try {
