@@ -3,32 +3,6 @@ import React, { useState } from 'react';
 import { Text, Image, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Link } from '@react-navigation/native';
 import { icons } from '../constants/icons';
-// interface User {
-//     id: number;
-//     username: string;
-//     firstName: string;
-//     lastName: string;
-//     avatar_path: string | null;
-// }
-
-// interface Threads {
-//     threadid: number,
-//     content: string,
-//     mediaFiles?:{ 
-//         id: number,
-//         imageUrl: string,
-//     }[], 
-//     likeCount: number, 
-//     commentCount: number, 
-//     retweetCount: number,
-//     sendCount: number,
-//     // creator: User,
-//     date: string,
-//     userid: number,
-//     firstName: string,
-//     lastName: string,
-//     avatar_path: string,
-// }
 
 const formatNumber = (num) => {
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
@@ -89,10 +63,6 @@ const Feed = ( {thread} ) => {
                 <TouchableOpacity className="flex-row items-center">
                         <Image source={icons.repeat} className='size-6' />
                         <Text className='text-base font-normal ml-1' >{formatNumber(thread.retweetCount)}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="flex-row items-center">
-                        <Image source={icons.send} className='size-6' />
-                        <Text className='text-base font-normal ml-1' >{formatNumber(thread.sendCount)}</Text>
                 </TouchableOpacity>
             </View>
         </View>
