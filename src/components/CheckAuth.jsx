@@ -11,7 +11,7 @@ const CheckAuth = ({ children, requireAuth = true }) => {
   useEffect(() => {
     if (!loading) {
       if (requireAuth && (isGuest || !user)) {
-        navigation.replace("LoginRequirement");
+        navigation.navigate("LoginRequirement");
       }
 
       if (!requireAuth && user && !isGuest) {

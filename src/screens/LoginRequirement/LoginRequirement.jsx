@@ -9,7 +9,7 @@ const LoginRequirement = () => {
             <Text className="text-base mb-8 px-4 text-center">Để thực hiện hành động này, bạn cần đăng nhập bằng tài khoản.</Text>
             <TouchableOpacity
                 className="bg-blue-500 py-3 px-8 rounded-full"
-                onPress={() => navigation.navigate('Login')}
+                onPress={() => navigation.replace('Login')}
             >
                 <Text className="text-white font-bold">Đăng nhập ngay</Text>
             </TouchableOpacity>

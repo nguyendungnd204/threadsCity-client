@@ -30,15 +30,9 @@ const AppContent = () => {
           />
           <Stack.Screen
             name="Create"
-            //component={CreateScreens}
+            component={CreateScreens}
             options={{ animation: 'slide_from_bottom', headerShown: true }}
-          >
-            {() => (
-              <CheckAuth requireAuth={true}>
-                <CreateScreens />
-              </CheckAuth>
-            )}
-          </Stack.Screen>
+          />
           <Stack.Screen 
             name="FeedDetail" 
             component={FeedDetailScreen}
@@ -47,23 +41,15 @@ const AppContent = () => {
           <Stack.Screen
             name="Login"
             options={{ animation: 'slide_from_bottom' }}
-          >
-            {() => (
-              <CheckAuth requireAuth={false}>
-                <LoginScreens />
-              </CheckAuth>
-            )}
-          </Stack.Screen>
+            component={LoginScreens}
+          />
+            
           <Stack.Screen
             name="LoginRequirement"
             options={{ animation: 'slide_from_bottom' }}
-          >
-            {() => (
-              <CheckAuth requireAuth={false}>
-                <LoginRequirement />
-              </CheckAuth>
-            )}
-          </Stack.Screen>
+            component={LoginRequirement}
+          />
+            
         </Stack.Navigator>
       </NavigationContainer>
 
