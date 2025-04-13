@@ -22,3 +22,19 @@ export const createUser = async (userId, userData) => {
     return false;
   }
 };
+
+export const getUserById = async (userId) => {
+  try {
+    const userRef = ref(database, `users/${userId}`);
+    const snapshot = await get(userRef);
+    
+    if (snapshot.exists()) {
+      return snapshot.val();
+    }
+    return null;
+  }
+  catch (error) {
+    console.error(error);
+    return null;
+  }
+}
