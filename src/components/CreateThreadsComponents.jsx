@@ -4,8 +4,9 @@ import UserImageIcon from '../components/UserImageIcon';
 import CreateIcons from '../components/CreateIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 
-const CreateThreadsComponents = ({ user, isPreview=false }) => {
+const CreateThreadsComponents = ({ user, isPreview }) => {
   const navigation = useNavigation();
   const inputRef = React.useRef(null);
   const [content, setContent] = useState('');
@@ -77,20 +78,20 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
     >
         <View className='flex-row mt-5 border-b-2 border-gray-300 pb-2 px-3'>
         <UserImageIcon 
-          source={user?.photoURL ? { uri: user.photoURL } : require('../assets/images/threads-logo-black.png')} 
+          source={user?.avatar ? { uri: user.avatar } : require('../assets/images/threads-logo-black.png')} 
           className='self-start'
         />
         
         <View className='flex-1 ml-3'>
           <Text className='text-[20px] font-bold'>
-            {user?.displayName || 'Người dùng ẩn danh'}
+            {user?.fullname || 'Người dùng ẩn danh'}
           </Text>
           
           <TextInput
             placeholder='Có gì mới...'
             placeholderTextColor='gray'
             multiline={true}
-            autoFocus={true}
+            autoFocus={!isPreview}
             className='text-[16px] text-gray-500'
             onChangeText={setContent}
             value={content}
@@ -149,4 +150,7 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
   );
 };
 
+CreateThreadsComponents.PropTypes = {
+  isPreview: PropTypes.bool,
+}
 export default CreateThreadsComponents;

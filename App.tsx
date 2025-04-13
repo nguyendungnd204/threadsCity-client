@@ -12,6 +12,7 @@ import CheckAuth from './src/components/CheckAuth';
 import LoginRequirement from './src/screens/LoginRequirement/LoginRequirement';
 import ProfileScreens from './src/screens/Profile/ProfileScreens';
 import SearchScreens from './src/screens/Search/SearchScreens';
+import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,11 @@ const AppContent = () => {
               </CheckAuth>
             )}
           </Stack.Screen>
+          <Stack.Screen 
+            name="FeedDetail" 
+            component={FeedDetailScreen}
+            options={{ animation: 'slide_from_bottom', headerShown: true }}
+          />
           <Stack.Screen
             name="Login"
             options={{ animation: 'slide_from_bottom' }}
