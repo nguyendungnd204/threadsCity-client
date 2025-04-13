@@ -6,57 +6,109 @@ import {
   FlatList,
   Image,
 } from "react-native";
-import { createThread } from "../../services/threadService";
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { icons } from "../../constants/icons";
+import { useAuth } from "../../Auth/AuthContext";
+import auth from "@react-native-firebase/auth";
+import Feed from "../../components/Feed";
+import { getUserById } from "../../services/userService";
+import LoginRequirement from "../LoginRequirement/LoginRequirement";
+
 
 const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
   const navigation = useNavigation();
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      content: "Tôi là con người !!!!",
-      date: "30.03.2023",
-      likes: 10,
-      comments: 10,
-      reposts: 20,
-      shares: 5,
-    },
-    {
-      id: 2,
-      content: "Tôi là con người !!!!",
-      date: "30.03.2023",
-      likes: 0,
-      comments: 0,
-      reposts: 0,
-      shares: 0,
-    },
-  ]);
+  const { user, logout, isGuest } = useAuth();
+  const [userProfile, setUserProfile] = useState(null);
+  const [userThreads, setUserThreads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [userReplies, setUserReplies] = useState([]);
+  const [userReposts, setUserReposts] = useState([]);
 
-  const handleCreateThread = async () => {
+  const loadUserProfile = async () => {
     try {
-      const data = {
-        authorId: "dungdep_trai",
-        content: "Một ngày tuyệt vời tại Đà Lạt!",
-        image: "https://example.com/image.jpg", 
-        createdAt: new Date().toISOString(),
-      };
-      
-      console.log("Data to be sent:", data);
-      const response = await createThread(data);
-      console.log("Response:", response);
-      
-      
+      if (user && user.id) {
+        const user = await getUserById(user.id);
+        if (user) {
+          setUserProfile(user);
+        } else {
+          setUserProfile({
+            fullname: user.displayName || '',
+            email: user.email || '',
+            avatar: user.photoURL || '',
+            username: user.email ? user.email.split('@')[0] : '',
+            bio: '',
+            followers: [],
+            following: []
+          });
+        }
+      }
     } catch (error) {
-      console.error("Error in handleCreateThread:", error);
+      console.error("Error fetching user data:", error);
+
+    }
+  }
+  const loadUserContent = async () => {
+    try {
+      if (!user || !user.id) return;
+      
+      const threads = await getUserThreads(user.id);
+      setUserThreads(threads);
+      
+      const replies = await getUserReplies(user.id);
+      setUserReplies(replies);
+      
+      const reposts = await getUserReposts(user.id);
+      setUserReposts(reposts);
+    } catch (error) {
+      console.error("Error loading user content:", error);
     }
   };
-  const handleLogout = () => {
-    navigation.replace('Login');
-  }
-  
 
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        if (isGuest) {
+          setLoading(false);
+          return;
+        }
+
+        await loadUserProfile();
+        await loadUserContent();
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [user, isGuest]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+        await loadUserProfile();
+        await loadUserContent();
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await auth().signOut();
+      logout();
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Logout error:", error);
+
+    }
+  }
 
   const renderTabButton = (label) => (
     <TouchableOpacity
@@ -68,40 +120,32 @@ const ProfileScreens = () => {
       </Text>
     </TouchableOpacity>
   );
+  const renderThreadItem = ({ item }) => {
+    const threadData = {
+      firstName: item.firstName,
+      lastName: item.lastName,
+      avatar_path: userProfile?.avatar,
+      date: item.createdAt,
+      content: item.content,
+      mediaFiles: item.mediaFiles,
+      likeCount: item.likeCount,
+      commentCount: item.commentCount,
+      retweetCount: item.retweetCount,
+    }
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("ThreadDetail", {
+            threadId: item.id,
+            userId: userProfile?.id,
+          });
+        }}
+      >
+        <Feed thread={threadData} />
+      </TouchableOpacity>
+    );
 
-  const renderPost = ({ item }) => (
-    <View className="flex-row p-3 border-b border-gray-100 mt-5">
-      <Image
-        source={icons.user}
-        className="w-10 h-10 rounded-full mr-2.5"
-      />
-      <View className="flex-1">
-        <View className="flex-row justify-between">
-          <Text className="font-semibold text-base">Nguyễn Dũng</Text>
-          <Text className="text-base text-gray-500">{item.date}</Text>
-        </View>
-        <Text>{item.content}</Text>
-        <View className="flex-row mt-2 space-x-3">
-          <TouchableOpacity className="flex-row items-center space-x-1">
-            <Image source={icons.unlike} className="w-5 h-5" resizeMode="contain" />
-            <Text className="text-xl font-normal text-gray-600 ml-1 mr-1">{item.likes}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center space-x-1">
-          <Image source={icons.chat} className="w-5 h-5" resizeMode="contain"/>
-            <Text className="text-xl text-gray-600 ml-1 mr-1">{item.comments}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center space-x-1">
-          <Image source={icons.repeat} className="w-5 h-5" resizeMode="contain"/>
-            <Text className="text-xl text-gray-600 ml-1 mr-1">{item.reposts}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center space-x-1">
-          <Image source={icons.send} className="w-5 h-5" resizeMode="contain"/>
-            <Text className="text-xl text-gray-600 ml-1 mr-1">{item.shares}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
+  }
 
   const renderEmptyContent = () => (
     <View className="items-center p-5">
@@ -110,44 +154,66 @@ const ProfileScreens = () => {
       </Text>
     </View>
   );
+  const getFilteredThreads = () => {
+    switch (activeTab) {
+      case "Thread":
+        return userThreads.length > 0 ? userThreads.filter(thread => !thread.isReply && !thread.isRepost) : [];
+      case "Thread trả lời":
+        return userThreads.filter(thread => thread.isReply);
+      case "Bài đăng lại":
+        return userThreads.filter(thread => thread.isRepost);
+      default:
+        return [];
+    }
+  };
+  const dataToShow = getFilteredThreads();
 
-  const dataToShow = activeTab === "Thread" ? posts : [];
-
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Đang tải...</Text>
+      </View>
+    );
+  }
   return (
     <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
-        <Image source={icons.search} className="w-5 h-5" resizeMode="contain"/>
+        <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
         <TouchableOpacity onPress={handleLogout}>
-        <Image 
-          source={icons.more} 
-          className="w-5 h-5" 
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-      <Image source={icons.search} className="w-5 h-5" resizeMode="contain"/>
-        <View className="flex-row space-x-2">
-        <Image source={icons.more} className="w-5 h-5" resizeMode="contain"/>
-        </View>
+          <Image
+            source={icons.more}
+            className="w-5 h-5"
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       </View>
 
       <View className="flex-row justify-between items-center p-4">
         <View>
-          <Text className="font-bold text-xl">Nguyễn Dũng</Text>
-          <Text className="text-gray-600 text-base">dung_dep_trai</Text>
-          <Text className="mt-1 text-base text-gray-700">Tuyệt</Text>
-          <Text className="mt-1 text-base text-gray-500">0 followers</Text>
+          <Text className="font-bold text-xl">{userProfile?.fullname }</Text>
+          <Text className="mt-1 text-base text-gray-700">{userProfile?.bio}</Text>
+          <Text className="mt-1 text-base text-gray-500">
+            {userProfile?.followers ? (
+              Array.isArray(userProfile.followers) ?
+                userProfile.followers.length :
+                Object.keys(userProfile.followers).length
+            ) : 0} followers
+          </Text>
         </View>
         <Image
-          source={require("../../assets/images/user.png")}
+          source={userProfile?.avatar ? { uri: userProfile.avatar } : require("../../assets/images/user.png")}
           className="w-16 h-16 rounded-full border-2 border-white"
         />
       </View>
 
       <View className="flex-row space-x-2 px-4 mt-2 pb-5">
-        <TouchableOpacity onPress={handleCreateThread} className="flex-1 border border-gray-300 p-2 items-center rounded-md">
+        <TouchableOpacity
+          className="flex-1 border border-gray-300 p-2 items-center rounded-md"
+          onPress={() => navigation.navigate('EditProfile', { userProfile })}
+        >
           <Text>Chỉnh sửa thông tin</Text>
         </TouchableOpacity>
-        <TouchableOpacity  className="flex-1 border border-gray-300 p-2 items-center rounded-md ml-5">
+        <TouchableOpacity className="flex-1 border border-gray-300 p-2 items-center rounded-md ml-5">
           <Text>Chia sẻ trang cá nhân</Text>
         </TouchableOpacity>
       </View>
@@ -161,9 +227,11 @@ const ProfileScreens = () => {
       <FlatList
         data={dataToShow}
         keyExtractor={(item) => item.id?.toString()}
-        renderItem={renderPost}
+        renderItem={renderThreadItem}
         ListEmptyComponent={renderEmptyContent}
         contentContainerStyle={{ flexGrow: 1 }}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
       />
     </View>
   );
