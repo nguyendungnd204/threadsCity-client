@@ -120,7 +120,7 @@ const LoginScreens = () => {
     <View style={styles.container}>
       <Image source={icons.login} style={styles.loginImage} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>How would you like to use Threads?</Text>
+        <Text style={styles.title}>Chào mừng bạn đến với Thread</Text>
 
         <View style={styles.buttonContainer}>
             <ButtonLogin
@@ -144,17 +144,11 @@ const LoginScreens = () => {
             disabled={loading}
           >
             <View style={styles.loginButtonContent}>
-              <Text style={styles.loginButtonText}>Use without a profile</Text>
-              <Icon name="chevron-forward" size={24} color="#acacac" />
+              <Text style={styles.loginButtonText}>Vào với tư cách khách</Text>
             </View>
             <Text style={styles.loginButtonSubtitle}>
-              You can browse Threads without a profile, but won't be able to post, interact or get
-              personalised recommendations.
+            Bạn vẫn có thể xem Threads mà không cần đăng nhập, nhưng sẽ không thể đăng bài, tương tác hoặc nhận các đề xuất phù hợp với bạn
             </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity disabled={loading}>
-            <Text style={styles.switchAccountButtonText}>Switch accounts</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

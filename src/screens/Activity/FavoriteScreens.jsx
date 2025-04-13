@@ -2,8 +2,12 @@ import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import React, { useState, useMemo } from 'react';
 import FollowerActivity from '../../components/FollowerActivity';
 import Feed from '../../components/Feed';
+import CheckAuth from '../../components/CheckAuth';
+import { useAuth } from "../../Auth/AuthContext";
+import auth from "@react-native-firebase/auth";
 
-const Activity = () => {
+const ActivityScreens = () => {
+  const { user } = useAuth();
   const Tabs = [
     { name: 'Tất cả' },
     { name: 'Lượt theo dõi' },
@@ -67,6 +71,7 @@ const Activity = () => {
   }, [tabIndex]);
 
   return (
+    <CheckAuth requireAuth={true}>
      <View className='flex-1 mt-[50px] bg-white px-5 '>
       <FlatList
         data={mergedData}
@@ -116,7 +121,8 @@ const Activity = () => {
         showsVerticalScrollIndicator={false}
       />
     </View>
+    </CheckAuth>
   );
 };
 
-export default Activity;
+export default ActivityScreens;

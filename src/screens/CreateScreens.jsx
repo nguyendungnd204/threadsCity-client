@@ -5,6 +5,7 @@ import { useAuth } from '../Auth/AuthContext';
 import CreateThreadsComponents from '../components/CreateThreadsComponents';
 import { database } from '../../FirebaseConfig';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import CheckAuth from '../components/CheckAuth';
 
 const CreateScreens = () => {
   const navigation = useNavigation();
@@ -60,6 +61,7 @@ const CreateScreens = () => {
   };
 
   return (
+    <CheckAuth requireAuth={true}>
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 flex-col">
         <CreateThreadsComponents 
@@ -87,6 +89,7 @@ const CreateScreens = () => {
         </View>
       </View>
     </SafeAreaView>
+    </CheckAuth>
   );
 };
 
