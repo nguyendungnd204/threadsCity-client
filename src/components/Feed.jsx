@@ -102,26 +102,26 @@ const Feed = ( {thread} ) => {
     )
 }
 
-Feed.PropTypes = {
-    thread: PropTypes.shape({
-      threadid: PropTypes.number.isRequired,
-      content: PropTypes.string.isRequired,
-      mediaFiles: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          imageUrl: PropTypes.string.isRequired,
-        })
-      ),
-      likeCount: PropTypes.number.isRequired,
-      commentCount: PropTypes.number.isRequired,
-      retweetCount: PropTypes.number.isRequired,
-      sendCount: PropTypes.number.isRequired,
-      date: PropTypes.string.isRequired,
-      userid: PropTypes.number.isRequired,
-      firstName: PropTypes.string.isRequired,
-      lastName: PropTypes.string.isRequired,
-      avatar_path: PropTypes.string.isRequired,
-    }).isRequired,
-  };
+// Feed.PropTypes = {
+//     thread: PropTypes.shape({
+//       threadid: PropTypes.number.isRequired,
+//       content: PropTypes.string.isRequired,
+//       mediaFiles: PropTypes.arrayOf(
+//         PropTypes.shape({
+//           id: PropTypes.number.isRequired,
+//           imageUrl: PropTypes.string.isRequired,
+//         })
+//       ),
+//       likeCount: PropTypes.number.isRequired,
+//       commentCount: PropTypes.number.isRequired,
+//       retweetCount: PropTypes.number.isRequired,
+//       sendCount: PropTypes.number.isRequired,
+//       date: PropTypes.string.isRequired,
+//       userid: PropTypes.number.isRequired,
+//       firstName: PropTypes.string.isRequired,
+//       lastName: PropTypes.string.isRequired,
+//       avatar_path: PropTypes.string.isRequired,
+//     }).isRequired,
+//   };
   
 export default Feed;

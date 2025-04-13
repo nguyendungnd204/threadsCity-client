@@ -5,13 +5,12 @@ import FavoriteScreens from '../screens/Activity/FavoriteScreens'
 import ProfileScreens from '../screens/Profile/ProfileScreens'
 import SearchScreens from '../screens/Search/SearchScreens'
 import CreateScreens from '../screens/CreateScreens'
-import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 const Tab = createBottomTabNavigator();
 import IconTabs from '../components/CustomIcon'
-const TabsNavigation = () => {
-    const navigation = useNavigation();
+const TabsNavigation = (navigation) => {
+
   return (
     <Tab.Navigator
         screenOptions={{
@@ -61,7 +60,7 @@ const TabsNavigation = () => {
             />
         <Tab.Screen
             name="CreateTab"
-            component={() => null}
+            component={CreateScreens}
             options={{
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs 

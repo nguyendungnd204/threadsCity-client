@@ -2,49 +2,26 @@ import { View, Text, TextInput, Image, TouchableOpacity, LayoutAnimation, Keyboa
 import React from 'react'
 import ProfileSearchResult from '../../components/ProfileSearchResult'
 import { icons } from '../../constants/icons'
+import { getUserByName } from '../../services/userService'
 
 const SearchScreens = () => {
   const [status, setStatus] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [users, setUsers] = React.useState([])
 
-  const users = [
-    {
-      id: 1,
-      uri: 'https://static01.nyt.com/images/2022/09/16/arts/16CAMERON1/16CAMERON1-mediumSquareAt3X.jpg',
-      username: 'Nguyễn Văn A',
-      firstName: 'Nguyen',
-      lastName: 'A',
-      followCount: 10,
-      status: false,
-    },
-    {
-      id: 2,
-      uri: 'https://randomuser.me/api/portraits/women/2.jpg',
-      username: 'Trần Thị B',
-      firstName: 'Nguyen',
-      lastName: 'A',
-      followCount: 310,
-      status: true,
-    },
-    {
-      id: 3,
-      uri: 'https://randomuser.me/api/portraits/men/3.jpg',
-      username: 'Lê Văn C',
-      firstName: 'Nguyen',
-      lastName: 'A',
-      followCount: 11230,
-      status: false,
-    },
-    {
-      id: 4,
-      uri: 'https://randomuser.me/api/portraits/women/4.jpg',
-      username: 'Phạm Thị D',
-      firstName: 'Nguyen',
-      lastName: 'A',
-      followCount: 10000000000000,
-      status: false,
-    },
-  ];
+  React.useEffect(() => {
+    const fetchUsers = setTimeout(async () => {
+      if (searchTerm.trim() !== '') {
+        const result = await getUserByName(searchTerm.trim());
+        
+        setUsers(result || []);
+      } else {
+        setUsers([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(fetchUsers)
+  }, [searchTerm]);
 
   const handleSearch = (searchTerm) => {
       setSearchTerm(searchTerm)
@@ -52,6 +29,8 @@ const SearchScreens = () => {
   const toggleStatus = (value) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setStatus(value);
+    setUsers([]);
+    setSearchTerm('');
 }
   return (
      <View className='flex-1 mt-[50px] bg-white'>
@@ -94,14 +73,14 @@ const SearchScreens = () => {
           ItemSeparatorComponent={() => (
             <View className='border-b-hairline border-b-gray-400 bg-gray-100' />
           )} 
-          ListEmptyComponent={() => <Text style={styles.emptyText}>No users found</Text>}
+          ListEmptyComponent={() => <Text className='text-base text-center mt-4 text-gray-300'>No users found</Text>}
           renderItem={({ item }) => (
-              <ProfileSearchResult Users={item} handleFollow={() => { !item.status }}/> 
+              <ProfileSearchResult Users={item} handleFollow={() => { }}/> 
           )}
           contentContainerStyle={{ gap: 8}}
         />
       </View>
-      
+        
     </View>
   )
 }

@@ -8,6 +8,7 @@ import TabsNavigation from './src/navigation/TabsNavigation';
 import LoginScreens from './src/screens/Login/LoginScreens';
 import { AuthProvider, useAuth } from './src/Auth/AuthContext';
 import './global.css';
+import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,11 @@ const AppContent = () => {
           <Stack.Screen 
             name="Create" 
             component={CreateScreens}
+            options={{ animation: 'slide_from_bottom', headerShown: true }}
+          />
+          <Stack.Screen 
+            name="FeedDetail" 
+            component={FeedDetailScreen}
             options={{ animation: 'slide_from_bottom', headerShown: true }}
           />
           <Stack.Screen

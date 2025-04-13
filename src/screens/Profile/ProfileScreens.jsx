@@ -37,9 +37,26 @@ const ProfileScreens = () => {
   const handleCreateThread = async () => {
     try {
       const data = {
-        authorId: "dungdep_trai",
-        content: "Một ngày tuyệt vời tại Đà Lạt!",
-        image: "https://example.com/image.jpg", 
+        authorId: "chu_khi_buon",
+        content: "Hôm nay tôi buồn nhiều chút :(((",
+        mediaFiles: [
+          {
+            id: 1,
+            imageUrl: 'https://www.bing.com/images/search?view=detailV2&ccid=R841lPAZ&id=2EA2F31B5D152459B85BF873FAE6A37A280CCCA0&thid=OIP.R841lPAZW7aeZfSCf25BvAHaE8&mediaurl=https%3A%2F%2Fcff2.earth.com%2Fuploads%2F2024%2F01%2F16161844%2FBiodiversity-patterns-scaled.jpg&cdnurl=https%3A%2F%2Fth.bing.com%2Fth%2Fid%2FR.47ce3594f0195bb69e65f4827f6e41bc%3Frik%3DoMwMKHqj5vpz%252bA%26pid%3DImgRaw%26r%3D0&exph=1707&expw=2560&q=%E1%BA%A3nh&simid=608016865961515555&form=IRPRST&ck=EAC1E93FF9DB796A61387611C6299F7C&selectedindex=2&itb=0&cw=1375&ch=664&ajaxhist=0&ajaxserp=0&cit=ccid_bcnasP8O*cp_4DFE05D0A85C34143065FF28CE49B695*mid_1E60FCFB27C29AFF2B083B0D62911F974F95D130*simid_608021014877650592*thid_OIP.bcnasP8O4jxKv8ZOnknpSgHaEK&vt=2',
+          },
+          {
+            id: 2,
+            imageUrl: 'https://th.bing.com/th/id/OIP.bcnasP8O4jxKv8ZOnknpSgHaEK?rs=1&pid=ImgDetMain',
+          },
+        ], 
+        likeCount: 0, 
+        commentCount: 0, 
+        retweetCount: 0,
+        sendCount: 0,
+        userid: 2,
+        firstName: "Tiến",
+        lastName: "Duy",
+        avatar_path: 'https://th.bing.com/th/id/OIP.bcnasP8O4jxKv8ZOnknpSgHaEK?rs=1&pid=ImgDetMain',
         createdAt: new Date().toISOString(),
       };
       

@@ -1,5 +1,5 @@
 import { database } from '../../FirebaseConfig';
-import { ref, set, get, update, push } from 'firebase/database';
+import { ref, set, get, update, push, query, orderByChild, equalTo } from 'firebase/database';
 
 export const createUser = async (userId, userData) => {
   try {
@@ -22,3 +22,24 @@ export const createUser = async (userId, userData) => {
     return false;
   }
 };
+
+
+export const getUserByName = async ( name ) => {
+  try{
+    const userQuery = query(ref(database, 'users'));
+    const snapshot = await get(userQuery);
+
+    if (snapshot.exists()) {
+      const users = snapshot.val();
+      const filtered = Object.entries(users).filter(([id, users]) =>
+        users.fullname?.toLowerCase().includes(name.toLowerCase())
+      ); // Trả về object user(s) có name khớp
+      return filtered.map(([id, user]) => ({ id, ...user }));
+    } else {
+      return [];
+    }
+  } catch (error){
+    console.error(error)
+    return [];
+  }
+} 
