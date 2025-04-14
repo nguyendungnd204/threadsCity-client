@@ -14,39 +14,45 @@ import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
-  const { loading } = useAuth();
+  const {user, isGuest, loading } = useAuth();
 
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
-          <Stack.Screen
-            name="Tabs"
-            component={TabsNavigation}
-            options={{ animation: 'slide_from_bottom' }}
-          />
-          <Stack.Screen
-            name="Create"
-            component={CreateScreens}
-            options={{ animation: 'slide_from_bottom', headerShown: true }}
-          />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {user || isGuest ? (
+            <>
+              <Stack.Screen
+                name="Tabs"
+                component={TabsNavigation}
+                options={{ animation: 'slide_from_bottom' }}
+              />
+              <Stack.Screen
+                name="Create"
+                component={CreateScreens}
+                options={{ animation: 'slide_from_bottom', headerShown: true }}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="Login"
+                component={LoginScreens}
+                options={{ animation: 'slide_from_bottom' }}
+              />
+              <Stack.Screen
+                name="LoginRequirement"
+                component={LoginRequirement}
+                options={{ animation: 'slide_from_bottom' }}
+              />
+            </>
+          )}
+          
           <Stack.Screen 
             name="FeedDetail" 
             component={FeedDetailScreen}
             options={{ animation: 'slide_from_bottom', headerShown: true }}
           />
-          <Stack.Screen
-            name="Login"
-            options={{ animation: 'slide_from_bottom' }}
-            component={LoginScreens}
-          />
-            
-          <Stack.Screen
-            name="LoginRequirement"
-            options={{ animation: 'slide_from_bottom' }}
-            component={LoginRequirement}
-          />
-            
         </Stack.Navigator>
       </NavigationContainer>
 
