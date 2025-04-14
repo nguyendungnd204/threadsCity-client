@@ -74,7 +74,7 @@ const ProfileScreens = () => {
           setLoading(false);
           return;
         }
-
+        console.log("User ID:", user);
         await loadUserProfile();
         await loadUserContent();
       } catch (error) {
