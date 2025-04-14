@@ -13,7 +13,7 @@ import auth from "@react-native-firebase/auth";
 import Feed from "../../components/Feed";
 import { getUserById } from "../../services/userService";
 import LoginRequirement from "../LoginRequirement/LoginRequirement";
-
+import CheckAuth from "../../components/CheckAuth";
 
 const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
@@ -74,7 +74,7 @@ const ProfileScreens = () => {
           setLoading(false);
           return;
         }
-
+        console.log("User ID:", user);
         await loadUserProfile();
         await loadUserContent();
       } catch (error) {
@@ -176,6 +176,7 @@ const ProfileScreens = () => {
     );
   }
   return (
+    <CheckAuth requireAuth={true}>
     <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
         <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
@@ -234,6 +235,7 @@ const ProfileScreens = () => {
         refreshing={refreshing}
       />
     </View>
+    </CheckAuth>
   );
 };
 

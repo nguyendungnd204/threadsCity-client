@@ -14,7 +14,7 @@ const ButtonLogin = ({ style, onPress, disabled, loading, name }) => {
         <View style={styles.loginButtonContent}>
             {name === 'Facebook' ? <FacebookIcon/> : <GoogleIcon />}
             <Text style={styles.loginButtonText}>
-            {name === 'Facebook' ? 'Continue with Facebook' : 'Continue with Google'}
+            {name === 'Facebook' ? 'Tiếp tục với Facebook' : 'Tiếp tục với Google'}
             </Text>
         </View>
       </TouchableOpacity>

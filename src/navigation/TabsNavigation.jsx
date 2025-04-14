@@ -1,16 +1,21 @@
 import { Image, StyleSheet, View, TouchableOpacity} from 'react-native'
 import React from 'react'
+const Tab = createBottomTabNavigator();
 import HomeScreen from '../screens/Home/HomeScreens'
-import FavoriteScreens from '../screens/Activity/FavoriteScreens'
 import ProfileScreens from '../screens/Profile/ProfileScreens'
 import SearchScreens from '../screens/Search/SearchScreens'
+<<<<<<< HEAD
 import CreateScreens from '../screens/CreateScreens'
+=======
+import CreateScreens from '..//screens/Create/CreateScreens'
+import { useNavigation } from '@react-navigation/native';
+>>>>>>> 5db4736fa4c3934507071d4e1b6205e8f53dd8e6
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-
-
-const Tab = createBottomTabNavigator();
 import IconTabs from '../components/CustomIcon'
 import { useNavigation } from '@react-navigation/native';
+import ActivityScreens from '../screens/Activity/FavoriteScreens'
+
+
 const TabsNavigation = () => {
     const navigation = useNavigation()
   return (
@@ -103,7 +108,7 @@ const TabsNavigation = () => {
         />
         <Tab.Screen 
             name='Favorite' 
-            component={FavoriteScreens}
+            component={ActivityScreens}
             options={{
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs focused={focused} color={color} size={size} name="favorite" />

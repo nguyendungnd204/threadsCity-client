@@ -3,7 +3,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import CreateScreens from './src/screens/CreateScreens';
+import CreateScreens from './src/screens/Create/CreateScreens';
 import TabsNavigation from './src/navigation/TabsNavigation';
 import LoginScreens from './src/screens/Login/LoginScreens';
 import { AuthProvider, useAuth } from './src/Auth/AuthContext';
@@ -22,7 +22,7 @@ const AppContent = () => {
   return (
     <>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Tabs">
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
           <Stack.Screen
             name="Tabs"
             component={TabsNavigation}
@@ -30,15 +30,9 @@ const AppContent = () => {
           />
           <Stack.Screen
             name="Create"
-            //component={CreateScreens}
+            component={CreateScreens}
             options={{ animation: 'slide_from_bottom', headerShown: true }}
-          >
-            {() => (
-              <CheckAuth requireAuth={true}>
-                <CreateScreens />
-              </CheckAuth>
-            )}
-          </Stack.Screen>
+          />
           <Stack.Screen 
             name="FeedDetail" 
             component={FeedDetailScreen}
@@ -47,23 +41,15 @@ const AppContent = () => {
           <Stack.Screen
             name="Login"
             options={{ animation: 'slide_from_bottom' }}
-          >
-            {() => (
-              <CheckAuth requireAuth={false}>
-                <LoginScreens />
-              </CheckAuth>
-            )}
-          </Stack.Screen>
+            component={LoginScreens}
+          />
+            
           <Stack.Screen
             name="LoginRequirement"
             options={{ animation: 'slide_from_bottom' }}
-          >
-            {() => (
-              <CheckAuth requireAuth={false}>
-                <LoginRequirement />
-              </CheckAuth>
-            )}
-          </Stack.Screen>
+            component={LoginRequirement}
+          />
+            
         </Stack.Navigator>
       </NavigationContainer>
 
