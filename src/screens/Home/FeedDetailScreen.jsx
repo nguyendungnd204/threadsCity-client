@@ -26,7 +26,8 @@ const FeedDetailScreen = () => {
         {thread ? (
           <>
             <Feed thread={thread} />
-            <Comments threadId={thread.threadid} />
+            <View className='border-b-2 border-b-gray-300 ' />
+            <Comments  />
           </>
         ) : (
           <ActivityIndicator size="large" className='mt-10' />

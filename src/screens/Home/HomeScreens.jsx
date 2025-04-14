@@ -64,11 +64,11 @@ const HomScreen = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            <CreateThreadsComponents isPreview={true} user={user} />
+            {tab === "Dành cho bạn" && <CreateThreadsComponents isPreview={true} user={user} />}
           </View>
         }
         ItemSeparatorComponent={() => (
-          <View className='border-b-hairline border-b-gray-400 bg-gray-100' />
+          <View className='border-b-2 border-b-gray-300 ' />
         )}
         className='bg-white'
         refreshControl={
