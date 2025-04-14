@@ -4,7 +4,12 @@ const Tab = createBottomTabNavigator();
 import HomeScreen from '../screens/Home/HomeScreens'
 import ProfileScreens from '../screens/Profile/ProfileScreens'
 import SearchScreens from '../screens/Search/SearchScreens'
+<<<<<<< HEAD
 import CreateScreens from '../screens/CreateScreens'
+=======
+import CreateScreens from '..//screens/Create/CreateScreens'
+import { useNavigation } from '@react-navigation/native';
+>>>>>>> 5db4736fa4c3934507071d4e1b6205e8f53dd8e6
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import IconTabs from '../components/CustomIcon'
 import { useNavigation } from '@react-navigation/native';

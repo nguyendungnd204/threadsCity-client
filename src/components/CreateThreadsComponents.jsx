@@ -6,13 +6,25 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 
-const CreateThreadsComponents = ({ user, isPreview }) => {
+
+const CreateThreadsComponents = ({ user, isPreview=false, onContentChange, onImageChange }) => {
+
   const navigation = useNavigation();
   const inputRef = React.useRef(null);
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
 
+  useEffect(() => {
+    if (onContentChange) {
+      onContentChange(content);
+    }
+  }, [content]);
+  useEffect(() => {
+    if (onImageChange) {
+      onImageChange(images);
+    }
+  }, [images]);
 
   const selectImage = async (type) => {
     try {
@@ -25,10 +37,11 @@ const CreateThreadsComponents = ({ user, isPreview }) => {
           cropping: true,
           compressImageQuality: 0.8,
         });
-      } else {
+      } else if (type === 'gallery') {
         result = await ImagePicker.openPicker({
+          mediaType: 'any',
           multiple: true,
-          maxFiles: 4,
+          maxFiles: 5,
           width: 800,
           height: 800,
           compressImageQuality: 0.8,
@@ -37,10 +50,6 @@ const CreateThreadsComponents = ({ user, isPreview }) => {
 
       if (result) {
         const selectedImages = Array.isArray(result) ? result : [result];
-        if (images.length + selectedImages.length > 4) {
-          Alert.alert('Thông báo', 'Bạn chỉ có thể chọn tối đa 4 ảnh');
-          return;
-        }
         setImages(prev => [...prev, ...selectedImages]);
       }
     } catch (error) {
@@ -122,7 +131,6 @@ const CreateThreadsComponents = ({ user, isPreview }) => {
               <TouchableOpacity 
                 onPress={() => selectImage('gallery')} 
                 className='mr-4'
-                disabled={isUploading}
               >
                 <CreateIcons source={require('../assets/images/image-gallery.png')}/>
               </TouchableOpacity>
@@ -130,7 +138,6 @@ const CreateThreadsComponents = ({ user, isPreview }) => {
               <TouchableOpacity 
                 onPress={() => selectImage('camera')} 
                 className='mr-4'
-                disabled={isUploading}
               >
                 <CreateIcons source={require('../assets/images/camera.png')}/>
               </TouchableOpacity>

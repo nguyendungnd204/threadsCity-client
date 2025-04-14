@@ -1,11 +1,10 @@
 import { View, Text, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../Auth/AuthContext';
-import CreateThreadsComponents from '../components/CreateThreadsComponents';
-import { database } from '../../FirebaseConfig';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import CheckAuth from '../components/CheckAuth';
+import { useAuth } from '../../Auth/AuthContext';
+import CreateThreadsComponents from '../../components/CreateThreadsComponents';
+import firestore from '@react-native-firebase/firestore';
 
 const CreateScreens = () => {
   const navigation = useNavigation();
@@ -31,30 +30,40 @@ const CreateScreens = () => {
     setIsUploading(true);
 
     try {
-      const imageUrls = [];
+      // Chuyển đổi image objects thành mảng URLs
+      const imageUrls = images
+        .map(image => image?.uri || image?.path || '')
+        .filter(url => url !== '');
 
-      // 2. Tạo thread trong Firestore
       const threadData = {
         content: content.trim(),
         images: imageUrls,
-        authorId: user.uid,
-        authorName: user.displayName || 'Người dùng ẩn danh',
-        authorAvatar: user.photoURL || '',
+        authorId: user.oauthId,
+        authorName: user.fullname || 'Người dùng ẩn danh',
+        authorAvatar: user.avatar || '',
         likes: [],
         comments: [],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        updatedAt: firestore.FieldValue.serverTimestamp(),
       };
 
-      await addDoc(collection(database, 'threads'), threadData);
+      await firestore()
+        .collection('Threads')
+        .add(threadData);
 
-      // 3. Thông báo thành công và quay về màn hình trước
       Alert.alert('Thành công', 'Đã đăng bài thành công', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { 
+          text: 'OK', 
+          onPress: () => {
+            navigation.goBack();
+            setContent('');
+            setImages([]);
+          }
+        }
       ]);
     } catch (error) {
       console.error('Lỗi khi đăng bài:', error);
-      Alert.alert('Lỗi', 'Đăng bài thất bại. Vui lòng thử lại');
+      Alert.alert('Lỗi', error.message || 'Đăng bài thất bại. Vui lòng thử lại');
     } finally {
       setIsUploading(false);
     }
@@ -66,7 +75,13 @@ const CreateScreens = () => {
       <View className="flex-1 flex-col">
         <CreateThreadsComponents 
           user={user}
+          isPreview={false}
+          onContentChange={handleContentChange}
+          onImageChange={handleImagesChange}
+          initialContent={content}
+          initialImages={images}
         />
+        
         <View className="flex-row mt-auto pb-[50px] px-[20px] items-center">
           <Text className="text-[16px] text-gray-500">
             Bất kỳ ai cũng có thể trả lời và trích dẫn
