@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 const checkLoginSession = async () => {
   try {
     const session = await AsyncStorage.getItem('userSession');
+    console.log('Retrieved session:', session); 
     return session ? JSON.parse(session) : null;
   } catch (error) {
     console.error('Error checking session:', error);
