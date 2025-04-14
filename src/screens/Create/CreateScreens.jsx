@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CheckAuth from '../components/CheckAuth';
+import CheckAuth from '../../components/CheckAuth';
 import { useAuth } from '../../Auth/AuthContext';
 import CreateThreadsComponents from '../../components/CreateThreadsComponents';
 import firestore from '@react-native-firebase/firestore';
@@ -20,6 +20,10 @@ const CreateScreens = () => {
   const handleImagesChange = (newImages) => {
     setImages(newImages);
   };
+
+  const handleUploadImage = async (image) => {
+    const formData = new FormData();
+  }
 
   const handlePostThread = async () => {
     if (!content.trim() && images.length === 0) {

@@ -8,10 +8,7 @@ import TabsNavigation from './src/navigation/TabsNavigation';
 import LoginScreens from './src/screens/Login/LoginScreens';
 import { AuthProvider, useAuth } from './src/Auth/AuthContext';
 import './global.css';
-import CheckAuth from './src/components/CheckAuth';
 import LoginRequirement from './src/screens/LoginRequirement/LoginRequirement';
-import ProfileScreens from './src/screens/Profile/ProfileScreens';
-import SearchScreens from './src/screens/Search/SearchScreens';
 import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
 
 const Stack = createNativeStackNavigator();
