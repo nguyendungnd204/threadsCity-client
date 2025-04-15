@@ -3,7 +3,6 @@ import React from 'react'
 import ProfileSearchResult from '../../components/ProfileSearchResult'
 import { icons } from '../../constants/icons'
 import { getUserByName } from '../../services/userService'
-import CheckAuth from '../../components/CheckAuth'
 
 const SearchScreens = () => {
   const [status, setStatus] = React.useState(false);
@@ -35,7 +34,6 @@ const SearchScreens = () => {
     setSearchTerm('');
 }
   return (
-    <CheckAuth requireAuth={false}>
      <View className='flex-1 mt-[50px] bg-white'>
       {!status &&  <Text className='px-5 py-2 text-3xl font-bold'>Tìm kiếm</Text> }
       <View className='flex-row items-center px-4'>
@@ -85,7 +83,6 @@ const SearchScreens = () => {
       </View>
         
     </View>
-    </CheckAuth>
   )
 }
 

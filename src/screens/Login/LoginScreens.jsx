@@ -80,7 +80,7 @@ const LoginScreens = () => {
   };
 
   const handleGuestLogin = () => {
-    setGuest();
+    // setGuest();
     navigation.navigate('Tabs');
   };
 

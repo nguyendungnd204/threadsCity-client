@@ -15,7 +15,7 @@ import ActivityScreens from './src/screens/Activity/FavoriteScreens';
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
-  const { loading, initialized } = useAuth();
+  const { user, loading, initialized } = useAuth();
 
   // Hiển thị loading cho đến khi khởi tạo xong
   if (!initialized || loading) {
@@ -31,8 +31,8 @@ const AppContent = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Tabs'>
             <Stack.Screen
               name="Create"
-              component={CreateScreens}
-              options={{ headerShown: true }}
+              component={user ? CreateScreens : LoginRequirement}
+              options={user ? { headerShown: true } : { headerShown: false }}
             />
             <Stack.Screen 
               name="FeedDetail" 
