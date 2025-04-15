@@ -9,8 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import IconTabs from '../components/CustomIcon';
 import ActivityScreens from '../screens/Activity/FavoriteScreens'
-import { useAuth } from '../context/AuthContext'
-import LoginRequirement from '../screens/Login/LoginRequirement'
+import { useAuth } from '../Auth/AuthContext'
+import LoginRequirement from '../screens/LoginRequirement/LoginRequirement'
 
 const Tab = createBottomTabNavigator();
 const TabsNavigation = () => {
@@ -65,7 +65,7 @@ const TabsNavigation = () => {
             }}
             />
             {
-                user || isGuest ? (
+                user ? (
                     <Tab.Screen
                         name="CreateTab"
                         component={CreateScreens}

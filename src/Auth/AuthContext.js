@@ -20,7 +20,6 @@ const checkLoginSession = async () => {
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     user: null,
-    isGuest: false,
     loading: true,
     initialized: false
   });
@@ -31,7 +30,6 @@ export const AuthProvider = ({ children }) => {
         const session = await checkLoginSession();
         setAuthState({
           user: session?.user || null,
-          isGuest: false,
           loading: false,
           initialized: true
         });
@@ -39,7 +37,6 @@ export const AuthProvider = ({ children }) => {
         console.error('Auth initialization error:', error);
         setAuthState({
           user: null,
-          isGuest: false,
           loading: false,
           initialized: true
         });
@@ -58,7 +55,6 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('userSession', JSON.stringify(session));
       setAuthState({
         user: userData,
-        isGuest: false,
         loading: false,
         initialized: true
       });
@@ -84,22 +80,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const setGuest = () => {
-    setAuthState({
-      user: null,
-      isGuest: true,
-      loading: false,
-      initialized: true
-    });
-  };
-
   return (
     <AuthContext.Provider
       value={{
         ...authState,
         login,
         logout,
-        setGuest,
         setLoading: (isLoading) => 
           setAuthState(prev => ({ ...prev, loading: isLoading }))
       }}

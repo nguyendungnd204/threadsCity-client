@@ -15,7 +15,7 @@ import ActivityScreens from './src/screens/Activity/FavoriteScreens';
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
-  const { user, isGuest, loading, initialized } = useAuth();
+  const { loading, initialized } = useAuth();
 
   // Hiển thị loading cho đến khi khởi tạo xong
   if (!initialized || loading) {
@@ -28,9 +28,7 @@ const AppContent = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} >
-        {/* {isGuest ? (
-          <>
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Tabs'>
             <Stack.Screen
               name="Create"
               component={CreateScreens}
@@ -41,9 +39,6 @@ const AppContent = () => {
               component={FeedDetailScreen}
               options={{ headerShown: true }}
             />
-          </>
-        ) : (
-          <>
             <Stack.Screen
               name="Login"
               component={LoginScreens}
@@ -53,9 +48,7 @@ const AppContent = () => {
               name="LoginRequirement"
               component={LoginRequirement}
             />
-          </>
-        )} */}
-        <Stack.Screen
+            <Stack.Screen
               name="Tabs"
               component={TabsNavigation}
               options={{ animation: 'slide_from_bottom' }}
