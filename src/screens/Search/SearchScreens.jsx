@@ -72,7 +72,7 @@ const SearchScreens = () => {
           keyExtractor={(item) => item.id.toString()}
           contentInsetAdjustmentBehavior="automatic"
           ItemSeparatorComponent={() => (
-            <View className='border-b-hairline border-b-gray-400 bg-gray-100' />
+            <View className='border-b-2 border-b-gray-300' />
           )} 
           ListEmptyComponent={() => <Text className='text-base text-center mt-4 text-gray-300'>No users found</Text>}
           renderItem={({ item }) => (

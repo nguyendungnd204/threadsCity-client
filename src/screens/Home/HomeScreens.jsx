@@ -64,7 +64,7 @@ const HomScreen = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            <CreateThreadsComponents isPreview={true} user={user} />
+            {tab === "Dành cho bạn" && <CreateThreadsComponents isPreview={true} user={user} />}
           </View>
         }
         ItemSeparatorComponent={() => (
