@@ -10,6 +10,9 @@ import { AuthProvider, useAuth } from './src/Auth/AuthContext';
 import './global.css';
 import LoginRequirement from './src/screens/LoginRequirement/LoginRequirement';
 import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
+import ProfileScreens from './src/screens/Profile/ProfileScreens';
+import ActivityScreens from './src/screens/Activity/FavoriteScreens';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -32,14 +35,20 @@ const AppContent = () => {
                 component={CreateScreens}
                 options={{ animation: 'slide_from_bottom', headerShown: true }}
               />
+              <Stack.Screen 
+                name="Profile"
+                component={ProfileScreens}
+                options={{ animation: 'slide_from_bottom', headerShown: true }}
+              />
+              <Stack.Screen 
+                name="Activity"
+                component={ActivityScreens}
+                options={{ animation: 'slide_from_bottom', headerShown: true }}
+              />
             </>
           ) : (
             <>
-              <Stack.Screen
-                name="Login"
-                component={LoginScreens}
-                options={{ animation: 'slide_from_bottom' }}
-              />
+              
               <Stack.Screen
                 name="LoginRequirement"
                 component={LoginRequirement}
@@ -47,7 +56,12 @@ const AppContent = () => {
               />
             </>
           )}
-          
+
+          <Stack.Screen
+                name="Login"
+                component={LoginScreens}
+                options={{ animation: 'slide_from_bottom' }}
+              />
           <Stack.Screen 
             name="FeedDetail" 
             component={FeedDetailScreen}
