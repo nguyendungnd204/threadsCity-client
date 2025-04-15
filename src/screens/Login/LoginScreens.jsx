@@ -81,7 +81,7 @@ const LoginScreens = () => {
 
   const handleGuestLogin = () => {
     setGuest();
-    //navigation.navigate('Tabs');
+    navigation.navigate('Tabs');
   };
 
   return (
