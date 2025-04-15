@@ -13,7 +13,7 @@ const ButtonLogin = ({ style, onPress, disabled, loading, name }) => {
       >
         <View style={styles.loginButtonContent}>
             {name === 'Facebook' ? <FacebookIcon/> : <GoogleIcon />}
-            <Text style={styles.loginButtonText}>
+            <Text style={styles.loginButtonContent}>
             {name === 'Facebook' ? 'Tiếp tục với Facebook' : 'Tiếp tục với Google'}
             </Text>
         </View>
