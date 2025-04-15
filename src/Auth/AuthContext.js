@@ -1,4 +1,3 @@
-// src/Auth/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -6,9 +5,12 @@ export const AuthContext = createContext();
 
 const checkLoginSession = async () => {
   try {
-    const session = await AsyncStorage.getItem('userSession');
-    console.log('Retrieved session:', session); 
-    return session ? JSON.parse(session) : null;
+    const sessionString = await AsyncStorage.getItem('userSession');
+    if (!sessionString){
+      return null;
+    } 
+    const session = JSON.parse(sessionString);
+    return session;
   } catch (error) {
     console.error('Error checking session:', error);
     return null;
@@ -20,35 +22,47 @@ export const AuthProvider = ({ children }) => {
     user: null,
     isGuest: false,
     loading: true,
+    initialized: false
   });
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const session = await checkLoginSession();
-      if (session) {
+      try {
+        const session = await checkLoginSession();
         setAuthState({
-          user: session.user,
+          user: session?.user || null,
           isGuest: false,
-          loading: false
+          loading: false,
+          initialized: true
         });
-      } else {
-        setAuthState(prev => ({ ...prev, loading: false }));
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        setAuthState({
+          user: null,
+          isGuest: false,
+          loading: false,
+          initialized: true
+        });
       }
     };
+    
     initializeAuth();
   }, []);
 
   const login = async (userData) => {
     try {
-      await AsyncStorage.setItem('userSession', JSON.stringify({
+      const session = {
         user: userData,
-        timestamp: new Date().getTime()
-      }));
+      };
+      
+      await AsyncStorage.setItem('userSession', JSON.stringify(session));
       setAuthState({
         user: userData,
         isGuest: false,
-        loading: false
+        loading: false,
+        initialized: true
       });
+      return true;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -61,10 +75,12 @@ export const AuthProvider = ({ children }) => {
       setAuthState({
         user: null,
         isGuest: false,
-        loading: false
+        loading: false,
+        initialized: true
       });
     } catch (error) {
       console.error('Logout error:', error);
+      throw error;
     }
   };
 
@@ -72,16 +88,15 @@ export const AuthProvider = ({ children }) => {
     setAuthState({
       user: null,
       isGuest: true,
-      loading: false
+      loading: false,
+      initialized: true
     });
   };
 
   return (
     <AuthContext.Provider
       value={{
-        user: authState.user,
-        isGuest: authState.isGuest,
-        loading: authState.loading,
+        ...authState,
         login,
         logout,
         setGuest,
@@ -94,4 +109,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  return context;
+};
