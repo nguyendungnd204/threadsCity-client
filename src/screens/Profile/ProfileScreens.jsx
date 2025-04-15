@@ -176,7 +176,6 @@ const ProfileScreens = () => {
     );
   }
   return (
-    <CheckAuth requireAuth={true}>
     <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
         <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
@@ -235,7 +234,6 @@ const ProfileScreens = () => {
         refreshing={refreshing}
       />
     </View>
-    </CheckAuth>
   );
 };
 

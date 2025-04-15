@@ -71,7 +71,6 @@ const ActivityScreens = () => {
   }, [tabIndex]);
 
   return (
-    <CheckAuth requireAuth={true}>
      <View className='flex-1 mt-[50px] bg-white px-5 '>
       <FlatList
         data={mergedData}
@@ -121,7 +120,7 @@ const ActivityScreens = () => {
         showsVerticalScrollIndicator={false}
       />
     </View>
-    </CheckAuth>
+    
   );
 };
 

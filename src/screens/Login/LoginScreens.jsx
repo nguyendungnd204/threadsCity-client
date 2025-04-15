@@ -70,7 +70,7 @@ const LoginScreens = () => {
       };
       await createUser(userId, userData);
       await login(userData);
-      navigation.navigate('Tabs');
+      //navigation.navigate('Tabs');
     } catch (error) {
       console.error('Facebook login error:', error);
       Alert.alert('Login Failed', error.message || 'An error occurred during Facebook login');
@@ -79,41 +79,9 @@ const LoginScreens = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      setLoading(true);
-      await GoogleSignin.hasPlayServices();
-      const signInResult = await GoogleSignin.signIn();
-
-      let idToken = signInResult.data?.idToken || signInResult.idToken;
-      if (!idToken) {
-        throw new Error('No ID token found');
-      }
-
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      const userCredential = await auth().signInWithCredential(googleCredential);
-      
-      const userData = {
-        uid: userCredential.user.uid,
-        displayName: userCredential.user.displayName,
-        email: userCredential.user.email,
-        photoURL: userCredential.user.photoURL,
-        providerId: userCredential.user.providerData[0]?.providerId
-      };
-      
-      login(userData);
-      navigation.navigate('Tabs');
-    } catch (error) {
-      console.error('Google login error:', error);
-      Alert.alert('Login Failed', error.message || 'An error occurred during Google login');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGuestLogin = () => {
     setGuest();
-    navigation.navigate('Tabs');
+    //navigation.navigate('Tabs');
   };
 
   return (
@@ -129,13 +97,6 @@ const LoginScreens = () => {
                 disabled={loading}
                 loading={loading}
                 name="Facebook"
-            />
-
-            <ButtonLogin
-                style={styles.loginButton}
-                onPress={handleGoogleLogin}
-                disabled={loading}
-                loading={loading}
             />
 
           <TouchableOpacity 
