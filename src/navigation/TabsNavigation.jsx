@@ -1,23 +1,21 @@
 import { Image, StyleSheet, View, TouchableOpacity} from 'react-native'
 import React from 'react'
-const Tab = createBottomTabNavigator();
+
 import HomeScreen from '../screens/Home/HomeScreens'
 import ProfileScreens from '../screens/Profile/ProfileScreens'
 import SearchScreens from '../screens/Search/SearchScreens'
-<<<<<<< HEAD
-import CreateScreens from '../screens/CreateScreens'
-=======
 import CreateScreens from '..//screens/Create/CreateScreens'
 import { useNavigation } from '@react-navigation/native';
->>>>>>> 5db4736fa4c3934507071d4e1b6205e8f53dd8e6
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import IconTabs from '../components/CustomIcon'
-import { useNavigation } from '@react-navigation/native';
+import IconTabs from '../components/CustomIcon';
 import ActivityScreens from '../screens/Activity/FavoriteScreens'
+import { useAuth } from '../Auth/AuthContext'
+import LoginRequirement from '../screens/LoginRequirement/LoginRequirement'
 
-
+const Tab = createBottomTabNavigator();
 const TabsNavigation = () => {
     const navigation = useNavigation()
+    const {user, isGuest} = useAuth()
   return (
     <Tab.Navigator
         screenOptions={{
@@ -31,6 +29,7 @@ const TabsNavigation = () => {
         }
         }
     >
+
         <Tab.Screen 
             name='Home' 
             component={HomeScreen}
@@ -65,47 +64,57 @@ const TabsNavigation = () => {
                 headerShown: false,
             }}
             />
-        <Tab.Screen
-            name="CreateTab"
-            component={CreateScreens}
-            options={{
-                tabBarIcon: ({ focused, color, size }) => (
-                    <IconTabs 
-                        focused={focused} 
-                        color={color} 
-                        size={size} 
-                        name="create" 
-                    />
-                ),
-                tabBarButton: (props) => (
-                    <TouchableOpacity
-                        {...props}
-                        onPress={() => navigation.navigate('Create')}
-                        style={{
-                            flex: 1,
-                            width: 70,
-                            height: 50,
-                            backgroundColor: '#f0f0f0',
-                            borderRadius: 8,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            shadowColor: '#000',
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.1,
-                            shadowRadius: 4,
-                            elevation: 5,
-                            marginTop: 10, 
-                            marginLeft: 5,
-                            marginBottom: 15,
-                            zIndex: 10
+            {
+                user ? (
+                    <Tab.Screen
+                        name="CreateTab"
+                        component={CreateScreens}
+                        options={{
+                            tabBarIcon: ({ focused, color, size }) => (
+                                <IconTabs 
+                                    focused={focused} 
+                                    color={color} 
+                                    size={size} 
+                                    name="create" 
+                                />
+                            ),
+                            tabBarButton: (props) => (
+                                <TouchableOpacity
+                                    {...props}
+                                    onPress={() => navigation.navigate('Create')}
+                                    style={{
+                                        flex: 1,
+                                        width: 70,
+                                        height: 50,
+                                        backgroundColor: '#f0f0f0',
+                                        borderRadius: 8,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        shadowColor: '#000',
+                                        shadowOffset: { width: 0, height: 2 },
+                                        shadowOpacity: 0.1,
+                                        shadowRadius: 4,
+                                        elevation: 5,
+                                        marginTop: 10, 
+                                        marginLeft: 5,
+                                        marginBottom: 15,
+                                        zIndex: 10
+                                    }}
+                                    activeOpacity={0.8}
+                                    accessibilityLabel="Create new item"
+                                    accessibilityRole="button"
+                                />
+                            ),
                         }}
-                        activeOpacity={0.8}
-                        accessibilityLabel="Create new item"
-                        accessibilityRole="button"
                     />
-                ),
-            }}
-        />
+                ) :
+                (
+                    <Tab.Screen
+                    name="LoginRequirement"
+                    component={LoginRequirement}
+                    />
+                )
+            }
         <Tab.Screen 
             name='Favorite' 
             component={ActivityScreens}

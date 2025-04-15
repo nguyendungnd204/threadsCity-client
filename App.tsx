@@ -1,4 +1,3 @@
-// App.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,57 +7,54 @@ import TabsNavigation from './src/navigation/TabsNavigation';
 import LoginScreens from './src/screens/Login/LoginScreens';
 import { AuthProvider, useAuth } from './src/Auth/AuthContext';
 import './global.css';
-import CheckAuth from './src/components/CheckAuth';
 import LoginRequirement from './src/screens/LoginRequirement/LoginRequirement';
-import ProfileScreens from './src/screens/Profile/ProfileScreens';
-import SearchScreens from './src/screens/Search/SearchScreens';
 import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
+import ProfileScreens from './src/screens/Profile/ProfileScreens';
+import ActivityScreens from './src/screens/Activity/FavoriteScreens';
 
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
-  const { loading } = useAuth();
+  const { loading, initialized } = useAuth();
+
+  // Hiển thị loading cho đến khi khởi tạo xong
+  if (!initialized || loading) {
+    return (
+      <View style={styles.loadingOverlay}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
-    <>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
-          <Stack.Screen
-            name="Tabs"
-            component={TabsNavigation}
-            options={{ animation: 'slide_from_bottom' }}
-          />
-          <Stack.Screen
-            name="Create"
-            component={CreateScreens}
-            options={{ animation: 'slide_from_bottom', headerShown: true }}
-          />
-          <Stack.Screen 
-            name="FeedDetail" 
-            component={FeedDetailScreen}
-            options={{ animation: 'slide_from_bottom', headerShown: true }}
-          />
-          <Stack.Screen
-            name="Login"
-            options={{ animation: 'slide_from_bottom' }}
-            component={LoginScreens}
-          />
-            
-          <Stack.Screen
-            name="LoginRequirement"
-            options={{ animation: 'slide_from_bottom' }}
-            component={LoginRequirement}
-          />
-            
-        </Stack.Navigator>
-      </NavigationContainer>
-
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      )}
-    </>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Tabs'>
+            <Stack.Screen
+              name="Create"
+              component={CreateScreens}
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen 
+              name="FeedDetail" 
+              component={FeedDetailScreen}
+              options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreens}
+              options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+              name="LoginRequirement"
+              component={LoginRequirement}
+            />
+            <Stack.Screen
+              name="Tabs"
+              component={TabsNavigation}
+              options={{ animation: 'slide_from_bottom' }}
+            />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
