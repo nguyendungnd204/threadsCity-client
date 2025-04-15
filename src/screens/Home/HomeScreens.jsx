@@ -68,7 +68,7 @@ const HomScreen = () => {
           </View>
         }
         ItemSeparatorComponent={() => (
-          <View className='border-b-2 border-b-gray-300 ' />
+          <View className='border-b-2 border-b-gray-300' />
         )}
         className='bg-white'
         refreshControl={

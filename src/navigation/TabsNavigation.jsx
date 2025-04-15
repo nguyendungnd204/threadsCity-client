@@ -64,11 +64,10 @@ const TabsNavigation = () => {
                 headerShown: false,
             }}
             />
-            {
-                user ? (
                     <Tab.Screen
                         name="CreateTab"
-                        component={CreateScreens}
+                        component={() => null}
+                        initialParams={{ userId: user ? user.id : null }}
                         options={{
                             tabBarIcon: ({ focused, color, size }) => (
                                 <IconTabs 
@@ -81,7 +80,7 @@ const TabsNavigation = () => {
                             tabBarButton: (props) => (
                                 <TouchableOpacity
                                     {...props}
-                                    onPress={() => navigation.navigate('Create')}
+                                    onPress={user && !isGuest ? () => navigation.navigate('Create') : () => navigation.navigate('LoginRequirement')}
                                     style={{
                                         flex: 1,
                                         width: 70,
@@ -107,17 +106,10 @@ const TabsNavigation = () => {
                             ),
                         }}
                     />
-                ) :
-                (
-                    <Tab.Screen
-                    name="LoginRequirement"
-                    component={LoginRequirement}
-                    />
-                )
-            }
         <Tab.Screen 
             name='Favorite' 
-            component={ActivityScreens}
+            component={user && !isGuest ? ActivityScreens : LoginRequirement}
+            initialParams={{ userId: user ? user.id : null }}
             options={{
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs focused={focused} color={color} size={size} name="favorite" />
@@ -135,7 +127,8 @@ const TabsNavigation = () => {
             />
         <Tab.Screen 
             name='Profile' 
-            component={ProfileScreens}
+            component={user && !isGuest ? ProfileScreens : LoginRequirement}
+            initialParams={{ userId: user ? user.id : null }}
                 options={{
                 tabBarIcon: ({ focused, color, size }) => (
                     <IconTabs focused={focused} color={color} size={size} name="user" />

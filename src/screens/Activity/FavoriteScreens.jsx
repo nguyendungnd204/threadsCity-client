@@ -12,7 +12,7 @@ const ActivityScreens = () => {
     { name: 'Tất cả' },
     { name: 'Lượt theo dõi' },
     { name: 'Bài đăng lại' },
-    { name: 'Follow' },
+    { name: 'Thread trả lời' },
   ];
   const [tabIndex, setTabIndex] = useState('Tất cả');
 

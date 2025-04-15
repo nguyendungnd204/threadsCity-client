@@ -74,7 +74,6 @@ const CreateScreens = () => {
   };
 
   return (
-    <CheckAuth requireAuth={true}>
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 flex-col">
         <CreateThreadsComponents 
@@ -108,7 +107,7 @@ const CreateScreens = () => {
         </View>
       </View>
     </SafeAreaView>
-    </CheckAuth>
+ 
   );
 };
 
