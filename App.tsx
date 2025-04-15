@@ -9,8 +9,7 @@ import { AuthProvider, useAuth } from './src/Auth/AuthContext';
 import './global.css';
 import LoginRequirement from './src/screens/LoginRequirement/LoginRequirement';
 import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
-import ProfileScreens from './src/screens/Profile/ProfileScreens';
-import ActivityScreens from './src/screens/Activity/FavoriteScreens';
+import EditProfile from './src/screens/UpdateProfle/UpdateProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +32,11 @@ const AppContent = () => {
               name="Create"
               component={user ? CreateScreens : LoginRequirement}
               options={user ? { headerShown: true } : { headerShown: false }}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              component={user ? EditProfile : LoginRequirement}
+              
             />
             <Stack.Screen 
               name="FeedDetail" 

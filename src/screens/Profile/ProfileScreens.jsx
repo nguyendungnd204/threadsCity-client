@@ -97,11 +97,11 @@ const ProfileScreens = () => {
   return (
     <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
-        <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
+        <Image source={icons.search} className="w-6 h-6" resizeMode="contain" />
         <TouchableOpacity onPress={handleLogout}>
           <Image
-            source={icons.more}
-            className="w-5 h-5"
+            source={icons.close}
+            className="w-7 h-7"
             resizeMode="contain"
           />
         </TouchableOpacity>
