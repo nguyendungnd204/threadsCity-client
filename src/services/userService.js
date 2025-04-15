@@ -29,15 +29,18 @@ export const getUserById = async (userId) => {
     const snapshot = await get(userRef);
     
     if (snapshot.exists()) {
-      return snapshot.val();
+      return {
+        userId,
+        ...snapshot.val()
+      };
     }
     return null;
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     return null;
   }
 }
+
 
 
 export const getUserByName = async ( name ) => {

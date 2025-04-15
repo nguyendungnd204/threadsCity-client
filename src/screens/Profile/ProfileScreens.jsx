@@ -5,98 +5,43 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  RefreshControl
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { icons } from "../../constants/icons";
 import { useAuth } from "../../Auth/AuthContext";
 import auth from "@react-native-firebase/auth";
+import useFetch from '../../services/useFetch';
+import { getThread } from "../../services/threadService";
 import Feed from "../../components/Feed";
 import { getUserById } from "../../services/userService";
-import LoginRequirement from "../LoginRequirement/LoginRequirement";
-import CheckAuth from "../../components/CheckAuth";
 
 const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
   const navigation = useNavigation();
-  const { user, logout, isGuest } = useAuth();
-  const [userProfile, setUserProfile] = useState(null);
-  const [userThreads, setUserThreads] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [userReplies, setUserReplies] = useState([]);
-  const [userReposts, setUserReposts] = useState([]);
-
-  const loadUserProfile = async () => {
-    try {
-      if (user && user.id) {
-        const user = await getUserById(user.id);
-        if (user) {
-          setUserProfile(user);
-        } else {
-          setUserProfile({
-            fullname: user.displayName || '',
-            email: user.email || '',
-            avatar: user.photoURL || '',
-            username: user.email ? user.email.split('@')[0] : '',
-            bio: '',
-            followers: [],
-            following: []
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-
-    }
-  }
-  const loadUserContent = async () => {
-    try {
-      if (!user || !user.id) return;
-      
-      const threads = await getUserThreads(user.id);
-      setUserThreads(threads);
-      
-      const replies = await getUserReplies(user.id);
-      setUserReplies(replies);
-      
-      const reposts = await getUserReposts(user.id);
-      setUserReposts(reposts);
-    } catch (error) {
-      console.error("Error loading user content:", error);
-    }
-  };
+  const { user, logout } = useAuth();
+  const {data: userProfile} = useFetch(() => getUserByI(user?.oauthId), true);
+  const { data: thread, loading, refetch } = useFetch(getThread, true);
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        if (isGuest) {
-          setLoading(false);
-          return;
-        }
-        console.log("User ID:", user);
-        await loadUserProfile();
-        await loadUserContent();
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (user && user.oauthId) {
+      console.log('User ID:', user.oauthId);
+    }
+  }, [user]);
+  // useEffect(() => {
+  //   if (thread) {
+  //     console.log("Thread data:", thread);
+  //   }
+  // }, [thread]);
+  useEffect(() => {
+    console.log(" data:", userProfile);
+  }, [userProfile]);
 
-    loadData();
-  }, [user, isGuest]);
+  if (loading) return <Text>Loading...</Text>;
 
   const onRefresh = async () => {
-    setRefreshing(true);
-    try {
-        await loadUserProfile();
-        await loadUserContent();
-    } catch (error) {
-      console.error("Error refreshing data:", error);
-    } finally {
-      setRefreshing(false);
-    }
+    // Gọi lại refetch để tải lại dữ liệu
+    refetch();
   };
 
   const handleLogout = async () => {
@@ -120,32 +65,6 @@ const ProfileScreens = () => {
       </Text>
     </TouchableOpacity>
   );
-  const renderThreadItem = ({ item }) => {
-    const threadData = {
-      firstName: item.firstName,
-      lastName: item.lastName,
-      avatar_path: userProfile?.avatar,
-      date: item.createdAt,
-      content: item.content,
-      mediaFiles: item.mediaFiles,
-      likeCount: item.likeCount,
-      commentCount: item.commentCount,
-      retweetCount: item.retweetCount,
-    }
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("ThreadDetail", {
-            threadId: item.id,
-            userId: userProfile?.id,
-          });
-        }}
-      >
-        <Feed thread={threadData} />
-      </TouchableOpacity>
-    );
-
-  }
 
   const renderEmptyContent = () => (
     <View className="items-center p-5">
@@ -157,11 +76,11 @@ const ProfileScreens = () => {
   const getFilteredThreads = () => {
     switch (activeTab) {
       case "Thread":
-        return userThreads.length > 0 ? userThreads.filter(thread => !thread.isReply && !thread.isRepost) : [];
+        return [];
       case "Thread trả lời":
-        return userThreads.filter(thread => thread.isReply);
+        return [];
       case "Bài đăng lại":
-        return userThreads.filter(thread => thread.isRepost);
+        return [];
       default:
         return [];
     }
@@ -190,7 +109,7 @@ const ProfileScreens = () => {
 
       <View className="flex-row justify-between items-center p-4">
         <View>
-          <Text className="font-bold text-xl">{userProfile?.fullname }</Text>
+          <Text className="font-bold text-xl">{userProfile?.fullname}</Text>
           <Text className="mt-1 text-base text-gray-700">{userProfile?.bio}</Text>
           <Text className="mt-1 text-base text-gray-500">
             {userProfile?.followers ? (
@@ -225,13 +144,20 @@ const ProfileScreens = () => {
       </View>
 
       <FlatList
-        data={dataToShow}
-        keyExtractor={(item) => item.id?.toString()}
-        renderItem={renderThreadItem}
-        ListEmptyComponent={renderEmptyContent}
-        contentContainerStyle={{ flexGrow: 1 }}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
+        showsVerticalScrollIndicator={false}
+        data={thread || []}
+        keyExtractor={(item) => item.threadid.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handleThread(item.threadid)}>
+            <Feed thread={item} />
+          </TouchableOpacity>
+        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={onRefresh}
+          />
+        }
       />
     </View>
   );
