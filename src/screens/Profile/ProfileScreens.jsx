@@ -20,7 +20,7 @@ const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
   const navigation = useNavigation();
   const { user, logout } = useAuth();
-  const {data: userProfile} = useFetch(() => getUserByI(user?.oauthId), true);
+  const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
   const { data: thread, loading, refetch } = useFetch(getThread, true);
 
   useEffect(() => {
