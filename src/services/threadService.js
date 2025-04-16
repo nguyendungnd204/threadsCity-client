@@ -7,26 +7,28 @@ import {
   limitToLast, startAt, endAt
 } from 'firebase/database';
 
-export const createThread = async (data) => {
+export const createThread = async (userId, threadData) => {
   try {
-    console.log('Starting createThread function with data:', data);
-    
-    // Lấy tham chiếu đến bảng threads
     const threadsRef = ref(database, 'threads');
-    console.log('Threads reference obtained');
     
-    // Tạo ID mới bằng push
     const newThreadRef = push(threadsRef);
-    console.log('Generated new thread ID');
     
-    // Lưu dữ liệu
-    await set(newThreadRef, data);
-    console.log('Thread created successfully with key:', newThreadRef.key);
+    const threadToCreate = {
+      ...threadData,
+      authorId: userId,
+      likes: {},
+      comments: {},
+      createdAt: { '.sv': 'timestamp' },
+    };
     
-    return newThreadRef.key;
+    await set(newThreadRef, threadToCreate);
+    
+    const userThreadsRef = ref(database, `users/${userId}/threads/${newThreadRef.key}`);
+    await set(userThreadsRef, true);
+    
+    return newThreadRef.key; 
   } catch (error) {
-    console.error('Error in createThread:', error.message);
-    console.error('Error stack:', error.stack);
+    console.error('Error creating thread:', error);
     return null;
   }
 };

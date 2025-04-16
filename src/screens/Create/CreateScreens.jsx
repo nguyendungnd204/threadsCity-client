@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CheckAuth from '../../components/CheckAuth';
 import { useAuth } from '../../Auth/AuthContext';
 import CreateThreadsComponents from '../../components/CreateThreadsComponents';
+import { createThread } from '../../services/threadService';
 import firestore from '@react-native-firebase/firestore';
 import { getUserById } from '../../services/userService';
 import useFetch from '../../services/useFetch';
@@ -12,7 +12,7 @@ const CreateScreens = () => {
   const navigation = useNavigation();
   const { user } = useAuth();
   const [content, setContent] = useState('');
-  const [images, setImages] = useState([]);
+  const [mediaFiles, setMediaFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
 
@@ -27,16 +27,88 @@ const CreateScreens = () => {
     setContent(text);
   };
 
-  const handleImagesChange = (newImages) => {
-    setImages(newImages);
+  const handleImagesChange = (newMediaFiles) => {
+    console.log('Selected images:', newMediaFiles);
+
+    const formattedFiles = newMediaFiles
+    .map((file, index) => {
+        const path = file.path;
+        let type = 'image';
+        if (file.mime && file.mime.startsWith('video')) {
+          type = 'video';
+        } else if (path && (path.endsWith('.mp4') || path.endsWith('.mov'))) {
+          type = 'video';
+        }
+
+        return {
+          id: index + 1, 
+          path,
+          type,
+        };
+      }
+    );
+    console.log('Formatted mediaFiles:', formattedFiles); 
+    setMediaFiles(formattedFiles);
   };
 
-  const handleUploadImage = async (image) => {
-    const formData = new FormData();
-  }
+  const uploadImageToCloudinary = async (file, index) => {
+    try {
+      if (!file || !file.path) {
+        console.warn(`No valid path for file ID ${file.id}`);
+        return null;
+      }
+      const path = file.path;
+      const isVideo = file.type === 'video';
+
+      let type = isVideo ? 'video/mp4' : 'image/jpeg';
+      if (path.endsWith('.png')) {
+        type = 'image/png';
+      } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+        type = 'image/jpeg';
+      } else if (path.endsWith('.mov')) {
+        type = 'video/quicktime';
+      }
+
+      console.log(`Uploading ${isVideo ? 'video' : 'image'} ID ${file.id}:`, path);
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri:path,
+        type,
+        name: `upload.${type.split('/')[1]}`,
+      });
+      formData.append('upload_preset', 'Threads-app');
+
+      const response = await fetch(`https://api.cloudinary.com/v1_1/die2sjgsg/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(`Cloudinary upload failed for ID ${file.id}:`, errorData);
+        throw new Error(`Upload failed: ${errorData.error?.message || 'Unknown error'}`);
+      }
+
+      const data = await response.json();
+      if (!data.secure_url) {
+        console.error(`No secure_url returned for ID ${file.id}:`, data);
+        return null;
+      }
+
+      console.log(`Upload successful for ID ${file.id}:`, data.secure_url);
+      if (isVideo) {
+        return { id: file.id, videoUrl: data.secure_url };
+      }
+      return { id: file.id, imageUrl: data.secure_url };
+    } catch (error) {
+      console.error(`Upload image error for ID ${file.id}:`, error.message);
+      return null;
+    }
+  };
 
   const handlePostThread = async () => {
-    if (!content.trim() && images.length === 0) {
+    if (!content.trim() && mediaFiles.length === 0) {
       Alert.alert('Thông báo', 'Vui lòng nhập nội dung hoặc thêm ảnh');
       return;
     }
@@ -44,40 +116,40 @@ const CreateScreens = () => {
     setIsUploading(true);
 
     try {
-      // Chuyển đổi image objects thành mảng URLs
-      const imageUrls = images
-        .map(image => image?.uri || image?.path || '')
-        .filter(url => url !== '');
+      const uploadResults = await Promise.all(
+        mediaFiles.map((file, index) => uploadImageToCloudinary(file, index))
+      );
+      const validMediaFiles = uploadResults.filter(file => file !== null);
+
+      if (mediaFiles.length > 0 && validMediaFiles.length === 0) {
+        Alert.alert('Lỗi', 'Không thể tải ảnh lên Cloudinary. Vui lòng thử lại.');
+        return;
+      }
 
       const threadData = {
         content: content.trim(),
-        images: imageUrls,
-        authorId: user.oauthId,
-        authorName: user.fullname || 'Người dùng ẩn danh',
-        authorAvatar: user.avatar || '',
-        likes: [],
-        comments: [],
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        updatedAt: firestore.FieldValue.serverTimestamp(),
+        mediaFiles: validMediaFiles,
+        fullname: user?.fullname || 'Người dùng ẩn danh',
+        avatar_path: user?.avatar || '',
       };
 
-      await firestore()
-        .collection('Threads')
-        .add(threadData);
-
-      Alert.alert('Thành công', 'Đã đăng bài thành công', [
-        { 
-          text: 'OK', 
-          onPress: () => {
-            navigation.goBack();
-            setContent('');
-            setImages([]);
-          }
-        }
-      ]);
+      const threadId = await createThread(user.oauthId, threadData);
+      if (threadId) {
+        setContent('');
+        setMediaFiles([]);
+        Alert.alert('Thành công', 'Đã đăng bài thành công', [
+          { text: 'OK', onPress: () => navigation.goBack() }
+        ]);
+      }
     } catch (error) {
       console.error('Lỗi khi đăng bài:', error);
-      Alert.alert('Lỗi', error.message || 'Đăng bài thất bại. Vui lòng thử lại');
+      let message = 'Đăng bài thất bại. Vui lòng thử lại';
+      if (error.message.includes('network')) {
+        message = 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối của bạn';
+      } else if (error.message.includes('permission')) {
+        message = 'Không có quyền đăng bài';
+      }
+      Alert.alert('Lỗi', message);
     } finally {
       setIsUploading(false);
     }
@@ -92,7 +164,7 @@ const CreateScreens = () => {
           onContentChange={handleContentChange}
           onImageChange={handleImagesChange}
           initialContent={content}
-          initialImages={images}
+          initialImages={mediaFiles}
         />
         
         <View className="flex-row mt-auto pb-[50px] px-[20px] items-center">
@@ -103,10 +175,8 @@ const CreateScreens = () => {
           <TouchableOpacity 
             className="ml-auto w-[70px] h-[40px] bg-black rounded-[20px] items-center justify-center"
             onPress={handlePostThread}
-            disabled={isUploading || (!content.trim() && images.length === 0)}
-            style={{
-              opacity: (isUploading || (!content.trim() && images.length === 0)) ? 0.5 : 1
-            }}
+            disabled={isUploading}
+            style={{ opacity: isUploading ? 0.5 : 1 }}
           >
             {isUploading ? (
               <ActivityIndicator color="#fff" />
@@ -117,7 +187,6 @@ const CreateScreens = () => {
         </View>
       </View>
     </SafeAreaView>
- 
   );
 };
 
