@@ -5,6 +5,8 @@ import CheckAuth from '../../components/CheckAuth';
 import { useAuth } from '../../Auth/AuthContext';
 import CreateThreadsComponents from '../../components/CreateThreadsComponents';
 import firestore from '@react-native-firebase/firestore';
+import { getUserById } from '../../services/userService';
+import useFetch from '../../services/useFetch';
 
 const CreateScreens = () => {
   const navigation = useNavigation();
@@ -12,6 +14,14 @@ const CreateScreens = () => {
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
+
+  React.useEffect(() => {
+    if (user && user.oauthId) {
+      console.log('User ID:', user.oauthId);
+      console.log('User Profile:', userProfile);
+    }
+  }, [userProfile]);
 
   const handleContentChange = (text) => {
     setContent(text);
@@ -77,7 +87,7 @@ const CreateScreens = () => {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 flex-col">
         <CreateThreadsComponents 
-          user={user}
+          user={userProfile}
           isPreview={false}
           onContentChange={handleContentChange}
           onImageChange={handleImagesChange}

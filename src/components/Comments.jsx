@@ -5,10 +5,6 @@ import React from 'react';
 const Comments = () => {
   const route = useRoute();
   const { id } = route.params;
-    // const [comments, setComments] = React.useState([]); // dùng null để phân biệt đang loading
-    // const [loading, setLoading] = React.useState(true); // dùng null để phân biệt đang loading
-    
-
 
   return (
     <View className='flex-1 bg-white'>

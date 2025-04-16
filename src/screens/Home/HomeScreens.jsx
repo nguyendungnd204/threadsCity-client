@@ -7,15 +7,17 @@ import { useAuth } from '../../Auth/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { getThread } from '../../services/threadService';
 import useFetch from '../../services/useFetch';
+import { getUserById } from '../../services/userService';
 
 const HomScreen = () => {
   const TabSelect = ["Dành cho bạn", "Đang theo dõi"];
   const [tab, setTab] = useState("Dành cho bạn");
   const { user } = useAuth();
   const navigation = useNavigation();
+  const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
   
   // Sử dụng useFetch để lấy dữ liệu
-  const { data: thread, loading, error, refetch } = useFetch(getThread, true);
+  const { data: thread, loading, error, refetch } = useFetch(() => getThread(), true);
 
   const handleThread = (id) => {
     navigation.navigate('FeedDetail', { id });
@@ -64,7 +66,7 @@ const HomScreen = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            {tab === "Dành cho bạn" && <CreateThreadsComponents isPreview={true} user={user} />}
+            {tab === "Dành cho bạn" && <CreateThreadsComponents isPreview={true} user={userProfile} />} 
           </View>
         }
         ItemSeparatorComponent={() => (
