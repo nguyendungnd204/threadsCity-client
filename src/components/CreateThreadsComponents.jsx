@@ -14,6 +14,7 @@ const CreateThreadsComponents = ({ user, isPreview=false, onContentChange, onIma
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  
 
   useEffect(() => {
     if (onContentChange) {

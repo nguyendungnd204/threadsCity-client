@@ -129,8 +129,8 @@ const CreateScreens = () => {
       const threadData = {
         content: content.trim(),
         mediaFiles: validMediaFiles,
-        fullname: user?.fullname || 'Người dùng ẩn danh',
-        avatar_path: user?.avatar || '',
+        fullname: userProfile?.fullname || 'Người dùng ẩn danh',
+        avatar_path: userProfile?.avatar || '',
       };
 
       const threadId = await createThread(user.oauthId, threadData);
