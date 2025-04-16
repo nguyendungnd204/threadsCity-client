@@ -4,6 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../Auth/AuthContext';
 import CreateThreadsComponents from '../../components/CreateThreadsComponents';
 import { createThread } from '../../services/threadService';
+import firestore from '@react-native-firebase/firestore';
+import { getUserById } from '../../services/userService';
+import useFetch from '../../services/useFetch';
 
 const CreateScreens = () => {
   const navigation = useNavigation();
@@ -11,6 +14,14 @@ const CreateScreens = () => {
   const [content, setContent] = useState('');
   const [mediaFiles, setMediaFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
+
+  React.useEffect(() => {
+    if (user && user.oauthId) {
+      console.log('User ID:', user.oauthId);
+      console.log('User Profile:', userProfile);
+    }
+  }, [userProfile]);
 
   const handleContentChange = (text) => {
     setContent(text);
@@ -118,8 +129,8 @@ const CreateScreens = () => {
       const threadData = {
         content: content.trim(),
         mediaFiles: validMediaFiles,
-        fullname: user?.fullname || 'Người dùng ẩn danh',
-        avatar_path: user?.avatar || '',
+        fullname: userProfile?.fullname || 'Người dùng ẩn danh',
+        avatar_path: userProfile?.avatar || '',
       };
 
       const threadId = await createThread(user.oauthId, threadData);
@@ -148,7 +159,7 @@ const CreateScreens = () => {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 flex-col">
         <CreateThreadsComponents 
-          user={user}
+          user={userProfile}
           isPreview={false}
           onContentChange={handleContentChange}
           onImageChange={handleImagesChange}

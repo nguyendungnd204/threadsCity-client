@@ -1,0 +1,32 @@
+import { database } from '../../FirebaseConfig';
+import { 
+  ref, push, set, get, query, 
+  orderByChild, equalTo, update, 
+  remove, onValue, off,
+  limitToLast, startAt, endAt
+} from 'firebase/database';
+
+
+export const getCommentsByThreadId = async (threadId) => {
+    try {
+        const commentRef = ref(database, 'comments')
+        const queryComment = query(commentRef, orderByChild('threadId'), equalTo(threadId))
+        const snapshot = await get(queryComment);
+
+        if (snapshot.exists()){
+            const comments = []
+            const data = snapshot.val()
+            Object.entries(data).forEach(([id, comment]) => {
+                comments.push({
+                    id,
+                    ...comment
+                })
+            })
+            return comments
+        }
+        return []
+    } catch (err) {
+        console.error(err)
+        return []
+    }
+}

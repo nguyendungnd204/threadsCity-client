@@ -86,7 +86,7 @@ export const getUserReposts = async (userId) => {
 };
 
 export const getThread = async () => {
-  try{
+  try {
     const threadRef = query(ref(database, 'threads'));
     const snapshot = await get(threadRef);
     
@@ -96,15 +96,15 @@ export const getThread = async () => {
         threadid: key, // ✅ gán key làm threadid
         ...value,
       }));
-      return threads; // Trả về object user(s) có name khớp
+      return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo createdAt giảm dần
     } else {
       return [];
     }
-  } catch (err){
-    console.error(err)
+  } catch (err) {
+    console.error(err);
     return [];
   }
-}
+};
 export const getThreadById = async (id) => {
   try {
     const threadRef = ref(database, `threads/${id}`);
