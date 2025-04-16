@@ -5,7 +5,7 @@ import CreateIcons from '../components/CreateIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-
+import { AdvancedImage } from 'cloudinary-react-native';
 
 const CreateThreadsComponents = ({ user, isPreview=false, onContentChange, onImageChange }) => {
 
@@ -35,7 +35,7 @@ const CreateThreadsComponents = ({ user, isPreview=false, onContentChange, onIma
           width: 800,
           height: 800,
           cropping: true,
-          compressImageQuality: 0.8,
+          compressImageQuality: 0.5,
         });
       } else if (type === 'gallery') {
         result = await ImagePicker.openPicker({
@@ -44,7 +44,7 @@ const CreateThreadsComponents = ({ user, isPreview=false, onContentChange, onIma
           maxFiles: 5,
           width: 800,
           height: 800,
-          compressImageQuality: 0.8,
+          compressImageQuality: 0.5,
         });
       }
 

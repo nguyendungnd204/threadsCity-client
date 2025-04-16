@@ -64,48 +64,48 @@ const TabsNavigation = () => {
                 headerShown: false,
             }}
             />
-                    <Tab.Screen
-                        name="CreateTab"
-                        component={() => null}
-                        initialParams={{ userId: user ? user.id : null }}
-                        options={{
-                            tabBarIcon: ({ focused, color, size }) => (
-                                <IconTabs 
-                                    focused={focused} 
-                                    color={color} 
-                                    size={size} 
-                                    name="create" 
-                                />
-                            ),
-                            tabBarButton: (props) => (
-                                <TouchableOpacity
-                                    {...props}
-                                    onPress={user && !isGuest ? () => navigation.navigate('Create') : () => navigation.navigate('LoginRequirement')}
-                                    style={{
-                                        flex: 1,
-                                        width: 70,
-                                        height: 50,
-                                        backgroundColor: '#f0f0f0',
-                                        borderRadius: 8,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        shadowColor: '#000',
-                                        shadowOffset: { width: 0, height: 2 },
-                                        shadowOpacity: 0.1,
-                                        shadowRadius: 4,
-                                        elevation: 5,
-                                        marginTop: 10, 
-                                        marginLeft: 5,
-                                        marginBottom: 15,
-                                        zIndex: 10
-                                    }}
-                                    activeOpacity={0.8}
-                                    accessibilityLabel="Create new item"
-                                    accessibilityRole="button"
-                                />
-                            ),
-                        }}
+        <Tab.Screen
+            name="CreateTab"
+            component={CreateScreens}
+            initialParams={{ userId: user ? user.id : null }}
+            options={{
+                tabBarIcon: ({ focused, color, size }) => (
+                    <IconTabs 
+                        focused={focused} 
+                        color={color} 
+                        size={size} 
+                        name="create" 
                     />
+                ),
+                tabBarButton: (props) => (
+                    <TouchableOpacity
+                        {...props}
+                        onPress={user && !isGuest ? () => navigation.navigate('Create') : () => navigation.navigate('LoginRequirement')}
+                        style={{
+                            flex: 1,
+                            width: 70,
+                            height: 50,
+                            backgroundColor: '#f0f0f0',
+                            borderRadius: 8,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.1,
+                            shadowRadius: 4,
+                            elevation: 5,
+                            marginTop: 10, 
+                            marginLeft: 5,
+                            marginBottom: 15,
+                            zIndex: 10
+                        }}
+                        activeOpacity={0.8}
+                        accessibilityLabel="Create new item"
+                        accessibilityRole="button"
+                    />
+                ),
+            }}
+        />
         <Tab.Screen 
             name='Favorite' 
             component={user && !isGuest ? ActivityScreens : LoginRequirement}
