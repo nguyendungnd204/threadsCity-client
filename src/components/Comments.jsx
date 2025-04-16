@@ -3,17 +3,28 @@ import { View, Text, ScrollView } from 'react-native';
 import React from 'react';
 import { getCommentsByThreadId } from '../services/commentService';
 import useFetch from '../services/useFetch';
+import Feed from './Feed';
 
 const Comments = () => {
   const route = useRoute();
   const { id } = route.params;
-  const { data: comments, loading, error } = useFetch(() => getCommentsByThreadId(id), true);
+  const [comments, setComments] = React.useState([])
+
   React.useEffect(() => {
-    console.log('Comments:', comments);
-  } , [id]);
+      
+      const fetchComment = async () => {
+        const result = await getCommentsByThreadId(id)
+        console.log('Comments:', result);  
+        setComments(result);
+      }
+      fetchComment();
+  }, [id]);
+
   return (
-    <View className='flex-1 bg-white'>
-        
+    <View>
+        {comments?.map((cmt) => (
+          <Feed key={cmt.id} thread={cmt}/>
+        ))}
     </View>
   );
 };

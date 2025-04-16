@@ -9,24 +9,24 @@ import {
 
 export const getCommentsByThreadId = async (threadId) => {
     try {
-        const commentRef = ref(database, 'comments')
-        const queryComment = query(commentRef, orderByChild('threadId'), equalTo(threadId))
-        const snapshot = await get(queryComment);
-
-        if (snapshot.exists()){
-            const comments = []
-            const data = snapshot.val()
-            Object.entries(data).forEach(([id, comment]) => {
-                comments.push({
-                    id,
-                    ...comment
-                })
-            })
-            return comments
-        }
-        return []
+      const commentRef = ref(database, 'comments');
+      const queryComment = query(commentRef, orderByChild('threadId'), equalTo(threadId));
+      const snapshot = await get(queryComment);
+  
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const comments = Object.entries(data).map(([id, comment]) => ({
+          id,
+          ...comment,
+        }));
+  
+        return comments;
+      }
+  
+      return [];
     } catch (err) {
-        console.error(err)
-        return []
+      console.error('Lỗi khi lấy comment:', err);
+      return [];
     }
-}
+  };
+  
