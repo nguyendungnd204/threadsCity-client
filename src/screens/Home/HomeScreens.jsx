@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
 import Feed from '../../components/Feed';
 import { icons } from '../../constants/icons';
@@ -14,16 +14,20 @@ const HomScreen = () => {
   const [tab, setTab] = useState("Dành cho bạn");
   const { user } = useAuth();
   const navigation = useNavigation();
-  const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
-  
+  const { data: userProfile } = useFetch(() => getUserById(user?.oauthId), true);
+
   // Sử dụng useFetch để lấy dữ liệu
   const { data: thread, loading, error, refetch } = useFetch(() => getThread(), true);
+
+  const flatListRef = useRef(null); // Tạo tham chiếu cho FlatList
 
   const handleThread = (id) => {
     navigation.navigate('FeedDetail', { id });
   };
 
   const onRefresh = async () => {
+    // Cuộn về đầu trang
+    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
     // Gọi lại refetch để tải lại dữ liệu
     refetch();
   };
@@ -41,6 +45,7 @@ const HomScreen = () => {
   return (
     <View className='flex-1 mt-[50px]'>
       <FlatList
+        ref={flatListRef} // Gắn tham chiếu vào FlatList
         showsVerticalScrollIndicator={false}
         data={thread || []}
         keyExtractor={(item) => item.threadid.toString()}
@@ -66,7 +71,7 @@ const HomScreen = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            {tab === "Dành cho bạn" && <CreateThreadsComponents isPreview={true} user={userProfile} />} 
+            {tab === "Dành cho bạn" && <CreateThreadsComponents isPreview={true} user={userProfile} />}
           </View>
         }
         ItemSeparatorComponent={() => (

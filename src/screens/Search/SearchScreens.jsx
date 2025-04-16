@@ -74,7 +74,7 @@ const SearchScreens = () => {
           ItemSeparatorComponent={() => (
             <View className='border-b-2 border-b-gray-300' />
           )} 
-          ListEmptyComponent={() => <Text className='text-base text-center mt-4 text-gray-300'>No users found</Text>}
+          ListEmptyComponent={() => {searchTerm && <Text className='text-base text-center mt-4 text-gray-300'>=Không tìm thấy người dùng</Text>}}
           renderItem={({ item }) => (
               <ProfileSearchResult Users={item} handleFollow={() => { }}/> 
           )}

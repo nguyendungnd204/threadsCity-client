@@ -3,11 +3,30 @@ import React, { useState } from 'react';
 import { Text, Image, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Link } from '@react-navigation/native';
 import { icons } from '../constants/icons';
+import Video from 'react-native-video';
 
 const formatNumber = (num) => {
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
     if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
     return num;
+};
+const formatDate = (date) => {
+    const today = new Date();
+    const givenDate = new Date(date);
+    const diffTime = Math.abs(today - givenDate);
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Chuyển đổi thành số ngày
+
+    if (diffDays === 0) {
+        if (diffHours === 0) {
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+            return `${diffMinutes} phút trước`;
+        }
+        return `${diffHours} giờ trước`;
+    }
+    if (diffDays === 1) return 'Hôm qua';
+    if (diffDays <= 7) return `${diffDays} ngày trước`;
+    return givenDate.toLocaleDateString('vi-VN'); // Hiển thị ngày tháng đầy đủ
 };
 const Feed = ( {thread} ) => {
     const [like, setLike] = useState(false);
@@ -17,9 +36,9 @@ const Feed = ( {thread} ) => {
             <Image source={{ uri: thread.avatar_path }} className='w-14 h-14 rounded-full self-start'/> 
         <View className='flex-1 gap-1 ml-4' >
             <View className='flex-row items-center'>
-                <View className='flex-row items-center flex-1 gap-1'>
-                    <Text className='text-base font-bold' numberOfLines={1} style={{ flexShrink: 1 }}>{thread.firstName} {thread.lastName}</Text>
-                    <Text className='text-sm text-gray-500' >{thread.date}</Text>    
+                <View className='flex-row items-center flex-1 gap-1.5'>
+                    <Text className='text-base font-bold' numberOfLines={1} style={{ flexShrink: 1 }}>{thread.fullname}</Text>
+                    <Text className='text-sm text-gray-500' >{formatDate(thread.createdAt)}</Text>    
                 </View>
                 <Image source={icons.more} className='size-6 self-end' tintColor="gray"/>
             </View>
@@ -33,11 +52,24 @@ const Feed = ( {thread} ) => {
                         contentContainerStyle={{ flexDirection: 'row', gap: 14, paddingRight: 40,}}
                     >
                         {thread.mediaFiles.map((media) => (
+                            media.imageUrl ? (
                             <Link href={'/'} key={media.id} asChild>
                                 <TouchableOpacity>
                                    <Image source={{ uri: media.imageUrl}} className='h-60 w-60 rounded-xl mb-3'/>
                                 </TouchableOpacity>
                             </Link>
+                            ) :  media.videoUrl ? (
+                                <Link href={'/'} key={media.id} asChild>
+                                    <TouchableOpacity>
+                                        <Video
+                                            source={{ uri: media.videoUrl }}
+                                            style={{ width: 240, height: 240, borderRadius: 12, marginBottom: 12}}
+                                            resizeMode="cover"
+                                            useNativeControls
+                                        />
+                                    </TouchableOpacity>
+                                </Link>
+                            ) : null
                         )) }
                     </ScrollView>
                )}       
