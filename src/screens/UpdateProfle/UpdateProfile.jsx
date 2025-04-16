@@ -21,7 +21,7 @@ const EditProfile = () => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: '#fff' }} className="flex-1 px-4 pt-4">
+    <ScrollView style={{ backgroundColor: '#fff' }} className="flex-1 px-4 pt-4 mt-[50px]">
       <View className="flex-row items-center justify-between mb-6">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text className="text-black-500 text-base">Huỷ</Text>

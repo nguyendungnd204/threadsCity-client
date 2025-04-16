@@ -4,6 +4,7 @@ import { Text, Image, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Link } from '@react-navigation/native';
 import { icons } from '../constants/icons';
 import Video from 'react-native-video';
+import CustomVideoPlayer from './CustomVideoPlayer';
 
 const formatNumber = (num) => {
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
@@ -61,12 +62,8 @@ const Feed = ( {thread} ) => {
                             ) :  media.videoUrl ? (
                                 <Link href={'/'} key={media.id} asChild>
                                     <TouchableOpacity>
-                                        <Video
-                                            source={{ uri: media.videoUrl }}
-                                            style={{ width: 240, height: 240, borderRadius: 12, marginBottom: 12}}
-                                            resizeMode="cover"
-                                            useNativeControls
-                                        />
+                                        
+                                        <CustomVideoPlayer uri={media.videoUrl}/>
                                     </TouchableOpacity>
                                 </Link>
                             ) : null
@@ -79,7 +76,7 @@ const Feed = ( {thread} ) => {
                         {like ? (
                             <>
                                 <Image source={icons.islike} className='size-6' />
-                                <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount + 1)}</Text>
+                                <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount + 1)}</Text> 
                             </>
                         ): (
                             <>
