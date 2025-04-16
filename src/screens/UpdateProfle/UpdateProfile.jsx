@@ -1,32 +1,44 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Image, Switch, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TextInput, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import UserImageIcon from '../../components/UserImageIcon';
+import { updateUserBio } from '../../services/userService'; 
 
 const EditProfile = () => {
   const navigation = useNavigation();
-  const [showInstagram, setShowInstagram] = useState(false);
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [bio, setBio] = useState('');
+  const route = useRoute();
+  const { userProfile } = route.params || {};
+
+  const [bio, setBio] = useState(userProfile?.bio || '');
+
+  const handleSave = async () => {
+    const success = await updateUserBio(userProfile.userId, bio);
+    if (success) {
+      navigation.goBack();
+    } else {
+      alert("Cập nhật tiểu sử thất bại. Vui lòng thử lại.");
+    }
+  };
 
   return (
-    
-    <ScrollView className="flex-1 bg-white mt-[50px]  px-4 pt-4">
+    <ScrollView style={{ backgroundColor: '#fff' }} className="flex-1 px-4 pt-4">
       <View className="flex-row items-center justify-between mb-6">
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text className="text-blue-500 text-base">Huỷ</Text>
+          <Text className="text-black-500 text-base">Huỷ</Text>
         </TouchableOpacity>
         <Text className="text-black text-lg font-semibold">Chỉnh sửa trang cá nhân</Text>
-        <TouchableOpacity>
-          <Text className="text-blue-500 text-base">Xong</Text>
+        <TouchableOpacity onPress={handleSave}>
+          <Text className="text-black-500 text-base">Xong</Text>
         </TouchableOpacity>
       </View>
 
-      <View className="items-center mb-6">
-        <Image
-          source={{ uri: 'https://your-avatar-url.jpg' }}
-          className="w-20 h-20 rounded-full mb-2"
+      <View className="flex-row items-center mb-6">
+      <UserImageIcon
+          source={{ uri: userProfile?.avatar || 'https://your-avatar-url.jpg' }}
         />
-        <Text className="text-black text-base font-semibold">Nguyễn Văn Dũng</Text>
+        <Text className="text-black pl-3 text-base font-semibold">
+          {userProfile?.fullname || 'Người dùng'}
+        </Text>
       </View>
 
       <View className="mb-4">
@@ -37,6 +49,7 @@ const EditProfile = () => {
           placeholder="Nhập tiểu sử..."
           placeholderTextColor="#666"
           className="border border-gray-400 rounded-md px-3 py-2 text-black"
+          multiline
         />
       </View>
     </ScrollView>

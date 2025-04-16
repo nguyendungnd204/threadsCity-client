@@ -41,6 +41,20 @@ export const getUserById = async (userId) => {
   }
 }
 
+export const updateUserBio = async (userId, newBio) => {
+  try {
+    const userRef = ref(database, `users/${userId}`);
+    await update(userRef, {
+      bio: newBio,
+      updatedAt: { '.sv': 'timestamp' }
+    });
+    return true;
+  } catch (error) {
+    console.error("Lỗi khi cập nhật bio:", error);
+    return false;
+  }
+};
+
 
 
 export const getUserByName = async ( name ) => {

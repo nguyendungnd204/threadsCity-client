@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   FlatList,
   Image,
-  RefreshControl
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { icons } from "../../constants/icons";
@@ -15,13 +16,16 @@ import useFetch from '../../services/useFetch';
 import { getThread } from "../../services/threadService";
 import Feed from "../../components/Feed";
 import { getUserById } from "../../services/userService";
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 const ProfileScreens = () => {
   const [activeTab, setActiveTab] = useState("Thread");
   const navigation = useNavigation();
   const { user, logout } = useAuth();
-  const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
-  const { data: thread, loading, refetch } = useFetch(getThread, true);
+  const {data: userProfile, loading: userLoading, refetch: refecthThead} = useFetch(() => getUserById(user?.oauthId), true);
+  const { data: thread, loading, refetch: refetchUserProfile } = useFetch(getThread, true);
+  const flatListRef = useRef(null);
 
   useEffect(() => {
     if (user && user.oauthId) {
@@ -37,11 +41,13 @@ const ProfileScreens = () => {
     console.log(" data:", userProfile);
   }, [userProfile]);
 
-  if (loading) return <Text>Loading...</Text>;
+  if (loading || userLoading) return <ActivityIndicator size="small" color="#0000ff" />;;
 
   const onRefresh = async () => {
     // Gọi lại refetch để tải lại dữ liệu
-    refetch();
+    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+    refetchUserProfile();
+    refecthThead();
   };
 
   const handleLogout = async () => {
@@ -54,6 +60,10 @@ const ProfileScreens = () => {
 
     }
   }
+  const handleThread = (id) => {
+    navigation.navigate("ThreadDetail", { threadId: id });
+  };
+  
 
   const renderTabButton = (label) => (
     <TouchableOpacity
