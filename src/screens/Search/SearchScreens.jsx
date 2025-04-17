@@ -20,7 +20,6 @@ const SearchScreens = () => {
         setUsers([]);
       }
     }, 500);
-
     return () => clearTimeout(fetchUsers)
   }, [searchTerm]);
 

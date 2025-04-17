@@ -11,6 +11,7 @@ import LoginRequirement from './src/screens/LoginRequirement/LoginRequirement';
 import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
 import EditProfile from './src/screens/UpdateProfle/UpdateProfile';
 import ReplyComment from './src/screens/ReplyComment';
+import UserProfileScreens from './src/screens/Profile/UserProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,11 @@ const AppContent = () => {
               name="FeedDetail" 
               component={FeedDetailScreen}
               options={{ headerShown: true }}
+            />
+            <Stack.Screen 
+              name="UserProfile" 
+              component={UserProfileScreens}
+              options={{ headerShown: false }}
             />
             <Stack.Screen 
               name="Reply" 

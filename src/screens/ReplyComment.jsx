@@ -32,7 +32,7 @@ const ReplyComment = () => {
     }, [id]);
   
     return (
-      <View>
+      <View className='bg-white'>
           {thread ? (
               <Feed thread={thread} />
           ) : (

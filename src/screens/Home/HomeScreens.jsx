@@ -51,7 +51,7 @@ const HomScreen = () => {
         keyExtractor={(item) => item.threadid.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleThread(item.threadid)}>
-            <Feed thread={item} />
+            <Feed thread={item} key={item.threadid}/>
           </TouchableOpacity>
         )}
         ListHeaderComponent={
