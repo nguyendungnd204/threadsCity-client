@@ -48,7 +48,7 @@ const FeedDetailScreen = () => {
         ) : (
           <ActivityIndicator size="large" className='mt-10' />
         )}
-        <Comments  />
+        <Comments/>
       </ScrollView>
       <View className=' bg-gray-200 my-0.5'>
       <TouchableOpacity className='flex-row items-center rounded-full gap-2.5 p-2 m-1.5' onPress={() => handlePress(id)} >

@@ -1,6 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 const formatNumber = (num) => {
     if (num >= 1_000_000_000) return (num /1_000_000_000).toFixed(1) + 'B';
@@ -10,9 +11,18 @@ const formatNumber = (num) => {
 };
 
 const ProfileSearchResult = ({ Users, handleFollow }) => {
+    const navigation = useNavigation();
+    
+    React.useEffect(() => {
+        console.log(Users.id)
+    })
+    
+    const handleGoProfile = (id) => {
+        navigation.navigate("UserProfile", { id })
+    }
 
     return(
-        <View className='flex-row items-center px-3 py-4 gap-1'>
+        <TouchableOpacity className='flex-row items-center px-3 py-4 gap-1' onPress={() => handleGoProfile(Users.id)}>
             <Image source={{ uri: Users.avatar }} className='w-14 h-14 rounded-full'/> 
             <View className='flex-1 gap-1 ml-4' >
                 <Text className='text-base font-bold'>{Users.fullname}</Text>
@@ -27,7 +37,7 @@ const ProfileSearchResult = ({ Users, handleFollow }) => {
                 <Text className='font-bold'>Theo dõi lại</Text>
             )}
             </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     )
 }
 
