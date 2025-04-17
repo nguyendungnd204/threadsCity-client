@@ -21,7 +21,7 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
   
     handleContentChange(content);
     handleImagesChange(images);
-  
+
   }, [content, images]);
   
   const selectImage = async (type) => {
@@ -202,7 +202,8 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
     };
 
   return (
-    <TouchableOpacity 
+    <>
+      <TouchableOpacity 
       onPress={() => {
         isPreview && navigation.navigate('Create');
       }}
@@ -238,8 +239,6 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
             ref={inputRef}
             style={{ textAlignVertical: 'top', minHeight: 50 }}
           />
-
-          {/* Hiển thị hình ảnh đã chọn */}
           <View style={{ display: images.length > 0 ? 'flex' : 'none' }} className='flex-row flex-wrap mb-2'>
               {images.map((image, index) => (
                 <View key={`${image.path}-${index}`} className='relative mr-2 mb-2'>
@@ -284,8 +283,9 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
           {!isPreview && <CreateIcons source={require('../assets/images/close.png')}/>}
         </TouchableOpacity>
       </View>
-      {!isPreview && (
-          <View className="flex-row mt-2 px-3 py-3 items-center bg-white">
+    </TouchableOpacity>  
+    {!isPreview && (
+          <View className="flex-row px-3 py-3 items-center bg-white">
             <Text className="text-[14px] text-gray-500">
               Bất kỳ ai cũng có thể trả lời và trích dẫn
             </Text>
@@ -293,8 +293,8 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
             <TouchableOpacity
               className="ml-auto w-[70px] h-[40px] bg-black rounded-full items-center justify-center"
               onPress={handlePostThread}
-              disabled={isUploading}
-              style={{ opacity: isUploading ? 0.5 : 1 }}
+              disabled={isUploading || !content.trim()}
+              style={{ opacity: isUploading || !content.trim() ? 0.5 : 1 }}
             >
               {isUploading ? (
                 <ActivityIndicator color="#fff" />
@@ -304,8 +304,7 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
             </TouchableOpacity>
           </View>
         )}
-
-    </TouchableOpacity>  
+  </>
   );
 };
 

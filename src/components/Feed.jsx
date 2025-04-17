@@ -1,10 +1,21 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, Image, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Link } from '@react-navigation/native';
 import { icons } from '../constants/icons';
 import CustomVideoPlayer from './CustomVideoPlayer';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../Auth/AuthContext';
+import { toggleLikeThread } from '../services/likeService';
+import UserImageIcon from './UserImageIcon';
+import { database } from '../../FirebaseConfig';
+import { 
+    ref, push, set, get, query, 
+    orderByChild, equalTo, update, 
+    remove, onValue, off,
+    limitToLast, startAt, endAt, increment
+} from 'firebase/database';
+import { debounce } from 'lodash';
 
 const formatNumber = (num) => {
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
@@ -31,8 +42,70 @@ const formatDate = (date) => {
 };
 
 const Feed = ( {thread} ) => {
-    const [like, setLike] = useState(false);
+    const [liked, setLiked] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [countLiked, setCountLiked] = useState(0);
     const navigation = useNavigation();
+    const { user } = useAuth();
+
+    useEffect(() => {
+        if(user?.userId) {
+            const threadRef = ref(database, `threads/${thread.threadid}/likes`);
+            const likeQuery = query(threadRef, orderByChild('userId'), equalTo(user.userId));
+            const unsubscribe = onValue(likeQuery, (snapshot) => {
+                setLiked(snapshot.exists());
+            })
+            return () => {
+                unsubscribe();
+            };
+        } else {
+            setLiked(false);
+        }
+    }, [user?.userId, thread.threadid]);
+
+    useEffect(() => {
+        const threadRef = ref(database, `threads/${thread.threadid}/likes`);
+        const unsubscribe = onValue(threadRef, (snapshot) => {
+            const likes = snapshot.val();
+            setCountLiked(likes ? Object.keys(likes).length : 0)
+        })
+        return () => {
+            unsubscribe();
+        };
+    }, [thread.threadid]);
+
+    const handleLike = debounce(async () => {
+        const userData = {
+          userId: user.oauthId ,
+          username: user.fullname,
+          avatar: user.avatar,
+          email : user.email,
+        };
+        console.log('Gọi toggleLikeThread với:', {
+          userId: user.oauthId,
+          threadId: thread.threadid,
+          userData,
+        });
+    
+        setIsLoading(true);
+        const previousLiked = liked;
+        const previousLikeCount = countLiked;
+        setLiked(!liked);
+        setCountLiked(liked ? countLiked - 1 : countLiked + 1);
+    
+        try {
+          const response = await toggleLikeThread(user.oauthId , thread.threadid, userData);
+          if (!response.success) {
+            setLiked(previousLiked);
+            setCountLiked(previousLikeCount);
+          }
+        } catch (error) {
+          setLiked(previousLiked);
+          setCountLiked(previousLikeCount);
+        } finally {
+          setIsLoading(false);
+        }
+      }, 300);
     
     const handleGoProfile = (id) => {
         navigation.navigate("UserProfile", { id })
@@ -45,7 +118,7 @@ const Feed = ( {thread} ) => {
     return(
         <View className='flex-row items-center px-3 py-4 gap-1'>
             <TouchableOpacity onPress={() => handleGoProfile(thread.authorId)} className='self-start'>
-                <Image source={{ uri: thread.avatar_path }} className='w-14 h-14 rounded-full'/> 
+                <UserImageIcon source={{ uri: thread.avatar_path }} />
             </TouchableOpacity>
         <View className='flex-1 gap-1 ml-4' >
             <View className='flex-row items-center'>
@@ -86,16 +159,16 @@ const Feed = ( {thread} ) => {
                )}       
             
             <View className='flex-row mt-3 gap-4'>
-                <TouchableOpacity className="flex-row items-center" onPress={() =>  setLike(!like)}>
-                        {like ? (
+                <TouchableOpacity className="flex-row items-center" onPress={handleLike}>
+                        {liked ? (
                             <>
                                 <Image source={icons.islike} className='size-6' />
-                                <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount + 1)}</Text> 
+                                <Text className='text-base font-normal ml-1' >{formatNumber(countLiked)}</Text> 
                             </>
                         ): (
                             <>
                                 <Image source={icons.unlike} className='size-6' />
-                                <Text className='text-base font-normal ml-1' >{formatNumber(thread.likeCount)}</Text>
+                                <Text className='text-base font-normal ml-1' >{formatNumber(countLiked)}</Text>
                             </>
                         )}
                 </TouchableOpacity>
