@@ -45,34 +45,52 @@ const Feed = ( {thread} ) => {
     const [liked, setLiked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [countLiked, setCountLiked] = useState(0);
+    const [commentCount, setCommentCount] = useState(0);
+    const [repostCount, setRepostCount] = useState(0);
     const navigation = useNavigation();
     const { user } = useAuth();
 
     useEffect(() => {
-        if(user?.userId) {
-            const threadRef = ref(database, `threads/${thread.threadid}/likes`);
-            const likeQuery = query(threadRef, orderByChild('userId'), equalTo(user.userId));
-            const unsubscribe = onValue(likeQuery, (snapshot) => {
-                setLiked(snapshot.exists());
-            })
-            return () => {
-                unsubscribe();
-            };
+        if (user?.oauthId && thread.threadid) {
+          const likeRef = ref(database, `threads/${thread.threadid}/likes`);
+          const likeQuery = query(likeRef, orderByChild('userId'), equalTo(user.oauthId));
+          const unsubscribe = onValue(likeQuery, (snapshot) => {
+            setLiked(snapshot.exists());
+          });
+          return () => off(likeRef, 'value', unsubscribe);
         } else {
-            setLiked(false);
+          setLiked(false);
         }
-    }, [user?.userId, thread.threadid]);
-
-    useEffect(() => {
-        const threadRef = ref(database, `threads/${thread.threadid}/likes`);
-        const unsubscribe = onValue(threadRef, (snapshot) => {
-            const likes = snapshot.val();
-            setCountLiked(likes ? Object.keys(likes).length : 0)
-        })
+      }, [user?.oauthId, thread.threadid]);
+    
+      useEffect(() => {
+        if (!thread.threadid) return;
+    
+        const likesRef = ref(database, `threads/${thread.threadid}/likes`);
+        const commentsRef = ref(database, `threads/${thread.threadid}/comments`);
+        const repostsRef = ref(database, `threads/${thread.threadid}/reposts`);
+    
+        const unsubscribeLikes = onValue(likesRef, (snapshot) => {
+          const likes = snapshot.val();
+          setCountLiked(likes ? Object.keys(likes).length : 0);
+        });
+    
+        const unsubscribeComments = onValue(commentsRef, (snapshot) => {
+          const comments = snapshot.val();
+          setCommentCount(comments ? Object.keys(comments).length : 0);
+        });
+    
+        const unsubscribeReposts = onValue(repostsRef, (snapshot) => {
+          const reposts = snapshot.val();
+          setRepostCount(reposts ? Object.keys(reposts).length : 0);
+        });
+    
         return () => {
-            unsubscribe();
+          off(likesRef, 'value', unsubscribeLikes);
+          off(commentsRef, 'value', unsubscribeComments);
+          off(repostsRef, 'value', unsubscribeReposts);
         };
-    }, [thread.threadid]);
+      }, [thread.threadid]);
 
     const handleLike = debounce(async () => {
         const userData = {
@@ -139,22 +157,24 @@ const Feed = ( {thread} ) => {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={{ flexDirection: 'row', gap: 14, paddingRight: 40,}}
                     >
-                        {thread.mediaFiles.map((media) => (
-                            media.imageUrl ? (
-                            <Link href={'/'} key={media.id} asChild>
-                                <TouchableOpacity>
-                                   <Image source={{ uri: media.imageUrl}} className='h-[240px] w-[240px] rounded-xl overflow-hidden mb-3'/>
-                                </TouchableOpacity>
-                            </Link>
-                            ) :  media.videoUrl ? (
-                                <Link href={'/'} key={media.id} asChild>
+                        {Object.values(thread.mediaFiles)
+                            .filter((media) => media && (media.imageUrl || media.videoUrl)) // Lọc các media hợp lệ
+                            .map((media, index) => {
+                                const key = media.id || `${thread.threadid}-media-${index}`; // Fallback key nếu media.id không tồn tại
+                                return media.imageUrl ? (
+                                <Link href={'/'} key={key} asChild>
                                     <TouchableOpacity>
-                                        
-                                        <CustomVideoPlayer uri={media.videoUrl}/>
+                                    <Image source={{ uri: media.imageUrl }} className='h-[240px] w-[240px] rounded-xl overflow-hidden mb-3' />
                                     </TouchableOpacity>
                                 </Link>
-                            ) : null
-                        )) }
+                                ) : media.videoUrl ? (
+                                <Link href={'/'} key={key} asChild>
+                                    <TouchableOpacity>
+                                    <CustomVideoPlayer uri={media.videoUrl} />
+                                    </TouchableOpacity>
+                                </Link>
+                                ) : null;
+                            })}
                     </ScrollView>
                )}       
             
@@ -163,13 +183,13 @@ const Feed = ( {thread} ) => {
                     <Image source={liked ? icons.islike : icons.unlike} className='size-6' />
                     <Text className='text-base font-normal ml-1' >{formatNumber(countLiked)}</Text> 
                 </TouchableOpacity>
-                <TouchableOpacity className="flex-row items-center" onPress={() => handleReply(thread.threadid)}>
+                <TouchableOpacity className="flex-row items-center" onPress={() => handleReply(thread.threadid || thread.id)}>
                         <Image source={icons.chat} className='size-6' />
-                        <Text className='text-base font-normal ml-1' >{formatNumber(thread.commentCount)}</Text>
+                        <Text className='text-base font-normal ml-1' >{formatNumber(commentCount)}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
                         <Image source={icons.repeat} className='size-6' />
-                        <Text className='text-base font-normal ml-1' >{formatNumber(thread.retweetCount)}</Text>
+                        <Text className='text-base font-normal ml-1' >{formatNumber(repostCount)}</Text>
                 </TouchableOpacity>
             </View>
         </View>
