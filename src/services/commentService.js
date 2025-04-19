@@ -6,6 +6,25 @@ import {
   limitToLast, startAt, endAt
 } from 'firebase/database';
 
+export const createComment = async (commentData) => {
+  try {
+    const commentsRef = ref(database, 'comments');
+    const newCommentRef = push(commentsRef);
+    const commentToCreate = {
+      ...commentData,
+      like: {},
+      comment: {},
+      repost: {},
+    };
+    
+    await set(newCommentRef, commentToCreate);
+    
+    return newCommentRef.key; 
+  } catch (err){
+    console.error(err)
+    return false
+  }
+}
 
 export const getCommentsByThreadId = async (threadId) => {
     try {

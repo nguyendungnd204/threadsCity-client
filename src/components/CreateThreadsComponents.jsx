@@ -7,8 +7,9 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import { createThread } from '../services/threadService';
 import { ActivityIndicator } from 'react-native-paper';
+import { createComment } from '../services/commentService';
 
-const CreateThreadsComponents = ({ user, isPreview=false }) => {
+const CreateThreadsComponents = ({ user, isPreview=false, isReply=false, ThreadId=null, parentId=null }) => {
 
   const navigation = useNavigation();
   const inputRef = React.useRef(null);
@@ -200,6 +201,55 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
         setIsUploading(false);
       }
     };
+    const handlePostComment = async () => {
+      if (!content.trim() && mediaFiles.length === 0) {
+        Alert.alert('Thông báo', 'Vui lòng nhập nội dung hoặc thêm ảnh');
+        return;
+      }
+  
+      setIsUploading(true);
+      try {
+        const uploadResults = await Promise.all(
+          mediaFiles.map((file, index) => uploadImageToCloudinary(file, index))
+        );
+        const validMediaFiles = uploadResults.filter(file => file !== null);
+  
+        if (mediaFiles.length > 0 && validMediaFiles.length === 0) {
+          Alert.alert('Lỗi', 'Không thể tải ảnh lên Cloudinary. Vui lòng thử lại.');
+          return;
+        }
+  
+        const commentData = {
+          content: content.trim(),
+          mediaFiles: validMediaFiles,
+          fullname: user?.fullname || 'Người dùng ẩn danh',
+          avatar_path: user?.avatar || '',
+          authorId: user.oauthId,
+          threadId: ThreadId,
+          createdAt: new Date().toISOString(),
+          parentId: parentId || null,
+        };
+  
+        const reuslt = await createComment(commentData);
+        if (reuslt) {
+          setContent('');
+          setMediaFiles([]);
+          setImages([]);
+          Alert.alert('Thành công', 'Đã đăng bài thành công', [
+            { text: 'OK', onPress: () => navigation.goBack() }
+          ]);
+        }
+      } catch (error) {
+        console.error('Lỗi khi đăng bài:', error);
+        let message = 'Đăng bài thất bại. Vui lòng thử lại';
+        if (error.message.includes('network')) {
+          message = 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối của bạn';
+        } else if (error.message.includes('permission')) {
+          message = 'Không có quyền đăng bài';
+        }
+        Alert.alert('Lỗi', message);
+      }
+    }
 
   return (
     <TouchableOpacity 
@@ -228,7 +278,7 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
           </Text>
           
           <TextInput
-            placeholder='Có gì mới...'
+            placeholder={isReply ? 'Trả lời ' + user.fullname : 'Có gì mới...'}
             placeholderTextColor='gray'
             multiline={true}
             autoFocus={!isPreview}
@@ -292,14 +342,14 @@ const CreateThreadsComponents = ({ user, isPreview=false }) => {
 
             <TouchableOpacity
               className="ml-auto w-[70px] h-[40px] bg-black rounded-full items-center justify-center"
-              onPress={handlePostThread}
+              onPress={isReply ? handlePostComment : handlePostThread}
               disabled={isUploading}
               style={{ opacity: isUploading ? 0.5 : 1 }}
             >
               {isUploading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white text-[16px] font-semibold">Đăng</Text>
+                <Text className="text-white text-[16px] font-semibold">{isReply ? 'Gửi': 'Đăng'}</Text>
               )}
             </TouchableOpacity>
           </View>

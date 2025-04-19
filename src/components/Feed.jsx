@@ -70,7 +70,7 @@ const Feed = ( {thread} ) => {
                             media.imageUrl ? (
                             <Link href={'/'} key={media.id} asChild>
                                 <TouchableOpacity>
-                                   <Image source={{ uri: media.imageUrl}} className='h-60 w-60 rounded-xl mb-3'/>
+                                   <Image source={{ uri: media.imageUrl}} className='h-[240px] w-[240px] rounded-xl overflow-hidden mb-3'/>
                                 </TouchableOpacity>
                             </Link>
                             ) :  media.videoUrl ? (

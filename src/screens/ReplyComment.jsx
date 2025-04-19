@@ -11,7 +11,7 @@ import { getUserById } from '../services/userService';
 const ReplyComment = () => {
 
     const route = useRoute();
-    const { id } = route.params;
+    const { threadId } = route.params;
     const [thread, setThread] = React.useState(null); // dùng null để phân biệt đang loading
     const { user } = useAuth();
     const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
@@ -19,17 +19,18 @@ const ReplyComment = () => {
     React.useEffect(() => {
         if (user && user.oauthId) {
           console.log('User ID:', user.oauthId);
-          console.log('User Profile:', userProfile);
+          console.log('User Profile:', threadId);
         }
     }, [userProfile]);
     
     React.useEffect(() => {
       const fetchThread = async () => {
-        const result = await getThreadById(id);
+        const result = await getThreadById(threadId);
         setThread(result); // nếu không có cũng là null
       };
+      console.log("A", threadId)
       fetchThread();
-    }, [id]);
+    }, [threadId]);
   
     return (
       <View className='bg-white'>
@@ -38,7 +39,7 @@ const ReplyComment = () => {
           ) : (
             <ActivityIndicator size="large" className='mt-10' />
           )}
-        <CreateThreadsComponents isPreview={false} user={userProfile} />
+        <CreateThreadsComponents isPreview={false} user={userProfile} isReply={true} ThreadId={threadId} parentId={null}/>
         
       </View>
     );

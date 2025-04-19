@@ -32,8 +32,8 @@ const FeedDetailScreen = () => {
     fetchThread();
   }, [id]);
 
-  const handlePress = (id) => {
-    navigation.navigate('Reply', { id });
+  const handlePress = (threadId) => {
+    navigation.navigate('Reply', { threadId });
   };
 
 

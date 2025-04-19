@@ -17,17 +17,19 @@ const CustomVideoPlayer = ({ uri }) => {
   };
 
   return (
-    <View style={{ marginBottom: 12 }}>
-      <Video
-        ref={videoRef}
-        source={{ uri }}
-        style={{ width: 240, height: 240, borderRadius: 12 }}
-        resizeMode="cover"
-        paused={!isPlaying}
-        muted={isMuted}
-        repeat
-      />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 5 }}>
+    <View className='mb-3'>
+      <View className='w-[240px] h-[240px] rounded-xl overflow-hidden'>
+        <Video
+          ref={videoRef}
+          source={{ uri }}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+          paused={!isPlaying}
+          muted={isMuted}
+          repeat
+        />
+      </View>
+      <View  className='flex-row justify-around mt-[5px]'>
         <TouchableOpacity onPress={handlePlayPause}>
           <Text>{isPlaying ? '⏸️ Dừng' : '▶️ Phát'}</Text>
         </TouchableOpacity>
