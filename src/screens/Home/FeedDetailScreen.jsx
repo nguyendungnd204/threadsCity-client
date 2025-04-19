@@ -16,7 +16,7 @@ const FeedDetailScreen = () => {
   const [thread, setThread] = React.useState(null); // dùng null để phân biệt đang loading
   const { user } = useAuth();
   const {data: userProfile} = useFetch(() => getUserById(user?.oauthId), true);
-
+  
   React.useEffect(() => {
       if (user && user.oauthId) {
         console.log('User ID:', user.oauthId);
@@ -32,8 +32,8 @@ const FeedDetailScreen = () => {
     fetchThread();
   }, [id]);
 
-  const handlePress = (id) => {
-    navigation.navigate('Reply', { id });
+  const handlePress = (threadId) => {
+    navigation.navigate('Reply', { threadId });
   };
 
 
