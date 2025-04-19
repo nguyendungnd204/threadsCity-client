@@ -159,18 +159,9 @@ const Feed = ( {thread} ) => {
                )}       
             
             <View className='flex-row mt-3 gap-4'>
-                <TouchableOpacity className="flex-row items-center" onPress={handleLike}>
-                        {liked ? (
-                            <>
-                                <Image source={icons.islike} className='size-6' />
-                                <Text className='text-base font-normal ml-1' >{formatNumber(countLiked)}</Text> 
-                            </>
-                        ): (
-                            <>
-                                <Image source={icons.unlike} className='size-6' />
-                                <Text className='text-base font-normal ml-1' >{formatNumber(countLiked)}</Text>
-                            </>
-                        )}
+                <TouchableOpacity className="flex-row items-center" onPress={handleLike}>                        
+                    <Image source={liked ? icons.islike : icons.unlike} className='size-6' />
+                    <Text className='text-base font-normal ml-1' >{formatNumber(countLiked)}</Text> 
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center" onPress={() => handleReply(thread.threadid)}>
                         <Image source={icons.chat} className='size-6' />

@@ -5,9 +5,10 @@ import CreateIcons from '../components/CreateIcons';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import { createThread } from '../services/threadService';
+import { createThread, getThreadById } from '../services/threadService';
 import { ActivityIndicator } from 'react-native-paper';
 import { createComment } from '../services/commentService';
+import useFetch from '../services/useFetch';
 
 const CreateThreadsComponents = ({ user, isPreview=false, isReply=false, ThreadId=null, parentId=null }) => {
 
@@ -17,9 +18,10 @@ const CreateThreadsComponents = ({ user, isPreview=false, isReply=false, ThreadI
   const [images, setImages] = useState([]);
   const [mediaFiles, setMediaFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const {data: thread} = useFetch(() => getThreadById(ThreadId), true);
+
  
   useEffect(() => {
-  
     handleContentChange(content);
     handleImagesChange(images);
 
@@ -279,7 +281,7 @@ const CreateThreadsComponents = ({ user, isPreview=false, isReply=false, ThreadI
           </Text>
           
           <TextInput
-            placeholder={isReply ? 'Trả lời ' + user.fullname : 'Có gì mới...'}
+            placeholder={isReply ? `Trả lời ${thread?.fullname}...` : 'Có gì mới...'}
             placeholderTextColor='gray'
             multiline={true}
             autoFocus={!isPreview}
