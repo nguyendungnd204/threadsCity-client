@@ -98,6 +98,7 @@ const Feed = ( {thread} ) => {
           username: user.fullname,
           avatar: user.avatar,
           email : user.email,
+          authorName: thread.fullname,
         };
         console.log('Gọi toggleLikeThread với:', {
           userId: user.oauthId,
@@ -180,16 +181,26 @@ const Feed = ( {thread} ) => {
             
             <View className='flex-row mt-3 gap-4'>
                 <TouchableOpacity className="flex-row items-center" onPress={handleLike}>                        
-                    <Image source={liked ? icons.islike : icons.unlike} className='size-6' />
-                    <Text className='text-base font-normal ml-1' >{formatNumber(countLiked)}</Text> 
+                    <Image source={liked ? icons.islike : icons.unlike} className='size-6 mr-2' />
+                    { countLiked > 0 ? (
+                        <Text className='text-base font-normal'>{formatNumber(countLiked)}</Text>
+                    ) : null}
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center" onPress={() => handleReply(thread.threadid || thread.id)}>
-                        <Image source={icons.chat} className='size-6' />
-                        <Text className='text-base font-normal ml-1' >{formatNumber(commentCount)}</Text>
+                        <Image source={icons.chat} className='size-6 mr-2' />
+                        {
+                            commentCount > 0 ? (
+                                <Text className='text-base font-normal'>{formatNumber(commentCount)}</Text>
+                            ) : null
+                        }
                 </TouchableOpacity>
                 <TouchableOpacity className="flex-row items-center">
-                        <Image source={icons.repeat} className='size-6' />
-                        <Text className='text-base font-normal ml-1' >{formatNumber(repostCount)}</Text>
+                        <Image source={icons.repeat} className='size-6 mr-2' />
+                        {
+                            repostCount > 0 ? (
+                                <Text className='text-base font-normal'>{formatNumber(repostCount)}</Text>
+                            ) : null
+                        }
                 </TouchableOpacity>
             </View>
         </View>
