@@ -13,7 +13,7 @@ import { icons } from "../constants/icons";
 import { useAuth } from "../Auth/AuthContext";
 import auth from "@react-native-firebase/auth";
 import useFetch from '../services/useFetch';
-import { getThread } from "../services/threadService";
+import { getThread, getUserThreads } from "../services/threadService";
 import Feed from "./Feed";
 import { getUserById } from "../services/userService";
 
@@ -22,7 +22,8 @@ const Profile = ({ userId }) => {
     const navigation = useNavigation();
     const { user, logout } = useAuth();
     const {data: userProfile, loading: userLoading, refetch: refecthThead} = useFetch(() => getUserById(userId), true);
-    const { data: thread, loading, refetch: refetchUserProfile } = useFetch(getThread, true);
+    // const { data: thread, loading, refetch: refetchUserProfile } = useFetch(getThread, true);
+    const { data: thread, loading, refetch: refetchUserProfile } = useFetch(() => getUserThreads(userId), true);
     const flatListRef = useRef(null);
   
     useEffect(() => {
@@ -30,11 +31,12 @@ const Profile = ({ userId }) => {
         console.log('User ID:', userId);
       }
     }, [userId]);
-    // useEffect(() => {
-    //   if (thread) {
-    //     console.log("Thread data:", thread);
-    //   }
-    // }, [thread]);
+    useEffect(() => {
+      if (user) {
+        console.log('User:', user?.oauthId);
+      }
+    }, [user]);
+   
     useEffect(() => {
       console.log(" data:", userProfile);
     }, [userProfile]);
@@ -59,7 +61,7 @@ const Profile = ({ userId }) => {
       }
     }
     const handleThread = (id) => {
-      navigation.navigate("ThreadDetail", { threadId: id });
+      navigation.navigate("FeedDetail", { id });
     };
     
   
@@ -107,11 +109,16 @@ const Profile = ({ userId }) => {
     return (
         <View className='flex-1 mt-[50px] bg-white'>
           <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
-            {user.authorId != userId ? (
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Image source={icons.back} className="w-6 h-6" resizeMode="contain"/>
-                </TouchableOpacity>
-                ) : <Image source={icons.search} className="w-6 h-6" resizeMode="contain" />}
+            {user?.oauthId === userId ? (
+                
+                    <Image source={icons.search} className="w-6 h-6" resizeMode="contain"/>
+                
+                ) : (
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Image source={icons.back} className="w-6 h-6" resizeMode="contain" />
+                  </TouchableOpacity>
+                )
+            }
             <TouchableOpacity onPress={handleLogout}>
               <Image
                 source={icons.close}
@@ -140,7 +147,7 @@ const Profile = ({ userId }) => {
           </View>
     
           <View className="flex-row space-x-2 px-4 mt-2 pb-5">
-            {user.authorId != userId ? (
+            {user?.oauthId === userId ? (
                 <TouchableOpacity
                     className="flex-1 border border-gray-300 p-2 items-center rounded-md"
                     onPress={() => null} // handleFollow 
@@ -172,7 +179,7 @@ const Profile = ({ userId }) => {
             keyExtractor={(item) => item.threadid.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleThread(item.threadid)}>
-                <Feed thread={item} />
+                <Feed thread={item} key={item.threadid}/>
               </TouchableOpacity>
             )}
             refreshControl={

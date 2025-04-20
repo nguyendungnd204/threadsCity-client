@@ -22,9 +22,11 @@ const FeedDetailScreen = () => {
         console.log('User ID:', user.oauthId);
         console.log('User Profile:', userProfile);
       }
-  }, [userProfile]);
+      console.log(id)
+  }, [userProfile, id]);
   
   React.useEffect(() => {
+    
     const fetchThread = async () => {
       const result = await getThreadById(id);
       setThread(result); // nếu không có cũng là null

@@ -127,9 +127,16 @@ const Feed = ( {thread} ) => {
       }, 300);
     
     const handleGoProfile = (id) => {
+      if (user?.oauthId !== id) {
         navigation.navigate("UserProfile", { id })
+      } else {
+        navigation.navigate("Profile")
+      }
     }
 
+    React.useEffect(() => {
+      console.log(thread.threadid)
+    }, [thread])
     const handleReply = (id) => {
         navigation.navigate('FeedDetail', { id });
     };
