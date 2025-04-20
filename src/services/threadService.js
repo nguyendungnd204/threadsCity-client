@@ -54,20 +54,27 @@ export const createThread = async (userId, threadData) => {
 export const getUserThreads = async (userId) => {
   try {
     const threadsRef = ref(database, 'threads');
-    const userThreadsQuery = query(threadsRef, orderByChild('userid'), equalTo(userId));
+    const userThreadsQuery = query(threadsRef, orderByChild('authorId'), equalTo(userId));
     const snapshot = await get(userThreadsQuery);
     
-    const threads = [];
+    // const threads = [];
     if (snapshot.exists()) {
-      snapshot.forEach((childSnapshot) => {
-        const threadData = childSnapshot.val();
-        if (!threadData.isReply && !threadData.isRepost) {
-          threads.push({
-            id: childSnapshot.key,
-            ...threadData,
-          });
-        }
-      });
+      console.log(snapshot.val())
+      // snapshot.forEach((childSnapshot) => {
+      //   const threadData = childSnapshot.val();
+      //   if (!threadData.isReply && !threadData.isRepost) {
+      //     threads.push({
+      //       threadid: childSnapshot.key,
+      //       ...threadData,
+      //     });
+      //   }
+      // });
+      const data = snapshot.val();
+      const threads = Object.entries(data).map(([key, value]) => ({
+        threadid: key, //  gán key làm threadid
+        ...value,
+      }));
+      return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
     
     return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

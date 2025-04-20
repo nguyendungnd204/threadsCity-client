@@ -8,11 +8,11 @@ import Profile from "../../components/Profile";
 const ProfileScreens = () => {
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (user && user.oauthId) {
-      console.log('User ID:', user.oauthId);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user && user.oauthId) {
+  //     console.log('User ID:', user.oauthId);
+  //   }
+  // }, [user]);
 
   return (
       <Profile userId={user.oauthId} />
