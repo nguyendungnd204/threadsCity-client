@@ -9,7 +9,7 @@ import { getThreadById } from '../services/threadService';
 import { ActivityIndicator } from 'react-native-paper';
 import useFetch from '../services/useFetch';
 import { uploadImageToCloudinary } from './uploadImage';
-import { handlePostThread, handlePostComment } from './postCmtAndThreads';
+import { handlePostThread, handlePostComment } from '../utils/postCmtAndThreads';
 
 const CreateThreadsComponents = ({ user, isPreview=false, isReply=false, ThreadId=null, parentId=null }) => {
   const navigation = useNavigation();
