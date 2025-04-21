@@ -1,6 +1,7 @@
 import { Alert } from 'react-native';
-import { createThread, createComment } from '../services/threadService';
-import { uploadImageToCloudinary } from './uploadImage';
+import { createThread } from '../services/threadService';
+import { uploadImageToCloudinary } from '../components/uploadImage';
+import {createComment} from '../services/commentService';
 
 export const handlePostThread = async (user, content, mediaFiles, navigation) => {
   if (!content.trim() && mediaFiles.length === 0) {
