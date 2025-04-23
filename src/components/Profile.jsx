@@ -147,7 +147,7 @@ const Profile = ({ userId }) => {
           </View>
     
           <View className="flex-row space-x-2 px-4 mt-2 pb-5">
-            {user?.oauthId === userId ? (
+            {user?.oauthId !== userId ? (
                 <TouchableOpacity
                     className="flex-1 border border-gray-300 p-2 items-center rounded-md"
                     onPress={() => null} // handleFollow 

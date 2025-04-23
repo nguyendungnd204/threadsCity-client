@@ -8,30 +8,40 @@ import {
 
 export const createComment = async (commentData) => {
   try {
+    if (!commentData.threadId) {
+      throw new Error('threadId is required');
+    }
     const commentsRef = ref(database, 'comments');
     const newCommentRef = push(commentsRef);
     const commentToCreate = {
       ...commentData,
+      createdAt: { '.sv': 'timestamp' },
       like: {},
       comment: {},
       repost: {},
     };
-    
     await set(newCommentRef, commentToCreate);
-    
-    // Cập nhật số lượng bình luận trong thread
     const threadRef = ref(database, `threads/${commentData.threadId}/comments/${newCommentRef.key}`);
     await set(threadRef, true);
-
-    return newCommentRef.key; 
+    // Nếu có parentId, cập nhật bình luận cha (tùy chọn)
+    if (commentData.parentId) {
+      const parentCommentsRef = ref(database, `comments/${commentData.parentId}/comments/${newCommentRef.key}`);
+      await set(parentCommentsRef, true);
+    }
+    return newCommentRef.key;
   } catch (err) {
     console.error('Error creating comment:', err);
-    return false;
+    throw err;
   }
 };
 
 export const getCommentsByThreadId = async (threadId) => {
   try {
+    if (!threadId) {
+      console.error('Thread ID is undefined or null');
+      return [];
+    }
+
     const commentRef = ref(database, 'comments');
     const queryComment = query(commentRef, orderByChild('threadId'), equalTo(threadId));
     const snapshot = await get(queryComment);
@@ -53,6 +63,11 @@ export const getCommentsByThreadId = async (threadId) => {
 
 export const getCommentById = async (commentId) => {
   try {
+    if (!commentId) {
+      console.error('Comment ID is undefined or null');
+      return null;
+    }
+
     const commentRef = ref(database, `comments/${commentId}`);
     const snapshot = await get(commentRef);
     if (snapshot.exists()) {
