@@ -29,8 +29,12 @@ export const handlePostThread = async (user, content, mediaFiles, navigation) =>
 
     const threadId = await createThread(user.oauthId, threadData);
     if (threadId) {
-      Alert.alert('Thành công', 'Đã đăng bài thành công', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+      Alert.alert('Thành công', 'Đã đăng bình luận thành công', [
+        { text: 'OK', onPress: () => {
+          console.log('Navigation stack before goBack:', navigation.getState());
+          navigation.goBack();
+          console.log('Navigation stack after goBack:', navigation.getState());
+        }}
       ]);
       return true;
     }
@@ -72,14 +76,18 @@ export const handlePostComment = async (user, content, mediaFiles, threadId, par
       avatar_path: user?.avatar || '',
       authorId: user.oauthId,
       threadId,
-      createdAt: new Date().toISOString(),
       parentId: parentId || null,
     };
 
+    console.log('Them binh luan voi du lieu: ',commentData)
     const result = await createComment(commentData);
     if (result) {
       Alert.alert('Thành công', 'Đã đăng bình luận thành công', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { text: 'OK', onPress: () => {
+          console.log('Navigation stack before goBack:', navigation.getState());
+          navigation.goBack();
+          console.log('Navigation stack after goBack:', navigation.getState());
+        }}
       ]);
       return true;
     }

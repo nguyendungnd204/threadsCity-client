@@ -77,7 +77,7 @@ export const getUserThreads = async (userId) => {
       return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
     
-    return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   } catch (error) {
     console.error('Error getting user threads:', error);
     throw error;
