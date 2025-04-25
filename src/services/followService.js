@@ -82,3 +82,17 @@ export const followUser = async (currentUserId, targetUserId) => {
       console.error("Error migrating user data:", error);
     }
   };
+
+export const getFollowings = async (userId) => {
+  try {
+    const followingrsRef = ref(database, `users/${userId}/following`);
+    const snapshot = await get(followingrsRef);
+    if (snapshot.exists()){
+      return Object.keys(snapshot.val());
+    }
+    return [];
+  } catch (err) {
+    console.error(err)
+    return [];
+  }
+}

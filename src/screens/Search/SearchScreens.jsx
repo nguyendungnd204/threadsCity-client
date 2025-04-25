@@ -75,7 +75,7 @@ const SearchScreens = () => {
           )} 
           ListEmptyComponent={() => <Text className='text-base text-center mt-4 text-gray-300'>Không tìm thấy người dùng</Text>}
           renderItem={({ item }) => (
-              <ProfileSearchResult Users={item} handleFollow={() => { }}/> 
+              <ProfileSearchResult userId={item.id}/> 
           )}
           contentContainerStyle={{ gap: 8}}
         />

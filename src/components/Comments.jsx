@@ -30,7 +30,7 @@ const CommentItem = ({ comment, level = 0, onReply }) => {
   const isFirstComment = level === 0 && comment.parentId === null;
 
   return (
-    <View style={[styles.commentContainer,]}>
+    <View style={[styles.commentContainer, { marginLeft: level*20}]}>
       {isFirstComment && (
         <View style={styles.connector}>
           <View style={styles.line} />

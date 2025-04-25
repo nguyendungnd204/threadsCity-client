@@ -13,10 +13,11 @@ import { icons } from "../constants/icons";
 import { useAuth } from "../Auth/AuthContext";
 import auth from "@react-native-firebase/auth";
 import useFetch from '../services/useFetch';
-import { getThread, getUserThreads } from "../services/threadService";
+import { getUserThreads } from "../services/threadService";
 import Feed from "./Feed";
 import { getUserById } from "../services/userService";
 import { followUser, unfollowUser, isFollowing } from "../services/followService";
+import { getCommentByUserId } from "../services/commentService";
 
 
 const Profile = ({ userId }) => {
@@ -24,18 +25,18 @@ const Profile = ({ userId }) => {
   const navigation = useNavigation();
   const { user, logout } = useAuth();
   const { data: userProfile, loading: userLoading, refetch: refecthThead } = useFetch(() => getUserById(userId), true);
-  // const { data: thread, loading, refetch: refetchUserProfile } = useFetch(getThread, true);
   const { data: thread, loading, refetch: refetchUserProfile } = useFetch(() => getUserThreads(userId), true);
   const flatListRef = useRef(null);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
-
+  const { data: commentReply } = useFetch(() => getCommentByUserId(userId), true);
 
   useEffect(() => {
     if (userId) {
       console.log('User ID:', userId);
     }
-  }, [userId]);
+    console.log( 'Reply',commentReply)
+  }, [userId, commentReply]);
   useEffect(() => {
     if (user) {
       console.log('User:', user?.oauthId);
@@ -124,9 +125,9 @@ const Profile = ({ userId }) => {
   const getFilteredThreads = () => {
     switch (activeTab) {
       case "Thread":
-        return [];
+        return thread || [];
       case "Thread trả lời":
-        return [];
+        return commentReply || [];
       case "Bài đăng lại":
         return [];
       default:
@@ -208,13 +209,13 @@ const Profile = ({ userId }) => {
         {renderTabButton("Bài đăng lại")}
       </View>
 
-      <FlatList
+       <FlatList
         showsVerticalScrollIndicator={false}
-        data={thread || []}
-        keyExtractor={(item) => item.threadid.toString()}
+        data={dataToShow}
+        keyExtractor={(item) => item.threadid?.toString() || item.id?.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleThread(item.threadid)}>
-            <Feed thread={item} key={item.threadid} />
+          <TouchableOpacity onPress={() => handleThread(item.threadid || item.id)}>
+            <Feed thread={item} key={item.threadid || item.id} />
           </TouchableOpacity>
         )}
         refreshControl={
@@ -223,6 +224,7 @@ const Profile = ({ userId }) => {
             onRefresh={onRefresh}
           />
         }
+        ListEmptyComponent={renderEmptyContent}
       />
     </View>
   );

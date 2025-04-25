@@ -79,3 +79,29 @@ export const getCommentById = async (commentId) => {
     return null;
   }
 };
+
+export const getCommentByUserId = async (userId) => {
+  try {
+    if (!userId) {
+      console.error("UserId is null")
+      return []
+    }
+    
+    const commentRef = ref(database, 'comments');
+    const queryComment = query(commentRef, orderByChild('authorId'), equalTo(userId));
+    const snapshot = await get(queryComment);
+
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      const comments = Object.entries(data).map(([id, comment]) => ({
+        id,
+        ...comment,
+      }));
+      return comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    return [];
+  } catch (err) {
+    console.error('Lỗi lấy comment bằng userId', err);
+    return [];
+  }
+}
