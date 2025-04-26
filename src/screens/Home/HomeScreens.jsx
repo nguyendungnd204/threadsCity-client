@@ -18,10 +18,61 @@ const HomScreen = () => {
   const { data: userProfile } = useFetch(() => getUserById(user?.oauthId), true);
   const { data: thread, loading, error, refetch } = useFetch(() => getThread(), true);
   const { data: following, loading: followLoading, refetch: followRefetch } = useFetch(() => getFollowings(user?.oauthId), true);
-  const [followedThreads, setFollowedThreads] = useState([]); 
+  const [followedThreads, setFollowedThreads] = useState([]);
   const [followedThreadsLoading, setFollowedThreadsLoading] = useState(false);
 
   const flatListRef = useRef(null);
+
+  // State cho phân trang của tab "Dành cho bạn"
+  const threadPageSize = 5;
+  const [threadCurrentPage, setThreadCurrentPage] = useState(1);
+  const [threadRenderedData, setThreadRenderedData] = useState([]);
+  const [isThreadLoading, setIsThreadLoading] = useState(false);
+
+  // State cho phân trang của tab "Đang theo dõi"
+  const followedPageSize = 5;
+  const [followedCurrentPage, setFollowedCurrentPage] = useState(1);
+  const [followedRenderedData, setFollowedRenderedData] = useState([]);
+  const [isFollowedLoading, setIsFollowedLoading] = useState(false);
+
+  // Hàm phân trang
+  const pagination = (database, pageSize, page) => {
+    // Kiểm tra nếu database là null hoặc undefined, trả về mảng rỗng
+    if (!database || !Array.isArray(database)) {
+      return [];
+    }
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    if (start > database.length) {
+      return [];
+    }
+    return database.slice(start, end);
+  };
+
+  useEffect(() => {
+    if (thread && tab === "Dành cho bạn") {
+      setIsThreadLoading(true);
+      const data = pagination(thread, threadPageSize, threadCurrentPage);
+      if (threadCurrentPage === 1) {
+        setThreadRenderedData(data);
+      }
+      console.log("Thread data:", data);
+      setIsThreadLoading(false);
+    }
+  }, [thread, threadPageSize, threadCurrentPage, tab]);
+
+  // Phân trang ban đầu cho tab "Đang theo dõi"
+  useEffect(() => {
+    if (followedThreads && tab === "Đang theo dõi") {
+      setIsFollowedLoading(true);
+      const data = pagination(followedThreads, followedPageSize, followedCurrentPage);
+      if (followedCurrentPage === 1) {
+        setFollowedRenderedData(data);
+      } 
+      console.log("Followed threads data:", data);
+      setIsFollowedLoading(false);
+    }
+  }, [followedThreads, followedPageSize, followedCurrentPage, tab]);
 
   useEffect(() => {
     const fetchFollowedThreads = async () => {
@@ -32,12 +83,11 @@ const HomScreen = () => {
 
       setFollowedThreadsLoading(true);
       try {
-        
-        const thread = following.map((userId) => getUserThreads(userId)); // lấy bài viết của người dùng
-        const threadResults = await Promise.all(thread);  // đẩy vào 1 mảng trong đó mỗi mảng là các bài viết của 1 người dùng
-       
-        const ThreadListForFollow = threadResults.flat(); // đẩy dữ liệu về thành 1 mảng 
-        const sortThreads = ThreadListForFollow.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo createdAt giảm dần
+        const threadPromises = following.map((userId) => getUserThreads(userId));
+        const threadResults = await Promise.all(threadPromises);
+
+        const ThreadListForFollow = threadResults.flat();
+        const sortThreads = ThreadListForFollow.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setFollowedThreads(sortThreads);
       } catch (err) {
         console.error('Error fetching followed threads:', err);
@@ -53,24 +103,36 @@ const HomScreen = () => {
     navigation.navigate('FeedDetail', { id });
   };
 
+  // Khi làm mới, thêm dữ liệu mới vào dưới cùng
   const onRefresh = async () => {
-    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
-    refetch(); // Refetch all threads
-    followRefetch(); // Refetch followed users
-  };
+    if (loading || followedThreadsLoading || isThreadLoading || isFollowedLoading) {
+      return; // Không làm mới nếu đang tải dữ liệu
+    }
 
-  // Determine which data to show based on the tab
+    // Reset page và dữ liệu
+    if (tab === "Dành cho bạn") {
+      setThreadCurrentPage(1);
+      setThreadRenderedData([]); // Xóa dữ liệu hiện tại để tải lại từ đầu
+    } else if (tab === "Đang theo dõi") {
+      setFollowedCurrentPage(1);
+      setFollowedRenderedData([]); // Xóa dữ liệu hiện tại để tải lại từ đầu
+    }
+
+    // Refetch dữ liệu mới
+    await Promise.all([refetch(), followRefetch()]);
+  };
+  // Xác định dữ liệu hiển thị dựa trên tab
   const getDisplayData = () => {
     if (tab === "Dành cho bạn") {
-      return thread || [];
+      return threadRenderedData; // Dữ liệu đã phân trang cho tab "Dành cho bạn"
     } else if (tab === "Đang theo dõi") {
-      return followedThreads || [];
+      return followedRenderedData; // Dữ liệu đã phân trang cho tab "Đang theo dõi"
     }
     return [];
   };
 
   const renderFooter = () => {
-    if (loading || followedThreadsLoading) {
+    if (loading || followedThreadsLoading || isThreadLoading || isFollowedLoading) {
       return <ActivityIndicator size="small" color="#0000ff" />;
     }
     if (error) {
@@ -79,12 +141,59 @@ const HomScreen = () => {
     return null;
   };
 
+  // Xử lý khi cuộn đến cuối danh sách
+  const handleEndReached = () => {
+    if (loading || followedThreadsLoading) {
+      return; // Không chạy nếu đang làm mới dữ liệu
+    }
+    if (tab === "Dành cho bạn" && !isThreadLoading) {
+      if (!thread || !Array.isArray(thread)) {
+        setIsThreadLoading(false);
+        return;
+      }
+      setIsThreadLoading(true);
+      const contentToAppend = pagination(thread, threadPageSize, threadCurrentPage + 1);
+      if (contentToAppend.length > 0) {
+        setThreadRenderedData([...threadRenderedData, ...contentToAppend]);
+        setThreadCurrentPage(threadCurrentPage + 1);
+      }
+      setIsThreadLoading(false);
+    } else if (tab === "Đang theo dõi" && !isFollowedLoading) {
+      if (!followedThreads || !Array.isArray(followedThreads)) {
+        setIsFollowedLoading(false);
+        return;
+      }
+      setIsFollowedLoading(true);
+      const contentToAppend = pagination(followedThreads, followedPageSize, followedCurrentPage + 1);
+      if (contentToAppend.length > 0) {
+        setFollowedRenderedData([...followedRenderedData, ...contentToAppend]);
+        setFollowedCurrentPage(followedCurrentPage + 1);
+      }
+      setIsFollowedLoading(false);
+    }
+  };
+
+  // Reset dữ liệu khi chuyển tab
+  useEffect(() => {
+    setThreadCurrentPage(1);
+    setFollowedCurrentPage(1);
+    if (thread) {
+      setThreadRenderedData(pagination(thread, threadPageSize, 1));
+    }
+    if (followedThreads) {
+      setFollowedRenderedData(pagination(followedThreads, followedPageSize, 1));
+    }
+  }, [tab, thread, followedThreads]);
+  
+
   return (
     <View className="flex-1 mt-[50px]">
       <FlatList
         ref={flatListRef}
         showsVerticalScrollIndicator={false}
-        data={getDisplayData()} 
+        onEndReachedThreshold={0.5}
+        onEndReached={handleEndReached}
+        data={getDisplayData()}
         keyExtractor={(item) => item.threadid.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleThread(item.threadid)}>
@@ -96,14 +205,8 @@ const HomScreen = () => {
             <Image source={icons.threads_logo_black} className="w-20 h-20 self-center" />
             <View className="flex-row flex-1 justify-around py-2">
               {TabSelect.map((item) => (
-                <TouchableOpacity
-                  key={item}
-                  className="items-center"
-                  onPress={() => setTab(item)}
-                >
-                  <Text
-                    className={`text-base font-bold ${tab === item ? 'text-black' : 'text-gray-300'}`}
-                  >
+                <TouchableOpacity key={item} className="items-center" onPress={() => setTab(item)}>
+                  <Text className={`text-xl font-bold ${tab === item ? 'text-black' : 'text-gray-300'}`}>
                     {item}
                   </Text>
                   <View
