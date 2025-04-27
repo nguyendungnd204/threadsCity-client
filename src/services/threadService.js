@@ -6,6 +6,52 @@ import {
   remove, onValue, off,
   limitToLast, startAt, endAt
 } from 'firebase/database';
+export const toggleRepostThread = async (threadId, userId) => {
+  try {
+    const threadRef = ref(database, `threads/${threadId}/reposts`);
+    const repostQuery = query(threadRef, orderByChild('userId'), equalTo(userId))
+    const repostSnapshot = await get(repostQuery)
+
+    let existingRepostThread = null;
+
+    repostSnapshot.forEach((child) => {
+      existingRepostThread = child.key;
+      return true;
+    })
+
+    const updates = {}
+    let newRepostKey = null;
+
+    if(existingRepostThread) {
+      updates[`threads/${threadId}/reposts/${existingRepostThread}`] = null
+      updates[`users/${userId}/reposts/${existingRepostThread}`] = null;
+    } else {
+      const newRepostThreads = push(threadRef);
+      newRepostKey = newRepostThreads.key;
+      const dataRepostThreads = {
+        userId : userId,
+        parentThreadId: threadId,
+        createdAt: { '.sv': 'timestamp' },
+      }
+      const userRepostData = {
+        userId : userId,
+        parentThreadId: threadId,
+        createdAt: { '.sv': 'timestamp' },
+      }
+      updates[`threads/${threadId}/reposts/${newRepostKey}`] = dataRepostThreads;
+      updates[`users/${userId}/reposts/${newRepostKey}`] = userRepostData;
+    }
+    await update(ref(database), updates);
+    return {
+      success: true,
+      reposted: !existingRepostThread, 
+    };
+  } catch (error) {
+    console.error('Error getting thread reposts:', error);
+    throw error;
+  }
+};
+
 
 export const createThread = async (userId, threadData) => {
   try {
@@ -84,12 +130,27 @@ export const getUserThreads = async (userId) => {
   }
 };
 
-export const getUserReplies = async (userId) => {
- 
-};
-
-export const getUserReposts = async (userId) => {
-  
+export const getRepostThread = async (userId) => {
+  try {
+    const repostRef = ref(database, `users/${userId}/reposts`);
+    const snapshot = await get(repostRef);
+    
+    if (snapshot.exists()) {
+      const reposts = [];
+      snapshot.forEach((childSnapshot) => {
+        reposts.push({
+          repostId: childSnapshot.key,
+          ...childSnapshot.val(),
+        });
+      });
+      return reposts;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting thread reposts:', error);
+    throw error;
+  }
 };
 
 export const getThread = async () => {

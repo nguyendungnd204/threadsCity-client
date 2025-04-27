@@ -8,10 +8,12 @@ import { useAuth } from '../Auth/AuthContext';
 import { toggleLikeThread } from '../services/likeService';
 import UserImageIcon from './UserImageIcon';
 import { database } from '../../FirebaseConfig';
+import { handelRepostThread } from '../components/postCmtAndThreads'
 import {
   ref, onValue, off, query, orderByChild, equalTo,
 } from 'firebase/database';
 import { debounce } from 'lodash';
+import { toggleRepostThread } from '../services/threadService';
 
 const formatNumber = (num) => {
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
@@ -40,6 +42,7 @@ const formatDate = (date) => {
 
 const Feed = ({ thread, onReply }) => {
   const [liked, setLiked] = useState(false);
+  const [isReposted, setIsReposted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [countLiked, setCountLiked] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
@@ -102,6 +105,7 @@ const Feed = ({ thread, onReply }) => {
     };
   }, [threadId]);
 
+
   const handleLike = debounce(async () => {
     const userData = {
       userId: user.oauthId,
@@ -135,7 +139,27 @@ const Feed = ({ thread, onReply }) => {
       setIsLoading(false);
     }
   }, 300);
-
+  const handelRepostThread = debounce(async () => {
+      setIsLoading(true);
+      const previousRepost = isReposted;
+      const previousRepostCount = repostCount;
+      setIsReposted(!isReposted);
+      setRepostCount(isReposted ? repostCount - 1 : repostCount + 1)
+      console.log(threadId)
+      try {
+        console.log(typeof toggleRepostThread)
+        const reponse = await toggleRepostThread(threadId, user.oauthId);
+        if (!reponse.success) {
+          setIsReposted(previousRepost);
+          setRepostCount(previousRepostCount);
+        }
+      } catch(error) {
+        setIsReposted(previousRepost)
+        setRepostCount(previousRepostCount);
+      } finally {
+        setIsLoading(false);
+      }
+}, 300)
   const handleGoProfile = (id) => {
     if (!id) {
       console.error('Cannot navigate to UserProfile: authorId is missing');
@@ -152,7 +176,7 @@ const Feed = ({ thread, onReply }) => {
     console.log('Navigating to FeedDetail with id:', threadId);
     navigation.navigate('FeedDetail', { id: threadId });
   };
-
+  
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">
       <TouchableOpacity onPress={() => handleGoProfile(thread.authorId)} className="self-start">
@@ -210,7 +234,7 @@ const Feed = ({ thread, onReply }) => {
               <Text className="text-base font-normal">{formatNumber(commentCount)}</Text>
             ) : null}
           </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center">
+          <TouchableOpacity className="flex-row items-center" onPress={handelRepostThread}>
             <Image source={icons.repeat} className="size-6 mr-2" />
             {repostCount > 0 ? (
               <Text className="text-base font-normal">{formatNumber(repostCount)}</Text>
