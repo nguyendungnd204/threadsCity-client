@@ -21,6 +21,7 @@ import camera from '../assets/images/camera.png';
 import microphone from '../assets/images/microphone.png';
 import gallery from '../assets/images/image-gallery.png';
 import close from '../assets/images/close.png';
+import reposted from '../assets/images/reposted.png';
 
 export const icons = {
     back,
@@ -45,5 +46,6 @@ export const icons = {
     camera,
     microphone,
     gallery,
-    close
+    close,
+    reposted,
 };
