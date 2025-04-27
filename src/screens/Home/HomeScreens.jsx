@@ -221,7 +221,7 @@ const HomScreen = () => {
         ItemSeparatorComponent={() => <View className="border-b-2 border-b-gray-300" />}
         className="bg-white"
         refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}
-        ListFooterComponent={renderFooter}
+        ListFooterComponent={renderFooter} 
       />
     </View>
   );

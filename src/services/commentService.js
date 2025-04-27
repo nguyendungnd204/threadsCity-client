@@ -5,6 +5,7 @@ import {
   remove, onValue, off,
   limitToLast, startAt, endAt
 } from 'firebase/database';
+import { getThreadByUserId } from './threadService';
 
 export const createComment = async (commentData) => {
   try {
@@ -100,6 +101,39 @@ export const getCommentByUserId = async (userId) => {
       return comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
     return [];
+  } catch (err) {
+    console.error('Lỗi lấy comment bằng userId', err);
+    return [];
+  }
+}
+export const getAllCommentsForUser = async (userId) => {
+  try {
+    if (!userId) {
+      console.error("UserId is null")
+      return []
+    }
+    const thread = await getThreadByUserId(userId);
+    const commentIds = await Promise.all(
+      thread.map(async (item) => {
+        const comments = ref(database, `threads/${item.id}/comments`);
+        const snapshot = await get(comments);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const comments = Object.entries(data).map(([id, comment]) => ({
+            id,
+            ...comment,
+          }));
+          return comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+      })
+    );
+    
+    const CommentList = await Promise.all(commentIds.map(async (item) => {
+      const result = await getCommentById(item.id);
+      return result;
+    }));
+    console.log("CommentList", CommentList)
+    return CommentList.filter(comment => comment !== null);
   } catch (err) {
     console.error('Lỗi lấy comment bằng userId', err);
     return [];

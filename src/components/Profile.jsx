@@ -242,6 +242,7 @@ const Profile = ({ userId }) => {
             onRefresh={onRefresh}
           />
         }
+        ItemSeparatorComponent={() => <View className="border-b-2 border-b-gray-300" />}
         ListEmptyComponent={renderEmptyContent}
       />
     </View>

@@ -80,7 +80,7 @@ const ProfileSearchResult = ({ userId }) => {
                 className={`py-2 px-6 rounded-xl border border-gray-300 items-center ${isFollowingUser ? 'bg-gray-100' : ''}`}
                 onPress={handleFollow}
                 >
-                    <Text>{isFollowingUser ? 'Đã theo dõi' : 'Theo dõi'}</Text>
+                  <Text className={`font-bold ${!isFollowingUser ? 'text-black' : 'text-gray-400'}`}>{isFollowingUser ? 'Đã theo dõi' : 'Theo dõi'}</Text>
                 </TouchableOpacity>
             ) : null}
         </TouchableOpacity>
