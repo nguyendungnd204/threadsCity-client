@@ -13,7 +13,7 @@ import { icons } from "../constants/icons";
 import { useAuth } from "../Auth/AuthContext";
 import auth from "@react-native-firebase/auth";
 import useFetch from '../services/useFetch';
-import { getUserThreads } from "../services/threadService";
+import { getRepostThread, getThreadById, getUserThreads } from "../services/threadService";
 import Feed from "./Feed";
 import { getUserById } from "../services/userService";
 import { followUser, unfollowUser, isFollowing } from "../services/followService";
@@ -29,13 +29,31 @@ const Profile = ({ userId }) => {
   const flatListRef = useRef(null);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
-  const { data: commentReply } = useFetch(() => getCommentByUserId(userId), true);
+  const { data: commentReply} = useFetch(() => getCommentByUserId(userId), true);
+
+  const { data: repostThread, loading: repostLoading, refetch: refecthRepostThead} = useFetch(() => getRepostThread(userId), true);
+  const [threadReposted, setThreadReposted] = useState([]);
+
+  useEffect(() => {  
+    const fetchRepostedThreads = async () => {
+      if(repostThread) {
+        const threads = await Promise.all(
+          repostThread.map((item) => getThreadById(item.parentThreadId))
+        );
+        setThreadReposted(threads.filter(thread => thread !== null));
+      }
+    };
+    fetchRepostedThreads();
+    console.log('repostThread:', repostThread);
+  }, [repostThread]);
 
   useEffect(() => {
-    if (userId) {
-      console.log('User ID:', userId);
-    }
-    console.log( 'Reply',commentReply)
+    // if (userId) {
+    //   console.log('User ID:', userId);
+    // }
+    // console.log( 'Reply',commentReply)
+
+    
   }, [userId, commentReply]);
   useEffect(() => {
     if (user) {
@@ -81,12 +99,13 @@ const Profile = ({ userId }) => {
     }
   };
 
-  if (loading || userLoading) return <ActivityIndicator size="small" color="#0000ff" />;;
+  if (loading || userLoading || repostLoading) return <ActivityIndicator size="small" color="#0000ff" />;;
 
   const onRefresh = async () => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
     refetchUserProfile();
     refecthThead();
+    refecthRepostThead();
   };
 
   const handleLogout = async () => {
@@ -96,7 +115,6 @@ const Profile = ({ userId }) => {
       navigation.navigate("Login");
     } catch (error) {
       console.error("Logout error:", error);
-
     }
   }
   const handleThread = (id) => {
@@ -105,7 +123,7 @@ const Profile = ({ userId }) => {
 
 
   const renderTabButton = (label) => (
-    <TouchableOpacity
+    <TouchableOpacity 
       className={`flex-1 py-2 items-center ${activeTab === label ? "border-b-2 border-black" : ""}`}
       onPress={() => setActiveTab(label)}
     >
@@ -129,7 +147,7 @@ const Profile = ({ userId }) => {
       case "Thread trả lời":
         return commentReply || [];
       case "Bài đăng lại":
-        return [];
+        return threadReposted || [];
       default:
         return [];
     }
