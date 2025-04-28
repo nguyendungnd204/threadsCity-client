@@ -63,7 +63,6 @@ const Feed = ({ thread, onReply }) => {
   const threadId = thread.threadid || thread.id;
 
   useEffect(() => {
-    console.log('Thread ID in Feed:', threadId);
     if (user?.oauthId && threadId) {
       const likeRef = ref(database, `threads/${threadId}/likes`);
       const likeQuery = query(likeRef, orderByChild('userId'), equalTo(user.oauthId));
@@ -95,7 +94,9 @@ const Feed = ({ thread, onReply }) => {
 
     const unsubscribeReposts = onValue(repostsRef, (snapshot) => {
       const reposts = snapshot.val();
+      console.log(reposts)
       setRepostCount(reposts ? Object.keys(reposts).length : 0);
+      setIsReposted(reposts ? Object.values(reposts) : false);
     });
 
     return () => {
@@ -235,7 +236,7 @@ const Feed = ({ thread, onReply }) => {
             ) : null}
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center" onPress={handelRepostThread}>
-            <Image source={icons.repeat} className="size-6 mr-2" />
+            <Image source={isReposted ? icons.reposted : icons.repeat} className="size-6 mr-2" />
             {repostCount > 0 ? (
               <Text className="text-base font-normal">{formatNumber(repostCount)}</Text>
             ) : null}
