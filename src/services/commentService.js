@@ -5,7 +5,7 @@ import {
   remove, onValue, off,
   limitToLast, startAt, endAt
 } from 'firebase/database';
-import { getThreadByUserId } from './threadService';
+import { getUserThreads } from './threadService';
 
 export const createComment = async (commentData) => {
   try {
@@ -108,14 +108,16 @@ export const getCommentByUserId = async (userId) => {
 }
 export const getAllCommentsForUser = async (userId) => {
   try {
+    console.log("userId", userId)
     if (!userId) {
       console.error("UserId is null")
       return []
     }
-    const thread = await getThreadByUserId(userId);
+    const thread = await getUserThreads(userId);
+    console.log("thread", thread)
     const commentIds = await Promise.all(
       thread.map(async (item) => {
-        const comments = ref(database, `threads/${item.id}/comments`);
+        const comments = ref(database, `threads/${item.threadid}/comments`);
         const snapshot = await get(comments);
         if (snapshot.exists()) {
           const data = snapshot.val();
@@ -123,17 +125,18 @@ export const getAllCommentsForUser = async (userId) => {
             id,
             ...comment,
           }));
-          return comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          return comments;
         }
       })
     );
-    
-    const CommentList = await Promise.all(commentIds.map(async (item) => {
-      const result = await getCommentById(item.id);
+    console.log("commentIds", commentIds)
+    const CommentList = await Promise.all(commentIds.flat().filter(item => item !== undefined).map(async (item) => {
+      const result = await getCommentById(item?.id);
       return result;
     }));
-    console.log("CommentList", CommentList)
-    return CommentList.filter(comment => comment !== null);
+    const result = CommentList.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    console.log("CommentList: ", result);
+    return result;
   } catch (err) {
     console.error('Lỗi lấy comment bằng userId', err);
     return [];

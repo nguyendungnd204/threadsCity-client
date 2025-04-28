@@ -1,9 +1,9 @@
-import { View, Text, TouchableOpacity, FlatList, Dimensions, RefreshControl } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Dimensions, RefreshControl, ActivityIndicator } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import FollowerActivity from '../../components/FollowerActivity';
 import Feed from '../../components/Feed';
 import { useAuth } from '../../Auth/AuthContext';
-import { getCommentByUserId } from '../../services/commentService';
+import { getAllCommentsForUser, getCommentByUserId } from '../../services/commentService';
 import useFetch from '../../services/useFetch';
 import { getRepostThread, getThreadById } from '../../services/threadService';
 import { getFollowers } from '../../services/followService';
@@ -18,7 +18,7 @@ const ActivityScreens = () => {
   const navigation = useNavigation();
 
   const { data: follower, loading: followerLoading, refetch: refetchFollower } = useFetch(() => getFollowers(user?.oauthId), true);
-  const { data: threadReply, loading: replyLoading, refetch: refetchReply } = useFetch(() => getCommentByUserId(user?.oauthId), true);
+  const { data: threadReply, loading: replyLoading, refetch: refetchReply } = useFetch(() => getAllCommentsForUser(user?.oauthId), true);
   const { data: repostThread, loading: repostLoading, refetch: refetchRepostThread } = useFetch(() => getRepostThread(user?.oauthId), true);
   const [threadReposted, setThreadReposted] = useState([]);
   const [userProfile, setUserProfile] = useState([]);
@@ -44,6 +44,7 @@ const ActivityScreens = () => {
     fetchUserProfileFollowers();
     console.log("follower", userProfile)
   }, [follower]);
+  
   useEffect(() => {  
     const fetchRepostedThreads = async () => {
       if (repostThread && repostThread.length > 0) {
@@ -118,7 +119,7 @@ const ActivityScreens = () => {
 
   const onRefresh = async () => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
-    await Promise.all([refetchReply(), refetchRepostThread()]);
+    await Promise.all([refetchReply(), refetchRepostThread(), refetchFollower()]);
   };
 
   // Dữ liệu cho FlatList chính (gồm header và danh sách hoạt động)
@@ -156,7 +157,7 @@ const ActivityScreens = () => {
             keyExtractor={(item, index) => item.name + index}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ marginHorizontal: 5, gap: 10, paddingTop: 10 }}
+            contentContainerStyle={{ paddingHorizontal: 5, gap: 8, paddingVertical: 8 }}
             snapToAlignment="center"
             snapToInterval={width / 4}
             decelerationRate="fast"
@@ -200,18 +201,12 @@ const ActivityScreens = () => {
             }}
             ItemSeparatorComponent={() => <View className="border-b-2 border-b-gray-300" />}
             keyExtractor={(item, index) => {
-              // Đảm bảo key duy nhất bằng cách kết hợp id/threadid với type và index
-              const itemId = item.threadid || item.id || `item-${index}`;
+              // Đảm bảo key duy nhất bằng cách kết hợp id//userId với type và index
+              const itemId = item.threadid || item.id || item.userId || `item-${index}`;
               return `${item.type}-${itemId}-${index}`;
             }}
             ListEmptyComponent={
               <Text className="text-xl text-gray-400 text-center mt-[300px]">Chưa có gì để xem ở đây.</Text>
-            }
-            refreshControl={
-              <RefreshControl
-                refreshing={replyLoading || repostLoading}
-                onRefresh={onRefresh}
-              />
             }
           />
         </View>
@@ -219,6 +214,9 @@ const ActivityScreens = () => {
     }
     return null;
   };
+
+  if (followerLoading || replyLoading || repostLoading ) return <ActivityIndicator size="small" color="#0000ff" />;
+  
 
   return (
     <View className="flex-1 mt-[50px] bg-white px-5">
@@ -229,6 +227,7 @@ const ActivityScreens = () => {
         keyExtractor={(item, index) => item.type + index}
         stickyHeaderIndices={[1]} // Phần tab (index 1) sẽ là sticky header
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={ followerLoading || replyLoading || repostLoading} onRefresh={onRefresh} />}
       />
     </View>
   );
