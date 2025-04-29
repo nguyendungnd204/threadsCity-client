@@ -1,122 +1,120 @@
-React Native Threads-Like App (Android)
-This is a React Native CLI project for Android, built with:
+# 📱 React Native Threads-Like App (Android)
 
-Firebase Authentication (Facebook login)
+## ✨ About This Project  
+This is a **React Native CLI** project designed for **Android**, inspired by the core features of **Threads by Instagram** (excluding share functionality).
 
-Firebase Realtime Database
+### 🔧 Tech Stack  
+- **React Native CLI**
+- **Firebase Authentication** (Facebook login)  
+- **Firebase Realtime Database**  
+- **Cloudinary** – Store images and videos  
+- **TailwindCSS** (via `nativewind`) for styling  
 
-Cloudinary for storing uploaded images and videos
+---
 
-TailwindCSS for styling (via nativewind)
+## 📦 Features  
+- 🔐 **Login with Facebook** using Firebase  
+- 🧕 **Create, view, comment, and repost threads**  
+- 🧑‍💬 **Profile page** displaying user threads  
+- 🖼️ **Upload image/video** to Cloudinary  
+- 🎯 **Activity screen** showing posts and replies  
+- ⚡ **Fast Refresh** for development speed  
 
-Core app features similar to Threads by Instagram, excluding thread sharing.
+---
 
-🚀 Features
-🔐 Facebook login via Firebase Authentication
+## 🛠️ Setup Instructions  
 
-🧵 Create, view, and interact with threads
+### 📌 Prerequisites  
+Make sure you’ve followed the official [React Native environment setup](https://reactnative.dev/docs/environment-setup).
 
-💬 Comment (reply) and repost threads
+> You need:
+> - Node.js  
+> - Android Studio or physical Android device  
+> - Firebase project setup  
+> - Cloudinary account
 
-📸 Upload images/videos to Cloudinary
+---
 
-🧑 Profile page with your posts
+## 📁 Installation  
 
-🎯 Activity feed showing threads and interactions
-
-🎨 Styled using TailwindCSS
-
-📦 Prerequisites
-📌 Make sure you've completed the official React Native environment setup before continuing.
-
-Node.js
-
-Android Studio + emulator or Android device connected
-
-Firebase project (Auth + Realtime Database configured)
-
-Cloudinary account
-
-🛠️ Installation
-Clone the project and install dependencies:
-
-sh
-Sao chép
-Chỉnh sửa
+```bash
 git clone https://github.com/your-username/your-project-name.git
 cd your-project-name
 npm install
-Firebase & Cloudinary Setup
-Set up Firebase (Facebook Auth + Realtime DB)
+```
 
-Configure your .env file with Firebase and Cloudinary keys:
+---
 
-makefile
-Sao chép
-Chỉnh sửa
+## 🔐 Environment Setup  
+
+Create a `.env` file in the root and add your Firebase and Cloudinary credentials:
+
+```env
 FIREBASE_API_KEY=your_key
+FIREBASE_PROJECT_ID=your_project_id
 CLOUDINARY_CLOUD_NAME=your_cloud_name
-...
-▶️ Getting Started
-Step 1: Start Metro
-sh
-Sao chép
-Chỉnh sửa
+CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+```
+
+---
+
+## ▶️ Getting Started
+
+### 1. Start Metro
+
+```bash
 npm run start
-Step 2: Run the App on Android
-sh
-Sao chép
-Chỉnh sửa
+```
+
+### 2. Run the App on Android
+
+```bash
 npm run android
-✅ Make sure an emulator is running or a real Android device is connected with USB debugging enabled.
+```
 
-Step 3: Debug Log (Optional)
-sh
-Sao chép
-Chỉnh sửa
+### 3. View Android Logs
+
+```bash
 npm run log
-This runs adb logcat for debugging Android logs.
+```
 
-🔧 File Structure
-bash
-Sao chép
-Chỉnh sửa
-/src
-  /components     # Reusable UI components
-  /screens        # App screens (Home, Profile, etc.)
-  /services       # Firebase & Cloudinary integrations
-  /store          # App context or state management
-App.tsx           # Entry point
-🔄 Live Reloading
-React Native supports Fast Refresh. Just save a file to see changes immediately.
+> ⚠️ Ensure an Android emulator or device is connected and USB debugging is enabled.
 
-Full reload:
+---
 
-Android: Press R twice in the terminal or Ctrl+M (Cmd+M on macOS) in the emulator and select Reload.
+---
 
-Device: Shake device to open Dev Menu → Reload
+## 🔄 Reload Options
 
-📚 Learn More
-React Native Docs
+- **Fast Refresh**: Auto-updates on file save  
+- **Full Reload**:  
+  - Press `R` twice in Metro terminal  
+  - Or use `Ctrl+M` (Cmd+M on macOS) to open Dev Menu and tap **Reload**  
 
-Firebase Docs
+---
 
-Cloudinary Docs
+## 📚 Learn More
 
-NativeWind (TailwindCSS for RN)
+- 🌐 [React Native Docs](https://reactnative.dev/docs/getting-started)  
+- 🔥 [Firebase Docs](https://firebase.google.com/docs)  
+- ☁️ [Cloudinary Docs](https://cloudinary.com/documentation)  
+- 🎨 [NativeWind Docs](https://www.nativewind.dev)  
 
-📌 Notes
-Currently only Android is supported.
+---
 
-You can build for iOS later by adding a macOS dev environment and CocoaPods.
+## 🛠️ Troubleshooting
 
-Thread sharing is not included.
-
-🧪 Troubleshooting
 If you run into issues:
 
-Follow React Native Troubleshooting Guide
+- Follow the [React Native Troubleshooting Guide](https://reactnative.dev/docs/troubleshooting)  
+- Double-check `.env` configurations  
+- Use `npm run log` for Android logs  
 
-Check your Firebase and Cloudinary setup.
+---
 
-Use npm run log for real-time logs and error tracking.
+## 📌 Notes
+
+- ✅ This project currently **only supports Android**  
+- ❌ **Thread sharing** is not implemented  
+- 🧪 iOS support can be added later (via macOS + CocoaPods)
+
