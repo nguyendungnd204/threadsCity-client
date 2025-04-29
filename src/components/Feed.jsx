@@ -71,7 +71,7 @@ const Feed = ({ thread, onReply }) => {
       });
       return () => off(likeRef, 'value', unsubscribe);
     } else {
-      setLiked(false);
+      setLiked(false);  
     }
   }, [user?.oauthId, threadId]);
 

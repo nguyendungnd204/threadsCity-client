@@ -96,3 +96,17 @@ export const getFollowings = async (userId) => {
     return [];
   }
 }
+
+export const getFollowers = async (userId) => {
+  try {
+    const followersRef = ref(database, `users/${userId}/followers`);
+    const snapshot = await get(followersRef);
+    if (snapshot.exists()){
+      return Object.keys(snapshot.val());
+    }
+    return [];
+  } catch (err) {
+    console.error(err)
+    return [];
+  }
+}
