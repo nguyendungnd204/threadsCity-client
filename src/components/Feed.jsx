@@ -16,6 +16,7 @@ import {
 } from 'firebase/database';
 import { debounce } from 'lodash';
 import { toggleRepostThread } from '../services/threadService';
+import ThreadMenu from './ThreadMenu';
 
 const formatNumber = (num) => {
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
@@ -220,7 +221,7 @@ const Feed = ({ thread, onReply }) => {
             </TouchableOpacity>
             <Text className="text-sm text-gray-500">{formatDate(thread.createdAt)}</Text>
           </View>
-          <Image source={icons.more} className="size-6 self-end" tintColor="gray" />
+          <ThreadMenu />
         </View>
         <Text className="text-base mb-3">{thread.content}</Text>
 

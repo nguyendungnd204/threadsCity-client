@@ -13,7 +13,7 @@ import { icons } from "../constants/icons";
 import { useAuth } from "../Auth/AuthContext";
 import auth from "@react-native-firebase/auth";
 import useFetch from '../services/useFetch';
-import { getRepostThread, getThreadById, getUserThreads } from "../services/threadService";
+import { getRepostThread, getUserThreads } from "../services/threadService";
 import Feed from "./Feed";
 import { getUserById } from "../services/userService";
 import { followUser, unfollowUser, isFollowing } from "../services/followService";
@@ -30,42 +30,10 @@ const Profile = ({ userId }) => {
   const flatListRef = useRef(null);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
-  const { data: commentReply} = useFetch(() => getCommentByUserId(userId), true);
-
+  const { data: commentReply, loading: commentLoading, refetch: refetchComment} = useFetch(() => getCommentByUserId(userId), true);
   const { data: repostThread, loading: repostLoading, refetch: refecthRepostThead} = useFetch(() => getRepostThread(userId), true);
-  const [threadReposted, setThreadReposted] = useState([]);
 
-  useEffect(() => {  
-    const fetchRepostedThreads = async () => {
-      if(repostThread) {
-        const threads = await Promise.all(
-          repostThread.map((item) => getThreadById(item.parentThreadId))
-        );
-        setThreadReposted(threads.filter(thread => thread !== null));
-      }
-    };
-    fetchRepostedThreads();
-    console.log('repostThread:', repostThread);
-  }, [repostThread]);
-
-  useEffect(() => {
-    // if (userId) {
-    //   console.log('User ID:', userId);
-    // }
-    // console.log( 'Reply',commentReply)
-
-    
-  }, [userId, commentReply]);
-  useEffect(() => {
-    if (user) {
-      console.log('User:', user?.oauthId);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    console.log(" data:", userProfile);
-  }, [userProfile]);
-
+  
   useEffect(() => {
     const checkFollowing = async () => {
       if (user?.oauthId && userId && user.oauthId !== userId) {
@@ -74,11 +42,13 @@ const Profile = ({ userId }) => {
       }
     };
     checkFollowing();
-  }, [user, userId]);
+  }, [user, userId, userProfile]);
 
   useEffect(() => {
     if (userProfile?.followers) {
-      setFollowerCount(Object.keys(userProfile.followers).length);
+      setFollowerCount(Object.keys(userProfile?.followers).length);
+    } else {
+      setFollowerCount(0);
     }
   }, [userProfile]);
 
@@ -97,18 +67,20 @@ const Profile = ({ userId }) => {
         setFollowerCount((prev) => prev + 1);
         showAlert("success", "Đã theo dõi");
       }
+      refetchUserProfile();
     } catch (error) {
       console.error("Error handling follow:", error);
     }
   };
 
-  if (loading || userLoading || repostLoading) return <ActivityIndicator size="small" color="#0000ff" />;;
+  if (loading || userLoading || repostLoading || commentLoading) return <ActivityIndicator size="small" color="#0000ff" />;;
 
   const onRefresh = async () => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
     refetchUserProfile();
     refecthThead();
     refecthRepostThead();
+    refetchComment();
   };
 
   const handleLogout = async () => {
@@ -150,7 +122,7 @@ const Profile = ({ userId }) => {
       case "Thread trả lời":
         return commentReply || [];
       case "Bài đăng lại":
-        return threadReposted || [];
+        return repostThread || [];
       default:
         return [];
     }

@@ -6,6 +6,8 @@ import {
   remove, onValue, off,
   limitToLast, startAt, endAt
 } from 'firebase/database';
+import { getFollowings } from './followService';
+
 export const toggleRepostThread = async (threadId, userId) => {
   try {
     const threadRef = ref(database, `threads/${threadId}/reposts`);
@@ -78,24 +80,6 @@ export const createThread = async (userId, threadData) => {
     return null;
   }
 };
-// export const getThreadById = async (threadId) => {
-//   try {
-//     const threadRef = ref(database, `threads/${threadId}`);
-//     const snapshot = await get(threadRef);
-    
-//     if (snapshot.exists()) {
-//       return { 
-//         id: threadId,
-//         ...snapshot.val()
-//       };
-//     }
-    
-//     return null;
-//   } catch (error) {
-//     console.error('Error getting thread by ID:', error);
-//     throw error;
-//   }
-// };
 
 export const getUserThreads = async (userId) => {
   try {
@@ -103,18 +87,8 @@ export const getUserThreads = async (userId) => {
     const userThreadsQuery = query(threadsRef, orderByChild('authorId'), equalTo(userId));
     const snapshot = await get(userThreadsQuery);
     
-    // const threads = [];
     if (snapshot.exists()) {
       console.log(snapshot.val())
-      // snapshot.forEach((childSnapshot) => {
-      //   const threadData = childSnapshot.val();
-      //   if (!threadData.isReply && !threadData.isRepost) {
-      //     threads.push({
-      //       threadid: childSnapshot.key,
-      //       ...threadData,
-      //     });
-      //   }
-      // });
       const data = snapshot.val();
       const threads = Object.entries(data).map(([key, value]) => ({
         threadid: key, //  gán key làm threadid
@@ -123,7 +97,6 @@ export const getUserThreads = async (userId) => {
       return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
     
-    // return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   } catch (error) {
     console.error('Error getting user threads:', error);
     throw error;
@@ -143,10 +116,18 @@ export const getRepostThread = async (userId) => {
           ...childSnapshot.val(),
         });
       });
-      return reposts;
+      if (reposts && reposts.length > 0) {
+        const threads = await Promise.all(
+          reposts.map((item) => getThreadById(item.parentThreadId))
+        );
+
+        const result = threads.filter(thread => thread !== null).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        return result;
+      }
+      return []; // Trả về mảng rỗng nếu không có reposts
     }
     
-    return null;
+    return []; // Trả về mảng rỗng nếu không có dữ liệu
   } catch (error) {
     console.error('Error getting thread reposts:', error);
     throw error;
@@ -193,5 +174,20 @@ export const getThreadById = async (id) => {
   }
 };
 
-
+export const getThreadFollowingUser = async (userId)  => {
+  try{
+    if (userId) {
+      const following = await getFollowings(userId);
+      console.log("following", following)
+      const threads = await Promise.all(
+        following.map((item) => getUserThreads(item.followingId))
+      );
+      const result = threads.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return result;
+    }
+  } catch (error) {
+    console.error('Error getting thread following user:', error);
+    throw error;
+  }
+}
 

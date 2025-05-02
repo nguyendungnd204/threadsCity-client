@@ -18,7 +18,7 @@ const formatNumber = (num) => {
 const ProfileSearchResult = ({ userId }) => {
     const navigation = useNavigation();
     const { user } = useAuth();
-    const { data: userProfile, loading: userLoading, refetch: refecthThead } = useFetch(() => getUserById(userId), true);
+    const { data: userProfile, loading: userLoading, refetch: refetchUserProfile } = useFetch(() => getUserById(userId), true);
     const [isFollowingUser, setIsFollowingUser] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
 
@@ -34,11 +34,13 @@ const ProfileSearchResult = ({ userId }) => {
           }
         };
         checkFollowing();
-    }, [user, userId]);
+    }, [user, userId, userProfile]);
     
     useEffect(() => {
           if (userProfile?.followers) {
-            setFollowerCount(Object.keys(userProfile.followers).length);
+            setFollowerCount(Object.keys(userProfile?.followers).length);
+          } else {
+            setFollowerCount(0);
           }
     }, [userProfile]);
 
@@ -55,6 +57,7 @@ const ProfileSearchResult = ({ userId }) => {
             setIsFollowingUser(true);
             setFollowerCount((prev) => prev + 1);
           }
+          refetchUserProfile();
         } catch (error) {
           console.error("Error handling follow:", error);
         }
