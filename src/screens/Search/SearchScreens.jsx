@@ -19,7 +19,7 @@ const SearchScreens = () => {
       } else {
         setUsers([]);
       }
-    }, 500);
+    }, 100);
     return () => clearTimeout(fetchUsers)
   }, [searchTerm]);
 

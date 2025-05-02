@@ -5,6 +5,7 @@ import {
   remove, onValue, off,
   limitToLast, startAt, endAt
 } from 'firebase/database';
+import { getUserById } from './userService';
 
 export const followUser = async (currentUserId, targetUserId) => {
     try {
@@ -13,12 +14,16 @@ export const followUser = async (currentUserId, targetUserId) => {
       const currentUserRef = ref(database, `users/${currentUserId}/following`);
       const targetUserRef = ref(database, `users/${targetUserId}/followers`);
   
+      const followData = {
+        Status: true,
+        createdAt: { '.sv': 'timestamp' }
+      }
       await update(currentUserRef, {
-        [targetUserId]: true
+        [targetUserId]: followData
       });
 
       await update(targetUserRef, {
-        [currentUserId]: true
+        [currentUserId]: followData
       });
   
       return true;
@@ -52,7 +57,7 @@ export const followUser = async (currentUserId, targetUserId) => {
     try {
       const followingRef = ref(database, `users/${currentUserId}/following/${targetUserId}`);
       const snapshot = await get(followingRef);
-      return snapshot.exists();
+      return snapshot.exists() && snapshot.val().Status === true;
     } catch (error) {
       console.error("Error checking follow status:", error);
       return false;
@@ -68,9 +73,39 @@ export const followUser = async (currentUserId, targetUserId) => {
         const users = snapshot.val();
         for (const userId in users) {
           const userRef = ref(database, `users/${userId}`);
+
+          const follower = users[userId].followers || {};
+          const following = users[userId].following || {};
+
+          console.log('follower', follower);
+          console.log('following', following);
+
+          const updFollower = {};
+          const updFollowing = {};
+
+          for (const followerId in follower){
+            if (follower[followerId].Status === true) {
+              updFollower[followerId] = {
+                Status: true,
+                createdAt: follower[followerId].createdAt || { '.sv': 'timestamp' }
+              };
+            } else if (typeof follower[followerId] === 'object') {
+                 updFollower[followerId] = follower[followerId];
+            };
+          }
+          for (const followingId in following){
+            if (following[followingId].Status === true) {
+              updFollowing[followingId] = {
+                Status: true,
+                createdAt: following[followingId].createdAt || { '.sv': 'timestamp' }
+              };
+            } else if (typeof following[followingId] === 'object') {
+                 updFollowing[followingId] = following[followingId];
+            };
+          }
           await update(userRef, {
-            followers: users[userId].followers || {}, 
-            following: users[userId].following || {},
+            followers: updFollower, 
+            following: updFollowing,
             updatedAt: { '.sv': 'timestamp' }
           });
         }
@@ -88,7 +123,14 @@ export const getFollowings = async (userId) => {
     const followingrsRef = ref(database, `users/${userId}/following`);
     const snapshot = await get(followingrsRef);
     if (snapshot.exists()){
-      return Object.keys(snapshot.val());
+      const followings = snapshot.val();
+      const result = Object.keys(followings)
+            .filter((id) => followings[id]?.Status === true)
+            .map((id) => ({
+              followingId: id,
+              createdAt: followings[id]?.createdAt || 0
+            }))
+      return result;
     }
     return [];
   } catch (err) {
@@ -102,7 +144,15 @@ export const getFollowers = async (userId) => {
     const followersRef = ref(database, `users/${userId}/followers`);
     const snapshot = await get(followersRef);
     if (snapshot.exists()){
-      return Object.keys(snapshot.val());
+      const followers = snapshot.val();
+      return Object.keys(followers)
+            .filter((id) => followers[id]?.Status === true)
+            .map((id) => {
+              return {
+                followerId: id,
+                createdAt: followers[id].createdAt || { '.sv': 'timestamp' }
+              };
+            });
     }
     return [];
   } catch (err) {
@@ -110,3 +160,20 @@ export const getFollowers = async (userId) => {
     return [];
   }
 }
+
+export const getUserFollowersProfile = async (userId) => {
+  try{
+      if (userId){
+        const followers = await getFollowers(userId);
+      const profile = await Promise.all(
+        followers.map((item) => getUserById(item.followerId))
+      );
+      const result = profile.flat();
+      return result;
+    }
+    return [];
+  } catch (err) {
+    console.error(err)
+    return [];
+  }
+} 

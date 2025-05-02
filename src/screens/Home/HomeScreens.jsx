@@ -5,10 +5,9 @@ import { icons } from '../../constants/icons';
 import CreateThreadsComponents from '../../components/CreateThreadsComponents';
 import { useAuth } from '../../Auth/AuthContext';
 import { useNavigation } from '@react-navigation/native';
-import { getThread, getUserThreads } from '../../services/threadService';
+import { getThread, getThreadFollowingUser } from '../../services/threadService';
 import useFetch from '../../services/useFetch';
 import { getUserById } from '../../services/userService';
-import { getFollowings } from '../../services/followService';
 
 const HomScreen = () => {
   const TabSelect = ["Dành cho bạn", "Đang theo dõi"];
@@ -17,9 +16,7 @@ const HomScreen = () => {
   const navigation = useNavigation();
   const { data: userProfile } = useFetch(() => getUserById(user?.oauthId), true);
   const { data: thread, loading, error, refetch } = useFetch(() => getThread(), true);
-  const { data: following, loading: followLoading, refetch: followRefetch } = useFetch(() => getFollowings(user?.oauthId), true);
-  const [followedThreads, setFollowedThreads] = useState([]);
-  const [followedThreadsLoading, setFollowedThreadsLoading] = useState(false);
+  const { data: followingThread, loading: followThreadLoading, refetch: followThreadRefetch } = useFetch(() => getThreadFollowingUser(user?.oauthId), true);
 
   const flatListRef = useRef(null);
 
@@ -63,41 +60,16 @@ const HomScreen = () => {
 
   // Phân trang ban đầu cho tab "Đang theo dõi"
   useEffect(() => {
-    if (followedThreads && tab === "Đang theo dõi") {
+    if (followingThread && tab === "Đang theo dõi") {
       setIsFollowedLoading(true);
-      const data = pagination(followedThreads, followedPageSize, followedCurrentPage);
+      const data = pagination(followingThread, followedPageSize, followedCurrentPage);
       if (followedCurrentPage === 1) {
         setFollowedRenderedData(data);
       } 
       console.log("Followed threads data:", data);
       setIsFollowedLoading(false);
     }
-  }, [followedThreads, followedPageSize, followedCurrentPage, tab]);
-
-  useEffect(() => {
-    const fetchFollowedThreads = async () => {
-      if (!following || following.length === 0) {
-        setFollowedThreads([]);
-        return;
-      }
-
-      setFollowedThreadsLoading(true);
-      try {
-        const threadPromises = following.map((userId) => getUserThreads(userId));
-        const threadResults = await Promise.all(threadPromises);
-
-        const ThreadListForFollow = threadResults.flat();
-        const sortThreads = ThreadListForFollow.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setFollowedThreads(sortThreads);
-      } catch (err) {
-        console.error('Error fetching followed threads:', err);
-      } finally {
-        setFollowedThreadsLoading(false);
-      }
-    };
-
-    fetchFollowedThreads();
-  }, [following]);
+  }, [followingThread, followedPageSize, followedCurrentPage, tab]);
 
   const handleThread = (id) => {
     navigation.navigate('FeedDetail', { id });
@@ -105,7 +77,7 @@ const HomScreen = () => {
 
   // Khi làm mới, thêm dữ liệu mới vào dưới cùng
   const onRefresh = async () => {
-    if (loading || followedThreadsLoading || isThreadLoading || isFollowedLoading) {
+    if (loading || followThreadLoading || isThreadLoading || isFollowedLoading) {
       return; // Không làm mới nếu đang tải dữ liệu
     }
 
@@ -119,7 +91,7 @@ const HomScreen = () => {
     }
 
     // Refetch dữ liệu mới
-    await Promise.all([refetch(), followRefetch()]);
+    await Promise.all([refetch(), followThreadRefetch()]);
   };
   // Xác định dữ liệu hiển thị dựa trên tab
   const getDisplayData = () => {
@@ -132,7 +104,7 @@ const HomScreen = () => {
   };
 
   const renderFooter = () => {
-    if (loading || followedThreadsLoading || isThreadLoading || isFollowedLoading) {
+    if (loading || followThreadLoading || isThreadLoading || isFollowedLoading) {
       return <ActivityIndicator size="small" color="#0000ff" />;
     }
     if (error) {
@@ -143,7 +115,7 @@ const HomScreen = () => {
 
   // Xử lý khi cuộn đến cuối danh sách
   const handleEndReached = () => {
-    if (loading || followedThreadsLoading) {
+    if (loading || followThreadLoading || isThreadLoading || isFollowedLoading) {
       return; // Không chạy nếu đang làm mới dữ liệu
     }
     if (tab === "Dành cho bạn" && !isThreadLoading) {
@@ -159,12 +131,12 @@ const HomScreen = () => {
       }
       setIsThreadLoading(false);
     } else if (tab === "Đang theo dõi" && !isFollowedLoading) {
-      if (!followedThreads || !Array.isArray(followedThreads)) {
+      if (!followingThread || !Array.isArray(followingThread)) {
         setIsFollowedLoading(false);
         return;
       }
       setIsFollowedLoading(true);
-      const contentToAppend = pagination(followedThreads, followedPageSize, followedCurrentPage + 1);
+      const contentToAppend = pagination(followingThread, followedPageSize, followedCurrentPage + 1);
       if (contentToAppend.length > 0) {
         setFollowedRenderedData([...followedRenderedData, ...contentToAppend]);
         setFollowedCurrentPage(followedCurrentPage + 1);
@@ -180,10 +152,10 @@ const HomScreen = () => {
     if (thread) {
       setThreadRenderedData(pagination(thread, threadPageSize, 1));
     }
-    if (followedThreads) {
-      setFollowedRenderedData(pagination(followedThreads, followedPageSize, 1));
+    if (followingThread) {
+      setFollowedRenderedData(pagination(followingThread, followedPageSize, 1));
     }
-  }, [tab, thread, followedThreads]);
+  }, [tab, thread, followingThread]);
   
 
   return (

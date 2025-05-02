@@ -3,6 +3,25 @@ import React, {useEffect, useState} from 'react';
 import { useAuth } from '../Auth/AuthContext';
 import { isFollowing, unfollowUser, followUser } from '../services/followService';
 
+const formatDate = (date) => {
+  const today = new Date();
+  const givenDate = new Date(date);
+  const diffTime = Math.abs(today - givenDate);
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) {
+    if (diffHours === 0) {
+      const diffMinutes = Math.floor(diffTime / (1000 * 60));
+      return `${diffMinutes} phút trước`;
+    }
+    return `${diffHours} giờ trước`;
+  }
+  if (diffDays === 1) return 'Hôm qua';
+  if (diffDays <= 7) return `${diffDays} ngày trước`;
+  return givenDate.toLocaleDateString('vi-VN');
+};
+
 const FollowerActivity = ({ Users }) => {
     const { user } = useAuth();
     const [isFollowingUser, setIsFollowingUser] = useState(false);
@@ -49,7 +68,7 @@ const FollowerActivity = ({ Users }) => {
             <View className='flex-1 gap-1 ml-4' >
                 <View className='flex-row items-center gap-1'> 
                     <Text className='text-sm font-bold' numberOfLines={1} style={{ flexShrink: 1 }}>{Users?.fullname}</Text>
-                    <Text className='text-xs text-gray-500' >10 giờ</Text>
+                    <Text className='text-xs text-gray-500' >{formatDate(Users?.createdAt)}</Text>
                 </View>
                 <Text className='text-sm text-gray-500'>Đã theo dõi bạn</Text>
             </View>

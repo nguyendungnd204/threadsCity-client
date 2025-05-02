@@ -3,11 +3,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import FollowerActivity from '../../components/FollowerActivity';
 import Feed from '../../components/Feed';
 import { useAuth } from '../../Auth/AuthContext';
-import { getAllCommentsForUser, getCommentByUserId } from '../../services/commentService';
+import { getAllCommentsForUser } from '../../services/commentService';
 import useFetch from '../../services/useFetch';
-import { getRepostThread, getThreadById } from '../../services/threadService';
-import { getFollowers } from '../../services/followService';
-import { getUserById } from '../../services/userService';
+import { getRepostThread } from '../../services/threadService';
+import { getUserFollowersProfile } from '../../services/followService';
 import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window'); // Lấy chiều rộng màn hình để tính toán
@@ -17,48 +16,9 @@ const ActivityScreens = () => {
   const flatListRef = useRef(null);
   const navigation = useNavigation();
 
-  const { data: follower, loading: followerLoading, refetch: refetchFollower } = useFetch(() => getFollowers(user?.oauthId), true);
   const { data: threadReply, loading: replyLoading, refetch: refetchReply } = useFetch(() => getAllCommentsForUser(user?.oauthId), true);
   const { data: repostThread, loading: repostLoading, refetch: refetchRepostThread } = useFetch(() => getRepostThread(user?.oauthId), true);
-  const [threadReposted, setThreadReposted] = useState([]);
-  const [userProfile, setUserProfile] = useState([]);
-
-  useEffect(() => {
-    const fetchUserProfileFollowers = async () => {
-      if (Array.isArray(follower) && follower.length > 0) {
-        const profile = await Promise.all(
-          
-          follower.map((item) => {
-            console.log("id", item)
-            return getUserById(item);
-          })
-        );      
-        const result = profile.flat()
-        setUserProfile(result);
-        console.log('User: ', result)
-      } else {
-        setUserProfile([]);
-      }
-
-    }
-    fetchUserProfileFollowers();
-    console.log("follower", userProfile)
-  }, [follower]);
-  
-  useEffect(() => {  
-    const fetchRepostedThreads = async () => {
-      if (repostThread && repostThread.length > 0) {
-        const threads = await Promise.all(
-          repostThread.map((item) => getThreadById(item.parentThreadId))
-        );
-        setThreadReposted(threads.filter(thread => thread !== null));
-      } else {
-        setThreadReposted([]);
-      }
-    };
-    fetchRepostedThreads();
-    console.log('repostThread:', repostThread);
-  }, [repostThread]);
+  const { data: userProfile, loading: userProfileLoading, refetch: refetchUserProfile } = useFetch(() => getUserFollowersProfile(user?.oauthId), true);
 
   const Tabs = [
     { name: 'Tất cả' },
@@ -105,21 +65,21 @@ const ActivityScreens = () => {
   // Gộp dữ liệu threadReply và threadReposted cho tab "Tất cả"
   const allActivities = [
     ...(threadReply || []).map(item => ({ ...item, type: 'reply' })), // Thêm type để phân biệt
-    ...(threadReposted || []).map(item => ({ ...item, type: 'repost' })), // Thêm type để phân biệt
-    // ...(userProfile || []).map(item => ({ ...item, type: 'userProfile' })),
+    ...(repostThread || []).map(item => ({ ...item, type: 'repost' })), // Thêm type để phân biệt
+    ...(userProfile || []).map(item => ({ ...item, type: 'userProfile' })),
   ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo ngày giảm dần
 
   // Dữ liệu cho các tab
   const activityData = {
     'Tất cả': allActivities,
     'Lượt theo dõi': (userProfile || []).map((item) => ({ ...item, type: 'userProfile' })), // Đảm bảo type cho tab "Lượt theo dõi"
-    'Bài đăng lại': (threadReposted || []).map((item) => ({ ...item, type: 'repost' })),
+    'Bài đăng lại': (repostThread || []).map((item) => ({ ...item, type: 'repost' })),
     'Thread trả lời': (threadReply || []).map((item) => ({ ...item, type: 'reply' })),
   };
 
   const onRefresh = async () => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
-    await Promise.all([refetchReply(), refetchRepostThread(), refetchFollower()]);
+    await Promise.all([refetchReply(), refetchRepostThread(), refetchUserProfile()]);
   };
 
   // Dữ liệu cho FlatList chính (gồm header và danh sách hoạt động)
@@ -215,7 +175,7 @@ const ActivityScreens = () => {
     return null;
   };
 
-  if (followerLoading || replyLoading || repostLoading ) return <ActivityIndicator size="small" color="#0000ff" />;
+  if (userProfileLoading || replyLoading || repostLoading ) return <ActivityIndicator size="small" color="#0000ff" />;
   
 
   return (
@@ -227,7 +187,7 @@ const ActivityScreens = () => {
         keyExtractor={(item, index) => item.type + index}
         stickyHeaderIndices={[1]} // Phần tab (index 1) sẽ là sticky header
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={ followerLoading || replyLoading || repostLoading} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={ userProfileLoading || replyLoading || repostLoading} onRefresh={onRefresh} />}
       />
     </View>
   );
