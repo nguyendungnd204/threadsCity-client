@@ -9,6 +9,8 @@ import { toggleLikeThread } from '../services/likeService';
 import UserImageIcon from './UserImageIcon';
 import { database } from '../../FirebaseConfig';
 import { handelRepostThread } from '../components/postCmtAndThreads'
+import { showAlert } from './Alert';
+import { getUserById } from '../services/userService';
 import {
   ref, onValue, off, query, orderByChild, equalTo,
 } from 'firebase/database';
@@ -127,12 +129,13 @@ const Feed = ({ thread, onReply }) => {
     const previousLikeCount = countLiked;
     setLiked(!liked);
     setCountLiked(liked ? countLiked - 1 : countLiked + 1);
-
+    showAlert('success', liked ? 'Đã bỏ thích' : 'Đã thích');
     try {
       const response = await toggleLikeThread(user.oauthId, threadId, userData);
       if (!response.success) {
         setLiked(previousLiked);
         setCountLiked(previousLikeCount);
+
       }
     } catch (error) {
       setLiked(previousLiked);
@@ -147,6 +150,7 @@ const Feed = ({ thread, onReply }) => {
       const previousRepostCount = repostCount;
       setIsReposted(!isReposted);
       setRepostCount(isReposted ? repostCount - 1 : repostCount + 1)
+      showAlert('success', isReposted ? 'Đã hủy đăng lại' : 'Đã đăng lại');
       console.log(threadId)
       try {
         console.log(typeof toggleRepostThread)
@@ -178,12 +182,35 @@ const Feed = ({ thread, onReply }) => {
     console.log('Navigating to FeedDetail with id:', threadId);
     navigation.navigate('FeedDetail', { id: threadId });
   };
+  const userId = thread.authorId;
+  const [userProfile, setUserProfile] = useState(null);
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (userId) {
+        const userData = await getUserById(userId);
+        setUserProfile(userData);
+      }
+    };
+    fetchUserProfile();
+  }, [userId]);
+  useEffect(() => {
+    if (userProfile) {
+      console.log('User profile loaded:', userProfile.avatar);
+    }
+  }, [userProfile]);
   
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">
-      <TouchableOpacity onPress={() => handleGoProfile(thread.authorId)} className="self-start">
-        <UserImageIcon source={{ uri: thread.avatar_path }} />
-      </TouchableOpacity>
+      <TouchableOpacity 
+      onPress={() => handleGoProfile(thread.authorId)} 
+      className="self-start"
+    >
+      <UserImageIcon source={
+              userProfile?.avatar
+                ? { uri: userProfile.avatar }
+                : require('../assets/images/threads-logo-black.png')
+            } />
+    </TouchableOpacity>
       <View className="flex-1 gap-1 ml-4">
         <View className="flex-row items-center">
           <View className="flex-row items-center flex-1 gap-1.5">
