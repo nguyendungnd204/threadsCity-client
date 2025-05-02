@@ -150,7 +150,7 @@ export const getFollowers = async (userId) => {
             .map((id) => {
               return {
                 followerId: id,
-                createdAt: followers[id].createdAt || { '.sv': 'timestamp' }
+                createdAt: followers[id].createdAt || 0
               };
             });
     }
@@ -162,18 +162,41 @@ export const getFollowers = async (userId) => {
 }
 
 export const getUserFollowersProfile = async (userId) => {
-  try{
-      if (userId){
-        const followers = await getFollowers(userId);
-      const profile = await Promise.all(
-        followers.map((item) => getUserById(item.followerId))
-      );
-      const result = profile.flat();
-      return result;
+  try {
+    if (!userId) {
+      console.log("No userId provided");
+      return [];
     }
-    return [];
+
+    const followers = await getFollowers(userId);
+    if (!followers || followers.length === 0) {
+      console.log("No followers found for userId:", userId);
+      return [];
+    }
+
+    const profiles = await Promise.all(
+      followers.map(async (item) => {
+        try {
+          const profile = await getUserById(item.followerId);
+          if (profile) {
+            return {
+              ...profile,
+              createdAt: item.createdAt || 0 // Thêm createdAt từ getFollowers
+            };
+          }
+          return null;
+        } catch (err) {
+          console.error(`Error fetching profile for followerId ${item.followerId}:`, err);
+          return null;
+        }
+      })
+    );
+
+    const result = profiles.filter((profile) => profile !== null);
+    console.log("User followers profiles:", result);
+    return result;
   } catch (err) {
-    console.error(err)
+    console.error("Error in getUserFollowersProfile:", err);
     return [];
   }
-} 
+};
