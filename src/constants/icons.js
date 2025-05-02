@@ -25,6 +25,7 @@ import reposted from '../assets/images/reposted.png';
 import wanring from '../assets/images/warning.png';
 import success from '../assets/images/success.png';
 import error from '../assets/images/error.png';
+import logout from '../assets/images/log-out.png';
 
 export const icons = {
     back,
@@ -54,4 +55,5 @@ export const icons = {
     wanring,
     success,
     error,
+    logout
 };

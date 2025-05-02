@@ -19,6 +19,7 @@ import { getUserById } from "../services/userService";
 import { followUser, unfollowUser, isFollowing } from "../services/followService";
 import { getCommentByUserId } from "../services/commentService";
 import { showAlert } from "./Alert";
+import LogoutButton from "./Logout";
 
 
 const Profile = ({ userId }) => {
@@ -83,15 +84,6 @@ const Profile = ({ userId }) => {
     refetchComment();
   };
 
-  const handleLogout = async () => {
-    try {
-      await auth().signOut();
-      logout();
-      navigation.navigate("Login");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  }
   const handleThread = (id) => {
     navigation.navigate("FeedDetail", { id });
   };
@@ -151,13 +143,7 @@ const Profile = ({ userId }) => {
           </TouchableOpacity>
         )
         }
-        <TouchableOpacity onPress={handleLogout}>
-          <Image
-            source={icons.close}
-            className="w-7 h-7"
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
+        <LogoutButton />
       </View>
 
       <View className="flex-row justify-between items-center p-4">
