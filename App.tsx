@@ -12,6 +12,7 @@ import FeedDetailScreen from './src/screens/Home/FeedDetailScreen';
 import EditProfile from './src/screens/UpdateProfle/UpdateProfile';
 import ReplyComment from './src/screens/ReplyComment';
 import UserProfileScreens from './src/screens/Profile/UserProfileScreen';
+import { AlertProvider } from './src/components/Alert';
 
 const Stack = createNativeStackNavigator();
 
@@ -76,9 +77,11 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <AlertProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </AlertProvider>
   );
 }
 

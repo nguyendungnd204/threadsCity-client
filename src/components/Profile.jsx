@@ -18,6 +18,7 @@ import Feed from "./Feed";
 import { getUserById } from "../services/userService";
 import { followUser, unfollowUser, isFollowing } from "../services/followService";
 import { getCommentByUserId } from "../services/commentService";
+import { showAlert } from "./Alert";
 
 
 const Profile = ({ userId }) => {
@@ -89,10 +90,12 @@ const Profile = ({ userId }) => {
         await unfollowUser(user.oauthId, userId);
         setIsFollowingUser(false);
         setFollowerCount((prev) => prev - 1);
+        showAlert("success", "Đã bỏ theo dõi");
       } else {
         await followUser(user.oauthId, userId);
         setIsFollowingUser(true);
         setFollowerCount((prev) => prev + 1);
+        showAlert("success", "Đã theo dõi");
       }
     } catch (error) {
       console.error("Error handling follow:", error);
