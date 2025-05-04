@@ -13,7 +13,10 @@ import EditProfile from './src/screens/UpdateProfle/UpdateProfile';
 import ReplyComment from './src/screens/ReplyComment';
 import UserProfileScreens from './src/screens/Profile/UserProfileScreen';
 import { AlertProvider } from './src/components/Alert';
-
+import { useNotification } from './src/notifications/useNotification';
+import { getMessaging } from '@react-native-firebase/messaging';
+import { Alert } from 'react-native';
+import { useEffect } from 'react';
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
@@ -76,6 +79,16 @@ const AppContent = () => {
 };
 
 function App() {
+  useNotification();
+
+  useEffect(() => {
+    const unsubscribe = getMessaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
+
   return (
     <AlertProvider>
       <AuthProvider>
