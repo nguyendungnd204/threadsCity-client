@@ -4,7 +4,7 @@ import Feed from '../../components/Feed';
 import { icons } from '../../constants/icons';
 import CreateThreadsComponents from '../../components/CreateThreadsComponents';
 import { useAuth } from '../../Auth/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getThread, getThreadFollowingUser } from '../../services/threadService';
 import useFetch from '../../services/useFetch';
 import { getUserById } from '../../services/userService';
@@ -20,6 +20,14 @@ const HomScreen = () => {
 
   const flatListRef = useRef(null);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const refreshData = async () => {
+        await Promise.all([refetch(), followThreadRefetch()]);
+      };
+      refreshData();
+    }, [])
+  );
   // State cho phân trang của tab "Dành cho bạn"
   const threadPageSize = 5;
   const [threadCurrentPage, setThreadCurrentPage] = useState(1);
@@ -65,8 +73,7 @@ const HomScreen = () => {
       const data = pagination(followingThread, followedPageSize, followedCurrentPage);
       if (followedCurrentPage === 1) {
         setFollowedRenderedData(data);
-      } 
-      console.log("Followed threads data:", data);
+      }   
       setIsFollowedLoading(false);
     }
   }, [followingThread, followedPageSize, followedCurrentPage, tab]);

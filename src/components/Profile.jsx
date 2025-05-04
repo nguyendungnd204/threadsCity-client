@@ -8,7 +8,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { icons } from "../constants/icons";
 import { useAuth } from "../Auth/AuthContext";
 import auth from "@react-native-firebase/auth";
@@ -26,15 +26,27 @@ const Profile = ({ userId }) => {
   const [activeTab, setActiveTab] = useState("Thread");
   const navigation = useNavigation();
   const { user, logout } = useAuth();
-  const { data: userProfile, loading: userLoading, refetch: refecthThead } = useFetch(() => getUserById(userId), true);
+  const { data: userProfile, loading: userLoading, refetch: refetchThead } = useFetch(() => getUserById(userId), true);
   const { data: thread, loading, refetch: refetchUserProfile } = useFetch(() => getUserThreads(userId), true);
   const flatListRef = useRef(null);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const { data: commentReply, loading: commentLoading, refetch: refetchComment} = useFetch(() => getCommentByUserId(userId), true);
-  const { data: repostThread, loading: repostLoading, refetch: refecthRepostThead} = useFetch(() => getRepostThread(userId), true);
+  const { data: repostThread, loading: repostLoading, refetch: refetchRepostThead} = useFetch(() => getRepostThread(userId), true);
 
-  
+  useFocusEffect(
+    React.useCallback(() => {
+      const refreshData = async () => {
+        await Promise.all([
+          refetchUserProfile(),
+          refetchThead(),
+          refetchRepostThead(),
+          refetchComment(),
+        ]);
+      };
+      refreshData();
+    }, [])
+  );
   useEffect(() => {
     const checkFollowing = async () => {
       if (user?.oauthId && userId && user.oauthId !== userId) {
@@ -78,10 +90,12 @@ const Profile = ({ userId }) => {
 
   const onRefresh = async () => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
-    refetchUserProfile();
-    refecthThead();
-    refecthRepostThead();
-    refetchComment();
+    await Promise.all([
+      refetchUserProfile(),
+      refetchThead(),
+      refetchRepostThead(),
+      refetchComment()
+    ]);
   };
 
   const handleThread = (id) => {
@@ -147,17 +161,15 @@ const Profile = ({ userId }) => {
       </View>
 
       <View className="flex-row justify-between items-center p-4">
-        <View>
+        <View className="flex-1 pr-4">
           <Text className="font-bold text-xl">{userProfile?.fullname}</Text>
-          <Text className="mt-1 text-base text-gray-700">{userProfile?.bio}</Text>
-          <Text className="mt-1 text-base text-gray-500">
-            {followerCount} người theo dõi
-          </Text>
+          <Text className="mt-1 text-base text-gray-700" numberOfLines={0} style={{ flexShrink: 1 }}>{userProfile?.bio}</Text>
+          <Text className="mt-1 text-base text-gray-500">{followerCount} người theo dõi</Text>
         </View>
-        <Image
-          source={userProfile?.avatar ? { uri: userProfile.avatar } : icons.user}
-          className="w-16 h-16 rounded-full border-2 border-white"
-        />
+          <Image
+            source={userProfile?.avatar ? { uri: userProfile.avatar } : icons.user}
+            className="w-20 h-20 rounded-full border-2 mr-2 border-white"
+          />
       </View>
 
       <View className="flex-row space-x-2 px-4 mt-2 pb-5">
@@ -189,6 +201,7 @@ const Profile = ({ userId }) => {
       </View>
 
        <FlatList
+        ref={flatListRef}
         showsVerticalScrollIndicator={false}
         data={dataToShow}
         keyExtractor={(item) => item.threadid?.toString() || item.id?.toString()}

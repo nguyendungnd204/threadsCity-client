@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, FlatList, Dimensions, RefreshControl, ActivityIndicator } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, use } from 'react';
 import FollowerActivity from '../../components/FollowerActivity';
 import Feed from '../../components/Feed';
 import { useAuth } from '../../Auth/AuthContext';
@@ -7,7 +7,7 @@ import { getAllCommentsForUser } from '../../services/commentService';
 import useFetch from '../../services/useFetch';
 import { getRepostThread } from '../../services/threadService';
 import { getUserFollowersProfile } from '../../services/followService';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window'); // Lấy chiều rộng màn hình để tính toán
 
@@ -20,6 +20,19 @@ const ActivityScreens = () => {
   const { data: repostThread, loading: repostLoading, refetch: refetchRepostThread } = useFetch(() => getRepostThread(user?.oauthId), true);
   const { data: userProfile, loading: userProfileLoading, refetch: refetchUserProfile } = useFetch(() => getUserFollowersProfile(user?.oauthId), true);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const refreshData = async () => {
+        await Promise.all([
+          refetchReply(),
+          refetchRepostThread(),
+          refetchUserProfile(),
+        ]);
+      };
+      refreshData();
+    }, [])
+  );
+  
   const Tabs = [
     { name: 'Tất cả' },
     { name: 'Lượt theo dõi' },
