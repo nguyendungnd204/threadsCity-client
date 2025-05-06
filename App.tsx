@@ -19,7 +19,6 @@ import { useEffect } from 'react';
 import MediaFile from './src/screens/Home/ImageOrVideoDetail';
 import { icons } from './src/constants/icons';
 const Stack = createNativeStackNavigator();
-
 const AppContent = () => {
   const { user, loading, initialized } = useAuth();
 
@@ -45,8 +44,8 @@ const AppContent = () => {
               component={user ? EditProfile : LoginRequirement}
               
             />
-            <Stack.Screen 
-              name="FeedDetail" 
+            <Stack.Screen
+              name="FeedDetail"
               component={FeedDetailScreen}
               options={({ navigation}) => ({
                 headerLeft: () => (

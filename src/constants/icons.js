@@ -26,6 +26,7 @@ import wanring from '../assets/images/warning.png';
 import success from '../assets/images/success.png';
 import error from '../assets/images/error.png';
 import logout from '../assets/images/log-out.png';
+import back_arrow from '../assets/images/back_arrow.png';
 
 export const icons = {
     back,
@@ -55,5 +56,6 @@ export const icons = {
     wanring,
     success,
     error,
-    logout
+    logout,
+    back_arrow,
 };
