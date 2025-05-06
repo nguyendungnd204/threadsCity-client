@@ -203,8 +203,6 @@ const Feed = ({ thread, onReply }) => {
     navigation.navigate('FeedDetail', { id: threadId });
   };
 
-  const userId = thread.authorId;
-  const [userProfile, setUserProfile] = useState(null);
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (userId) {
@@ -244,7 +242,7 @@ const Feed = ({ thread, onReply }) => {
             </TouchableOpacity>
             <Text className="text-sm text-gray-500">{formatDate(thread.createdAt)}</Text>
           </View>
-          <ThreadMenu />
+          <ThreadMenu thread={thread} />
         </View>
         <Text className="text-base mb-3">{thread.content}</Text>
 
