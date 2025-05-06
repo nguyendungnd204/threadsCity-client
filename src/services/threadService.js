@@ -191,3 +191,37 @@ export const getThreadFollowingUser = async (userId)  => {
   }
 }
 
+export const deleteThreadById = async (threadId, userId) => {
+  try {
+    const updates = {};
+
+    // Xoá thread chính
+    updates[`threads/${threadId}`] = null;
+
+    // Xoá liên kết thread khỏi user
+    if (userId) {
+      updates[`users/${userId}/threads/${threadId}`] = null;
+    }
+
+    // Xoá reposts liên quan nếu có
+    const repostsRef = ref(database, `threads/${threadId}/reposts`);
+    const repostsSnapshot = await get(repostsRef);
+
+    if (repostsSnapshot.exists()) {
+      repostsSnapshot.forEach((childSnapshot) => {
+        const repostKey = childSnapshot.key;
+        const repostData = childSnapshot.val();
+        const repostUserId = repostData.userId;
+        updates[`users/${repostUserId}/reposts/${repostKey}`] = null;
+      });
+      updates[`threads/${threadId}/reposts`] = null;
+    }
+
+    await update(ref(database), updates);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting thread:', error);
+    throw error;
+  }
+};
+
