@@ -99,7 +99,6 @@ const EditProfile = () => {
             <Image
               style={{ width: 100, height: 100, borderRadius: 50 }}
               source={{ uri: avatar }}
-              defaultSource={{ uri: DEFAULT_AVATAR }}
             />
           )}
         </TouchableOpacity>
