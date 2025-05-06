@@ -21,22 +21,6 @@ const FeedDetailScreen = () => {
   const { data: userProfile } = useFetch(() => getUserById(user?.oauthId), true);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      console.log('FeedDetailScreen focused after returning from Reply');
-      console.log('Current navigation stack:', navigation.getState());
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  useEffect(() => {
-    if (user && user.oauthId) {
-      console.log('User ID:', user.oauthId);
-      console.log('User Profile:', userProfile);
-    }
-    console.log('Thread ID in Detail:', id, 'Parent ID:', parentId);
-  }, [userProfile, id, parentId]);
-
-  useEffect(() => {
     const fetchThread = async () => {
       if (!id) {
         console.error('No thread ID provided in FeedDetailScreen');
@@ -159,6 +143,12 @@ const FeedDetailScreen = () => {
           data={data}
           renderItem={renderItem}
           keyExtractor={(item, index) => `${item.type}-${index}`}
+          contentContainerStyle={{ flexGrow: 1 }}
+          ListEmptyComponent={
+            <View className="flex-1 justify-center items-center p-4">
+              <Text className="text-gray-500">Chưa có bình luận nào</Text>
+            </View>
+          }
           ListFooterComponent={
             <View className="bg-gray-200 my-0.5">
               <TouchableOpacity
