@@ -50,6 +50,9 @@ const Feed = ({ thread, onReply }) => {
   const [countLiked, setCountLiked] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [repostCount, setRepostCount] = useState(0);
+
+  const userId = thread.authorId;
+  const [userProfile, setUserProfile] = useState(null);
   const navigation = useNavigation();
   const { user } = useAuth();
 
@@ -144,6 +147,7 @@ const Feed = ({ thread, onReply }) => {
       setIsLoading(false);
     }
   }, 300);
+
   const handelRepostThread = debounce(async () => {
       setIsLoading(true);
       const previousRepost = isReposted;
@@ -166,6 +170,7 @@ const Feed = ({ thread, onReply }) => {
         setIsLoading(false);
       }
 }, 300)
+
   const handleGoProfile = (id) => {
     if (!id) {
       console.error('Cannot navigate to UserProfile: authorId is missing');
@@ -182,8 +187,7 @@ const Feed = ({ thread, onReply }) => {
     console.log('Navigating to FeedDetail with id:', threadId);
     navigation.navigate('FeedDetail', { id: threadId });
   };
-  const userId = thread.authorId;
-  const [userProfile, setUserProfile] = useState(null);
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (userId) {
@@ -193,12 +197,18 @@ const Feed = ({ thread, onReply }) => {
     };
     fetchUserProfile();
   }, [userId]);
+
   useEffect(() => {
     if (userProfile) {
       console.log('User profile loaded:', userProfile.avatar);
     }
   }, [userProfile]);
   
+  const handleGoMediaFile = (threadid) => {
+    if (threadid){
+      navigation.navigate("MediaFile", {threadid})
+    }
+  }
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">
       <TouchableOpacity 
@@ -235,16 +245,14 @@ const Feed = ({ thread, onReply }) => {
             renderItem={({ item: media }) =>
               media.imageUrl ? (
                 <Link href={'/'} asChild>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <Image source={{ uri: media.imageUrl }} className="h-[240px] w-[240px] rounded-xl overflow-hidden mb-3" />
                   </TouchableOpacity>
                 </Link>
               ) : media.videoUrl ? (
-                <Link href={'/'} asChild>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <CustomVideoPlayer uri={media.videoUrl} />
                   </TouchableOpacity>
-                </Link>
               ) : null
             }
           />

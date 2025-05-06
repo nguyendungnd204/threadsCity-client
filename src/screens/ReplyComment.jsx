@@ -18,18 +18,6 @@ const ReplyComment = () => {
   const { user } = useAuth();
   const { data: userProfile } = useFetch(() => getUserById(user?.oauthId), true);
 
-  // useEffect(() => {
-  //   if (user && user.oauthId) {
-  //     console.log('User ID:', user.oauthId);
-  //     console.log('User Profile:', userProfile);
-  //   }
-  // }, [userProfile]);
-  useEffect(() => {
-    console.log('ReplyComment received threadId:', threadId);
-    console.log('ParentId: ', parentId)
-    
-  }, [threadId, parentId])
-
   useEffect(() => {
     const fetchData = async () => {
       if (!threadId) {

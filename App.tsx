@@ -17,6 +17,7 @@ import { useNotification } from './src/notifications/useNotification';
 import { getMessaging } from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 import { useEffect } from 'react';
+import MediaFile from './src/screens/Home/ImageOrVideoDetail';
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
@@ -48,6 +49,11 @@ const AppContent = () => {
               name="FeedDetail" 
               component={FeedDetailScreen}
               options={{ headerShown: true }}
+            />
+            <Stack.Screen
+              name='MediaFile'
+              component={MediaFile}
+              options={{ headerShown: false}}
             />
             <Stack.Screen 
               name="UserProfile" 
