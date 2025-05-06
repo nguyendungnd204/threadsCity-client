@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { Image, View, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import CreateScreens from './src/screens/Create/CreateScreens';
 import TabsNavigation from './src/navigation/TabsNavigation';
 import LoginScreens from './src/screens/Login/LoginScreens';
@@ -17,6 +17,7 @@ import { AlertProvider } from './src/components/Alert';
 import { Alert } from 'react-native';
 import { useEffect } from 'react';
 import MediaFile from './src/screens/Home/ImageOrVideoDetail';
+import { icons } from './src/constants/icons';
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
@@ -47,7 +48,15 @@ const AppContent = () => {
             <Stack.Screen 
               name="FeedDetail" 
               component={FeedDetailScreen}
-              options={{ headerShown: true }}
+              options={({ navigation}) => ({
+                headerLeft: () => (
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Image source={icons.back} style={{width: 20, height: 20}}/>
+                  </TouchableOpacity>
+                ),
+                headerShown: true,
+                headerTitleAlign: 'center',
+              })}
             />
             <Stack.Screen
               name='MediaFile'

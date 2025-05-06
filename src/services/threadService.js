@@ -94,7 +94,7 @@ export const getUserThreads = async (userId) => {
         threadid: key, //  gán key làm threadid
         ...value,
       }));
-      return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return threads.filter(item => item !== null).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
     
   } catch (error) {
@@ -145,7 +145,7 @@ export const getThread = async () => {
         threadid: key, //  gán key làm threadid
         ...value,
       }));
-      return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo createdAt giảm dần
+      return threads.filter(item => item !== null).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo createdAt giảm dần
     } else {
       return [];
     }
@@ -182,7 +182,7 @@ export const getThreadFollowingUser = async (userId)  => {
       const threads = await Promise.all(
         following.map((item) => getUserThreads(item.followingId))
       );
-      const result = threads.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const result = threads.filter(item => item !== null).flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       return result;
     }
   } catch (error) {
