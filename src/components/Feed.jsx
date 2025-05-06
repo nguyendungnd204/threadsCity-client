@@ -47,6 +47,9 @@ const Feed = ({ thread, onReply }) => {
   const [countLiked, setCountLiked] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [repostCount, setRepostCount] = useState(0);
+
+  const userId = thread.authorId;
+  const [userProfile, setUserProfile] = useState(null);
   const navigation = useNavigation();
   const { user } = useAuth();
 
@@ -265,11 +268,9 @@ const Feed = ({ thread, onReply }) => {
                   </TouchableOpacity>
                 </Link>
               ) : media.videoUrl ? (
-                <Link href={'/'} asChild>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <CustomVideoPlayer uri={media.videoUrl} />
                   </TouchableOpacity>
-                </Link>
               ) : null
             }
           />

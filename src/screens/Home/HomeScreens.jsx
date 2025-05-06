@@ -167,7 +167,7 @@ const HomScreen = () => {
       <FlatList
         ref={flatListRef}
         showsVerticalScrollIndicator={false}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.7}
         onEndReached={handleEndReached}
         data={getDisplayData()}
         keyExtractor={(item) => item.threadid.toString()}
