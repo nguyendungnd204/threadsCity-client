@@ -231,7 +231,7 @@ const Feed = ({ thread, onReply }) => {
             </TouchableOpacity>
             <Text className="text-sm text-gray-500">{formatDate(thread.createdAt)}</Text>
           </View>
-          <ThreadMenu />
+          <ThreadMenu thread={thread} />
         </View>
         <Text className="text-base mb-3">{thread.content}</Text>
 

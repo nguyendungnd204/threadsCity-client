@@ -3,13 +3,18 @@ import { View, Text, TouchableOpacity, StyleSheet, Pressable,Image } from 'react
 import Modal from 'react-native-modal';
 import { icons } from '../constants/icons';
 
-const ThreadsLikeMenu = () => {
+const ThreadsLikeMenu = (thread) => {
   const [visible, setVisible] = useState(false);
-
+  const threadId = thread.threadId;
+  
   const handleOption = (action) => {
     setVisible(false);
     alert(`Bạn chọn: ${action}`);
   };
+
+  const handleDeleteThread = async () => {
+
+  }
 
   return (
     <View>
