@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { getThreadById } from '../services/threadService';
 import { ActivityIndicator } from 'react-native-paper';
 import useFetch from '../services/useFetch';
-import { handlePostThread, handlePostComment } from './postCmtAndThreads'; // Loại bỏ handlePostReply
+import { handlePostThread, handlePostComment } from '../utils/postCmtAndThreads';
 
 const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, ThreadId = null, parentId = null }) => {
   const navigation = useNavigation();
