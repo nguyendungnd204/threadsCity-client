@@ -61,7 +61,6 @@ const HomScreen = () => {
       if (threadCurrentPage === 1) {
         setThreadRenderedData(data);
       }
-      console.log("Thread data:", data);
       setIsThreadLoading(false);
     }
   }, [thread, threadPageSize, threadCurrentPage, tab]);
@@ -82,19 +81,17 @@ const HomScreen = () => {
     navigation.navigate('FeedDetail', { id });
   };
 
-  // Khi làm mới, thêm dữ liệu mới vào dưới cùng
   const onRefresh = async () => {
     if (loading || followThreadLoading || isThreadLoading || isFollowedLoading) {
-      return; // Không làm mới nếu đang tải dữ liệu
+      return; 
     }
 
-    // Reset page và dữ liệu
     if (tab === "Dành cho bạn") {
       setThreadCurrentPage(1);
-      setThreadRenderedData([]); // Xóa dữ liệu hiện tại để tải lại từ đầu
+      setThreadRenderedData([]); 
     } else if (tab === "Đang theo dõi") {
       setFollowedCurrentPage(1);
-      setFollowedRenderedData([]); // Xóa dữ liệu hiện tại để tải lại từ đầu
+      setFollowedRenderedData([]); 
     }
 
     // Refetch dữ liệu mới

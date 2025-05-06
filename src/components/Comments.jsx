@@ -58,6 +58,7 @@ const Comments = () => {
   const { data: commentLists, refetch } = useFetch(() => getCommentsByThreadId(id), true);
 
   useEffect(()=> {
+    
     refetch()
   }, [id])
   
@@ -69,7 +70,6 @@ const Comments = () => {
       setCommentTree([]);
       return;
     }
- 
       if (commentLists) {
         console.log('Fetched comments for thread ID', id, ':', commentLists);
         setComments(commentLists);

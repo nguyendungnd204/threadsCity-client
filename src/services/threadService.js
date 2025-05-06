@@ -25,7 +25,7 @@ export const toggleRepostThread = async (threadId, userId) => {
     let newRepostKey = null;
 
     if(existingRepostThread) {
-      updates[`threads/${threadId}/reposts/${existingRepostThread}`] = null
+      updates[`threads/${threadId}/reposts/${existingRepostThread}`] = null;
       updates[`users/${userId}/reposts/${existingRepostThread}`] = null;
     } else {
       const newRepostThreads = push(threadRef);

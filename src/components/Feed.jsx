@@ -8,12 +8,9 @@ import { useAuth } from '../Auth/AuthContext';
 import { toggleLikeThread } from '../services/likeService';
 import UserImageIcon from './UserImageIcon';
 import { database } from '../../FirebaseConfig';
-import { handelRepostThread } from '../components/postCmtAndThreads'
 import { showAlert } from './Alert';
 import { getUserById } from '../services/userService';
-import {
-  ref, onValue, off, query, orderByChild, equalTo,
-} from 'firebase/database';
+import { ref, onValue, off, query, orderByChild, equalTo } from 'firebase/database';
 import { debounce } from 'lodash';
 import { toggleRepostThread } from '../services/threadService';
 import ThreadMenu from './ThreadMenu';
@@ -56,7 +53,6 @@ const Feed = ({ thread, onReply }) => {
   const navigation = useNavigation();
   const { user } = useAuth();
 
-  // Validate thread data
   if (!thread || (!thread.threadid && !thread.id)) {
     console.error('Invalid thread prop:', thread);
     return (
@@ -77,10 +73,24 @@ const Feed = ({ thread, onReply }) => {
       });
       return () => off(likeRef, 'value', unsubscribe);
     } else {
-      setLiked(false);  
+      setLiked(false);
     }
   }, [user?.oauthId, threadId]);
-
+  useEffect(() => {
+    if (user?.oauthId && threadId) {
+      const repostsRef = ref(database, `threads/${threadId}/reposts`);
+      const repostQuery = query(repostsRef, orderByChild('userId'), equalTo(user.oauthId));
+  
+      const unsubscribe = onValue(repostQuery, (snapshot) => {
+        setIsReposted(snapshot.exists());
+      });
+  
+      return () => unsubscribe(); 
+    } else {
+      setIsReposted(false);
+    }
+  }, [user?.oauthId, threadId]);
+  
   useEffect(() => {
     if (!threadId) return;
 
@@ -98,20 +108,17 @@ const Feed = ({ thread, onReply }) => {
       setCommentCount(comments ? Object.keys(comments).length : 0);
     });
 
-    const unsubscribeReposts = onValue(repostsRef, (snapshot) => {
+    const unsubscribeRepostCount = onValue(repostsRef, (snapshot) => {
       const reposts = snapshot.val();
-      console.log(reposts)
       setRepostCount(reposts ? Object.keys(reposts).length : 0);
-      setIsReposted(reposts ? Object.values(reposts) : false);
     });
 
     return () => {
       off(likesRef, 'value', unsubscribeLikes);
       off(commentsRef, 'value', unsubscribeComments);
-      off(repostsRef, 'value', unsubscribeReposts);
+      off(repostsRef, 'value', unsubscribeRepostCount);
     };
-  }, [threadId]);
-
+  }, [threadId, user?.oauthId]);
 
   const handleLike = debounce(async () => {
     const userData = {
@@ -132,13 +139,11 @@ const Feed = ({ thread, onReply }) => {
     const previousLikeCount = countLiked;
     setLiked(!liked);
     setCountLiked(liked ? countLiked - 1 : countLiked + 1);
-    showAlert('success', liked ? 'Đã bỏ thích' : 'Đã thích');
     try {
       const response = await toggleLikeThread(user.oauthId, threadId, userData);
       if (!response.success) {
         setLiked(previousLiked);
         setCountLiked(previousLikeCount);
-
       }
     } catch (error) {
       setLiked(previousLiked);
@@ -148,29 +153,39 @@ const Feed = ({ thread, onReply }) => {
     }
   }, 300);
 
-  const handelRepostThread = debounce(async () => {
-      setIsLoading(true);
-      const previousRepost = isReposted;
-      const previousRepostCount = repostCount;
-      setIsReposted(!isReposted);
-      setRepostCount(isReposted ? repostCount - 1 : repostCount + 1)
-      showAlert('success', isReposted ? 'Đã hủy đăng lại' : 'Đã đăng lại');
-      console.log(threadId)
-      try {
-        console.log(typeof toggleRepostThread)
-        const reponse = await toggleRepostThread(threadId, user.oauthId);
-        if (!reponse.success) {
-          setIsReposted(previousRepost);
-          setRepostCount(previousRepostCount);
-        }
-      } catch(error) {
-        setIsReposted(previousRepost)
+  const handleRepostThread = debounce(async () => {
+    if (!user?.oauthId || !threadId) {
+      showAlert('error', 'Không thể đăng lại: Thiếu thông tin người dùng hoặc bài đăng.');
+      return;
+    }
+  
+    setIsLoading(true);
+    const previousReposted = isReposted;
+    const previousRepostCount = repostCount;
+  
+    setIsReposted(!isReposted);
+    setRepostCount(isReposted ? repostCount - 1 : repostCount + 1);
+    showAlert("success", "Đã đăng lại")
+  
+    try {
+      const response = await toggleRepostThread(threadId, user.oauthId);
+      console.log('toggleRepostThread response:', response);
+  
+      if (response.success) {
+        showAlert('success', isReposted ? 'Đã hủy đăng lại' : 'Đã đăng lại');
+      } else {
+        setIsReposted(previousReposted);
         setRepostCount(previousRepostCount);
-      } finally {
-        setIsLoading(false);
+        showAlert('error', response.message || 'Không thể đăng lại bài đăng.');
       }
-}, 300)
-
+    } catch (error) {
+      setIsReposted(previousReposted);
+      setRepostCount(previousRepostCount);
+      showAlert('error', 'Lỗi khi đăng lại: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, 300);
   const handleGoProfile = (id) => {
     if (!id) {
       console.error('Cannot navigate to UserProfile: authorId is missing');
@@ -188,6 +203,8 @@ const Feed = ({ thread, onReply }) => {
     navigation.navigate('FeedDetail', { id: threadId });
   };
 
+  const userId = thread.authorId;
+  const [userProfile, setUserProfile] = useState(null);
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (userId) {
@@ -198,34 +215,30 @@ const Feed = ({ thread, onReply }) => {
     fetchUserProfile();
   }, [userId]);
 
-  useEffect(() => {
-    if (userProfile) {
-      console.log('User profile loaded:', userProfile.avatar);
-    }
-  }, [userProfile]);
-  
-  const handleGoMediaFile = (threadid) => {
-    if (threadid){
-      navigation.navigate("MediaFile", {threadid})
-    }
-  }
+
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">
-      <TouchableOpacity 
-      onPress={() => handleGoProfile(thread.authorId)} 
-      className="self-start"
-    >
-      <UserImageIcon source={
-              userProfile?.avatar
-                ? { uri: userProfile.avatar }
-                : require('../assets/images/threads-logo-black.png')
-            } />
-    </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => handleGoProfile(thread.authorId)}
+        className="self-start"
+      >
+        <UserImageIcon
+          source={
+            userProfile?.avatar
+              ? { uri: userProfile.avatar }
+              : require('../assets/images/threads-logo-black.png')
+          }
+        />
+      </TouchableOpacity>
       <View className="flex-1 gap-1 ml-4">
         <View className="flex-row items-center">
           <View className="flex-row items-center flex-1 gap-1.5">
             <TouchableOpacity onPress={() => handleGoProfile(thread.authorId)}>
-              <Text className="text-base font-bold" numberOfLines={1} style={{ flexShrink: 1 }}>
+              <Text
+                className="text-base font-bold"
+                numberOfLines={1}
+                style={{ flexShrink: 1 }}
+              >
                 {thread.fullname}
               </Text>
             </TouchableOpacity>
@@ -240,13 +253,18 @@ const Feed = ({ thread, onReply }) => {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: 'row', gap: 14, paddingRight: 40 }}
-            data={Object.values(thread.mediaFiles).filter((media) => media && (media.imageUrl || media.videoUrl))}
+            data={Object.values(thread.mediaFiles).filter(
+              (media) => media && (media.imageUrl || media.videoUrl)
+            )}
             keyExtractor={(media, index) => media.id || `${threadId}-media-${index}`}
             renderItem={({ item: media }) =>
               media.imageUrl ? (
                 <Link href={'/'} asChild>
-                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
-                    <Image source={{ uri: media.imageUrl }} className="h-[240px] w-[240px] rounded-xl overflow-hidden mb-3" />
+                  <TouchableOpacity>
+                    <Image
+                      source={{ uri: media.imageUrl }}
+                      className="h-[240px] w-[240px] rounded-xl overflow-hidden mb-3"
+                    />
                   </TouchableOpacity>
                 </Link>
               ) : media.videoUrl ? (
@@ -260,7 +278,10 @@ const Feed = ({ thread, onReply }) => {
 
         <View className="flex-row mt-3 gap-4">
           <TouchableOpacity className="flex-row items-center" onPress={handleLike}>
-            <Image source={liked ? icons.islike : icons.unlike} className="size-6 mr-2" />
+            <Image
+              source={liked ? icons.islike : icons.unlike}
+              className="size-6 mr-2"
+            />
             {countLiked > 0 ? (
               <Text className="text-base font-normal">{formatNumber(countLiked)}</Text>
             ) : null}
@@ -271,8 +292,11 @@ const Feed = ({ thread, onReply }) => {
               <Text className="text-base font-normal">{formatNumber(commentCount)}</Text>
             ) : null}
           </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center" onPress={handelRepostThread}>
-            <Image source={isReposted ? icons.reposted : icons.repeat} className="size-6 mr-2" />
+          <TouchableOpacity className="flex-row items-center" onPress={handleRepostThread}>
+            <Image
+              source={isReposted ? icons.reposted : icons.repeat}
+              className="size-6 mr-2"
+            />
             {repostCount > 0 ? (
               <Text className="text-base font-normal">{formatNumber(repostCount)}</Text>
             ) : null}
