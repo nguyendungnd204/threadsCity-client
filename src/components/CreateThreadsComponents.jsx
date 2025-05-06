@@ -192,7 +192,7 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
           </TouchableOpacity>
           {isReply && (
             <TouchableOpacity
-              className="absolute right-0 top-[20px] mt-5 mr-2"
+            className="absolute right-0 top-[15px] mt-5 mr-2"
               onPress={onPost}
               disabled={isUploading || (!content.trim() && mediaFiles.length === 0)}
             >

@@ -85,7 +85,7 @@ export const handlePostComment = async (user, content, mediaFiles, threadId, par
     const result = await createComment(commentData);
     if (result) {
       showAlert('success', 'Đã bình luận');
-      setTimeout(() => navigation.goBack(), 1500); 
+      setTimeout(() => navigation.navigate('FeedDetail', { id: threadId, refresh: true }), 1500);
       return true;
     } else {
       showAlert('error', 'Lỗi bình luận');
