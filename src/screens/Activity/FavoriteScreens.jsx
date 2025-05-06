@@ -9,7 +9,7 @@ import { getRepostThread } from '../../services/threadService';
 import { getUserFollowersProfile } from '../../services/followService';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-const { width } = Dimensions.get('window'); // Lấy chiều rộng màn hình để tính toán
+const { width } = Dimensions.get('window'); 
 
 const ActivityScreens = () => {
   const { user } = useAuth();
@@ -40,28 +40,24 @@ const ActivityScreens = () => {
     { name: 'Thread trả lời' },
   ];
   const [tabIndex, setTabIndex] = useState('Tất cả');
-  const tabFlatListRef = useRef(null); // Ref để điều khiển FlatList của tab
+  const tabFlatListRef = useRef(null); 
 
-  // Tính toán chỉ số của tab đang chọn
   const selectedTabIndex = Tabs.findIndex((tab) => tab.name === tabIndex);
 
-  // Tự động cuộn đến tab đang chọn khi tabIndex thay đổi
   useEffect(() => {
     if (tabFlatListRef.current && selectedTabIndex !== -1) {
       tabFlatListRef.current.scrollToIndex({
         index: selectedTabIndex,
         animated: true,
-        viewPosition: 0.5, // Căn giữa tab đang chọn
+        viewPosition: 0.5, 
       });
     }
   }, [selectedTabIndex]);
 
-  // Xử lý khi người dùng nhấn vào tab
   const handleTabPress = (tabName) => {
     setTabIndex(tabName);
   };
 
-  // Render từng tab
   const renderTab = ({ item, index }) => {
     const isSelected = tabIndex === item.name;
     return (
@@ -75,17 +71,15 @@ const ActivityScreens = () => {
     );
   };
 
-  // Gộp dữ liệu threadReply và threadReposted cho tab "Tất cả"
   const allActivities = [
-    ...(threadReply || []).map(item => ({ ...item, type: 'reply' })), // Thêm type để phân biệt
-    ...(repostThread || []).map(item => ({ ...item, type: 'repost' })), // Thêm type để phân biệt
+    ...(threadReply || []).map(item => ({ ...item, type: 'reply' })), 
+    ...(repostThread || []).map(item => ({ ...item, type: 'repost' })), 
     ...(userProfile || []).map(item => ({ ...item, type: 'userProfile' })),
-  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo ngày giảm dần
+  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); 
 
-  // Dữ liệu cho các tab
   const activityData = {
     'Tất cả': allActivities,
-    'Lượt theo dõi': (userProfile || []).map((item) => ({ ...item, type: 'userProfile' })), // Đảm bảo type cho tab "Lượt theo dõi"
+    'Lượt theo dõi': (userProfile || []).map((item) => ({ ...item, type: 'userProfile' })), 
     'Bài đăng lại': (repostThread || []).map((item) => ({ ...item, type: 'repost' })),
     'Thread trả lời': (threadReply || []).map((item) => ({ ...item, type: 'reply' })),
   };
@@ -95,24 +89,20 @@ const ActivityScreens = () => {
     await Promise.all([refetchReply(), refetchRepostThread(), refetchUserProfile()]);
   };
 
-  // Dữ liệu cho FlatList chính (gồm header và danh sách hoạt động)
   const data = [
-    { type: 'header' }, // Phần tiêu đề "Hoạt động"
-    { type: 'tabs' },   // Phần tab (sẽ làm sticky)
-    { type: 'activities' }, // Phần danh sách hoạt động
+    { type: 'header' }, 
+    { type: 'tabs' },   
+    { type: 'activities' }, 
   ];
 
-  // Hàm xử lý khi nhấn vào thread
   const handleThread = (threadId) => {
     console.log('Navigating to thread with ID:', threadId);
-    // Thêm logic điều hướng đến thread tại đây
     navigation.navigate('FeedDetail', { id: threadId });
   };
 
   const handleUserProfile = (id) => {
     navigation.navigate("UserProfile", { id });
   };
-  // Render từng mục trong FlatList chính
   const renderItem = ({ item, index }) => {
     if (item.type === 'header') {
       return (
@@ -174,7 +164,6 @@ const ActivityScreens = () => {
             }}
             ItemSeparatorComponent={() => <View className="border-b-2 border-b-gray-300" />}
             keyExtractor={(item, index) => {
-              // Đảm bảo key duy nhất bằng cách kết hợp id//userId với type và index
               const itemId = item.threadid || item.id || item.userId || `item-${index}`;
               return `${item.type}-${itemId}-${index}`;
             }}
@@ -198,7 +187,7 @@ const ActivityScreens = () => {
         data={data}
         renderItem={renderItem}
         keyExtractor={(item, index) => item.type + index}
-        stickyHeaderIndices={[1]} // Phần tab (index 1) sẽ là sticky header
+        stickyHeaderIndices={[1]}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={ userProfileLoading || replyLoading || repostLoading} onRefresh={onRefresh} />}
       />

@@ -45,7 +45,6 @@ const FeedDetailScreen = () => {
       }
 
       try {
-        // Thử lấy bài đăng trước
         let result = await getThreadById(id);
         if (result) {
           if (!result.threadId && !result.threadid && !result.id) {
@@ -57,7 +56,6 @@ const FeedDetailScreen = () => {
           setThread({ ...result, type: 'thread' });
           setParentThread(null);
         } else {
-          // Nếu không tìm thấy bài đăng, thử lấy bình luận
           const cmt = await getCommentById(id);
           if (!cmt) {
             console.error('Comment not found for ID:', id);

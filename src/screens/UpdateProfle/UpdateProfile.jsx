@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
-import { handleChangeAvatar } from '../../components/postCmtAndThreads';
+import { handleChangeAvatar } from '../../utils/postCmtAndThreads';
 import { updateUserBio } from '../../services/userService';
 import { showAlert } from '../../components/Alert';
 
-const DEFAULT_AVATAR = 'https://example.com/default-avatar.png'; // Thay bằng URL ảnh mặc định
 
 const EditProfile = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { userProfile } = route.params || {};
   const [bio, setBio] = useState(userProfile?.bio || '');
-  const [avatar, setAvatar] = useState(userProfile?.avatar || DEFAULT_AVATAR); // Thay images bằng avatar
+  const [avatar, setAvatar] = useState(userProfile?.avatar); 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
@@ -61,14 +60,14 @@ const EditProfile = () => {
         type: result.mime || 'image/jpeg',
       };
 
-      setAvatar(file.path); // Cập nhật avatar tạm thời
+      setAvatar(file.path); 
 
       const success = await handleChangeAvatar(userProfile.oauthId, file);
       if (success) {
         showAlert('success', 'Cập nhật ảnh đại diện thành công!');
       } else {
         showAlert('error', 'Cập nhật ảnh đại diện thất bại.');
-        setAvatar(userProfile?.avatar || DEFAULT_AVATAR); // Khôi phục avatar cũ
+        setAvatar(userProfile?.avatar); 
       }
     } catch (error) {
       console.error('Lỗi chọn ảnh:', error);
