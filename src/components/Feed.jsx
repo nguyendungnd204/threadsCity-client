@@ -203,8 +203,6 @@ const Feed = ({ thread, onReply }) => {
     navigation.navigate('FeedDetail', { id: threadId });
   };
 
-  const userId = thread.authorId;
-  const [userProfile, setUserProfile] = useState(null);
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (userId) {
