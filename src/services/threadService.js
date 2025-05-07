@@ -142,10 +142,10 @@ export const getThread = async () => {
     if (snapshot.exists()) {
       const data = snapshot.val();
       const threads = Object.entries(data).map(([key, value]) => ({
-        threadid: key, //  gán key làm threadid
+        threadid: key, 
         ...value,
       }));
-      return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo createdAt giảm dần
+      return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); 
     } else {
       return [];
     }

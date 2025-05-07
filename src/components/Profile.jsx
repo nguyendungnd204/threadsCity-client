@@ -148,9 +148,7 @@ const Profile = ({ userId }) => {
     <View className='flex-1 mt-[50px] bg-white'>
       <View className="flex-row justify-between items-center p-3 border-b border-gray-300">
         {user?.oauthId === userId ? (
-
-          <Image source={icons.search} className="w-6 h-6" resizeMode="contain" />
-
+          <Text className="text-xl font-bold">Trang cá nhân</Text>
         ) : (
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={icons.back} className="w-6 h-6" resizeMode="contain" />
