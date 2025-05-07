@@ -65,7 +65,6 @@ const HomScreen = () => {
     }
   }, [thread, threadPageSize, threadCurrentPage, tab]);
 
-  // Phân trang ban đầu cho tab "Đang theo dõi"
   useEffect(() => {
     if (followingThread && tab === "Đang theo dõi") {
       setIsFollowedLoading(true);
@@ -94,15 +93,13 @@ const HomScreen = () => {
       setFollowedRenderedData([]); 
     }
 
-    // Refetch dữ liệu mới
     await Promise.all([refetch(), followThreadRefetch()]);
   };
-  // Xác định dữ liệu hiển thị dựa trên tab
   const getDisplayData = () => {
     if (tab === "Dành cho bạn") {
-      return threadRenderedData; // Dữ liệu đã phân trang cho tab "Dành cho bạn"
+      return threadRenderedData; 
     } else if (tab === "Đang theo dõi") {
-      return followedRenderedData; // Dữ liệu đã phân trang cho tab "Đang theo dõi"
+      return followedRenderedData; 
     }
     return [];
   };
@@ -117,10 +114,9 @@ const HomScreen = () => {
     return null;
   };
 
-  // Xử lý khi cuộn đến cuối danh sách
   const handleEndReached = () => {
     if (loading || followThreadLoading || isThreadLoading || isFollowedLoading) {
-      return; // Không chạy nếu đang làm mới dữ liệu
+      return;
     }
     if (tab === "Dành cho bạn" && !isThreadLoading) {
       if (!thread || !Array.isArray(thread)) {
@@ -149,7 +145,6 @@ const HomScreen = () => {
     }
   };
 
-  // Reset dữ liệu khi chuyển tab
   useEffect(() => {
     setThreadCurrentPage(1);
     setFollowedCurrentPage(1);

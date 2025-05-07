@@ -49,9 +49,18 @@ const Feed = ({ thread, onReply }) => {
   const [repostCount, setRepostCount] = useState(0);
   const navigation = useNavigation();
   const { user } = useAuth();
-  const userId = thread.authorId;
   const [userProfile, setUserProfile] = useState(null);
 
+  const userId = thread?.authorId || thread?.userId || thread?.user_id || thread?.userId;
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (userId) {
+        const userData = await getUserById(userId);
+        setUserProfile(userData);
+      }
+    };
+    fetchUserProfile();
+  }, [userId]);
   if (!thread || (!thread.threadid && !thread.id)) {
     console.error('Invalid thread prop:', thread);
     return (
@@ -202,20 +211,6 @@ const Feed = ({ thread, onReply }) => {
     navigation.navigate('FeedDetail', { id: threadId });
   };
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (userId) {
-        const userData = await getUserById(userId);
-        setUserProfile(userData);
-      }
-    };
-    fetchUserProfile();
-  }, [userId]);
-  const handleGoMediaFile = (threadid) => {
-    if (threadid){
-      navigation.navigate("MediaFile", {threadid})
-    }
-  }
 
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">
