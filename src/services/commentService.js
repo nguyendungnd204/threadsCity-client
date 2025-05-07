@@ -98,7 +98,7 @@ export const getCommentByUserId = async (userId) => {
         id,
         ...comment,
       }));
-      return comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return comments.filter(item => item !== null).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
     return [];
   } catch (err) {

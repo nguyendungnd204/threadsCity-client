@@ -130,7 +130,7 @@ const HomScreen = () => {
       setIsThreadLoading(true);
       const contentToAppend = pagination(thread, threadPageSize, threadCurrentPage + 1);
       if (contentToAppend.length > 0) {
-        setThreadRenderedData([...threadRenderedData, ...contentToAppend]);
+        setThreadRenderedData(prev => [...prev, ...contentToAppend]);
         setThreadCurrentPage(threadCurrentPage + 1);
       }
       setIsThreadLoading(false);
@@ -167,7 +167,7 @@ const HomScreen = () => {
       <FlatList
         ref={flatListRef}
         showsVerticalScrollIndicator={false}
-        onEndReachedThreshold={0.7}
+        onEndReachedThreshold={0.8}
         onEndReached={handleEndReached}
         data={getDisplayData()}
         keyExtractor={(item) => item.threadid.toString()}

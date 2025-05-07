@@ -8,6 +8,34 @@ import {
 } from 'firebase/database';
 import { getFollowings } from './followService';
 
+
+// export const listenToThreads = (onThreadsUpdate) => {
+//   const threadRef = query(ref(database, 'threads'));
+
+//   const unsubscribe = onValue(threadRef, (snapshot) => {
+//     if (snapshot.exists()) {
+//       const data = snapshot.val();
+//       const threads = Object.entries(data).map(([key, value]) => ({
+//         threadid: key,
+//         ...value,
+//       }));
+
+//       // sort giảm dần theo createdAt
+//       const sortedThreads = threads
+//         .filter(item => item !== null)
+//         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+//       onThreadsUpdate(sortedThreads); // callback gửi data
+//     } else {
+//       onThreadsUpdate([]); // không có dữ liệu
+//     }
+//   }, (error) => {
+//     console.error('Firebase error:', error);
+//   });
+
+//   return unsubscribe; // có thể dùng để stop listener khi unmount
+// };
+
 export const toggleRepostThread = async (threadId, userId) => {
   try {
     const threadRef = ref(database, `threads/${threadId}/reposts`);
@@ -141,11 +169,12 @@ export const getThread = async () => {
     
     if (snapshot.exists()) {
       const data = snapshot.val();
-      const threads = Object.entries(data).map(([key, value]) => ({
+      const threads = Object.entries(data).filter(([_, value]) => value !== null).map(([key, value]) => ({
         threadid: key, //  gán key làm threadid
         ...value,
       }));
-      return threads.filter(item => item !== null).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo createdAt giảm dần
+      console.log("Du lieu:", threads.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)))
+      return threads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sắp xếp theo createdAt giảm dần
     } else {
       return [];
     }

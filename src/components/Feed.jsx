@@ -49,6 +49,8 @@ const Feed = ({ thread, onReply }) => {
   const [repostCount, setRepostCount] = useState(0);
   const navigation = useNavigation();
   const { user } = useAuth();
+  const userId = thread.authorId;
+  const [userProfile, setUserProfile] = useState(null);
 
   if (!thread || (!thread.threadid && !thread.id)) {
     console.error('Invalid thread prop:', thread);
@@ -209,7 +211,11 @@ const Feed = ({ thread, onReply }) => {
     };
     fetchUserProfile();
   }, [userId]);
-
+  const handleGoMediaFile = (threadid) => {
+    if (threadid){
+      navigation.navigate("MediaFile", {threadid})
+    }
+  }
 
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">
@@ -254,14 +260,12 @@ const Feed = ({ thread, onReply }) => {
             keyExtractor={(media, index) => media.id || `${threadId}-media-${index}`}
             renderItem={({ item: media }) =>
               media.imageUrl ? (
-                <Link href={'/'} asChild>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <Image
                       source={{ uri: media.imageUrl }}
                       className="h-[240px] w-[240px] rounded-xl overflow-hidden mb-3"
                     />
                   </TouchableOpacity>
-                </Link>
               ) : media.videoUrl ? (
                   <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <CustomVideoPlayer uri={media.videoUrl} />
