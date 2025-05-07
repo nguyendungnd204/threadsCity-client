@@ -255,14 +255,12 @@ const Feed = ({ thread, onReply }) => {
             keyExtractor={(media, index) => media.id || `${threadId}-media-${index}`}
             renderItem={({ item: media }) =>
               media.imageUrl ? (
-                <Link href={'/'} asChild>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <Image
                       source={{ uri: media.imageUrl }}
                       className="h-[240px] w-[240px] rounded-xl overflow-hidden mb-3"
                     />
                   </TouchableOpacity>
-                </Link>
               ) : media.videoUrl ? (
                   <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <CustomVideoPlayer uri={media.videoUrl} />

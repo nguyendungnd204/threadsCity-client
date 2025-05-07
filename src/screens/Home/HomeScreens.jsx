@@ -126,7 +126,7 @@ const HomScreen = () => {
       setIsThreadLoading(true);
       const contentToAppend = pagination(thread, threadPageSize, threadCurrentPage + 1);
       if (contentToAppend.length > 0) {
-        setThreadRenderedData([...threadRenderedData, ...contentToAppend]);
+        setThreadRenderedData(prev => [...prev, ...contentToAppend]);
         setThreadCurrentPage(threadCurrentPage + 1);
       }
       setIsThreadLoading(false);
