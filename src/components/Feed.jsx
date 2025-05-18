@@ -211,6 +211,11 @@ const Feed = ({ thread, onReply }) => {
     navigation.navigate('FeedDetail', { id: threadId });
   };
 
+  const handleGoMediaFile = (threadid) => {
+    if (threadid){
+      navigation.navigate("MediaFile", {threadid})
+    }
+  }
 
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">

@@ -29,13 +29,13 @@ const HomScreen = () => {
     }, [])
   );
   // State cho phân trang của tab "Dành cho bạn"
-  const threadPageSize = 5;
+  const threadPageSize = 10;
   const [threadCurrentPage, setThreadCurrentPage] = useState(1);
   const [threadRenderedData, setThreadRenderedData] = useState([]);
   const [isThreadLoading, setIsThreadLoading] = useState(false);
 
   // State cho phân trang của tab "Đang theo dõi"
-  const followedPageSize = 5;
+  const followedPageSize = 8;
   const [followedCurrentPage, setFollowedCurrentPage] = useState(1);
   const [followedRenderedData, setFollowedRenderedData] = useState([]);
   const [isFollowedLoading, setIsFollowedLoading] = useState(false);

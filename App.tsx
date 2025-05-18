@@ -18,11 +18,16 @@ import { Alert } from 'react-native';
 import { useEffect } from 'react';
 import MediaFile from './src/screens/Home/ImageOrVideoDetail';
 import { icons } from './src/constants/icons';
+import messaging from '@react-native-firebase/messaging';
 const Stack = createNativeStackNavigator();
 const AppContent = () => {
   const { user, loading, initialized } = useAuth();
-
-  // Hiển thị loading cho đến khi khởi tạo xong
+  const requesetNotificationPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  }
   if (!initialized || loading) {
     return (
       <View style={styles.loadingOverlay}>

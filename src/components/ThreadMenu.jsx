@@ -12,7 +12,7 @@ const ThreadsLikeMenu = ({thread}) => {
   const handleOption = (action) => {
     console.log(thread.authorId, user.oauthId)
     setVisible(false);
-    alert(`Bạn chọn: ${action}`);
+    alert(`Bạn đã ${action}`);
   };
 
   const handleDeleteThread = async () => {
