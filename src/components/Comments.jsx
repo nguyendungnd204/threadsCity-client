@@ -58,7 +58,6 @@ const Comments = () => {
   const { data: commentLists, refetch } = useFetch(() => getCommentsByThreadId(id), true);
 
   useEffect(()=> {
-    
     refetch()
   }, [id])
   
