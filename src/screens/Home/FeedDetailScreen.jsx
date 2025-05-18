@@ -16,8 +16,8 @@ const FeedDetailScreen = () => {
   const route = useRoute();
   const { id, parentId, refresh } = route.params || {};
   const [thread, setThread] = useState(null);
-  const [parentThread, setParentThread] = useState(null);
   const [error, setError] = useState(null);
+  const [rootThreadId, setRootThreadId] = useState(null); // Lưu ID của bài viết gốc
   const { user } = useAuth();
   const { data: userProfile } = useFetch(() => getUserById(user?.oauthId), true);
 
@@ -37,10 +37,9 @@ const FeedDetailScreen = () => {
           />
         </TouchableOpacity>
       ),
-      headerBackTitleVisible: false, 
+      headerBackTitleVisible: false,
     });
   }, [navigation]);
-
 
   const fetchThread = async () => {
     if (!id) {
@@ -51,7 +50,9 @@ const FeedDetailScreen = () => {
 
     try {
       let result = await getThreadById(id);
+      let rootThreadId = id; // Giả định ban đầu id là threadId
       if (result) {
+        // Trường hợp id là bài viết gốc
         if (!result.threadId && !result.threadid && !result.id) {
           console.error('Thread data missing threadId, threadid, or id:', result);
           setError('Dữ liệu bài đăng không hợp lệ.');
@@ -59,43 +60,23 @@ const FeedDetailScreen = () => {
         }
         console.log('Fetched thread:', result);
         setThread({ ...result, type: 'thread' });
-        setParentThread(null);
       } else {
+        // Trường hợp id là bình luận
         const cmt = await getCommentById(id);
         if (!cmt) {
           console.error('Comment not found for ID:', id);
           setError('Không tìm thấy bài đăng hoặc bình luận.');
           return;
         }
-        // if (!cmt.threadId && !cmt.threadid && !cmt.id) {
-        //   console.error('Comment data missing threadId, threadid, or id:', cmt);
-        //   setError('Dữ liệu bình luận không hợp lệ.');
-        //   return;
-        // }
         console.log('Fetched comment:', cmt);
         setThread({ ...cmt, type: 'comment' });
 
-        // Lấy bài viết gốc hoặc bình luận cha
+        // Xác định rootThreadId (ID của bài viết gốc) để sử dụng khi trả lời
         if (cmt.threadId || cmt.threadid) {
-          const parentThreadId = cmt.threadId || cmt.threadid;
-          const parentResult = await getThreadById(parentThreadId);
-          if (parentResult) {
-            console.log('Fetched parent thread:', parentResult);
-            setParentThread({ ...parentResult, type: 'thread' });
-          } else {
-            console.warn('Parent thread not found for threadId:', parentThreadId);
-          }
-        }
-        if (cmt.parentId) {
-          const parentComment = await getCommentById(cmt.parentId);
-          if (parentComment) {
-            console.log('Fetched parent comment:', parentComment);
-            setParentThread({ ...parentComment, type: 'comment' });
-          } else {
-            console.warn('Parent comment not found for parentId:', cmt.parentId);
-          }
+          rootThreadId = cmt.threadId || cmt.threadid;
         }
       }
+      setRootThreadId(rootThreadId);
     } catch (err) {
       console.error('Error fetching thread:', err);
       setError('Lỗi khi tải bài đăng. Vui lòng thử lại sau.');
@@ -119,18 +100,15 @@ const FeedDetailScreen = () => {
 
   const data = useMemo(() => {
     const items = [];
-    if (parentThread) {
-      items.push({ type: 'parent', data: parentThread });
-    }
     if (thread) {
       items.push({ type: 'main', data: thread });
     }
     items.push({ type: 'comments' });
     return items;
-  }, [thread, parentThread]);
+  }, [thread]);
 
   const renderItem = ({ item }) => {
-    if (item.type === 'parent' || item.type === 'main') {
+    if (item.type === 'main') {
       return (
         <>
           <Feed thread={item.data} />
@@ -169,10 +147,10 @@ const FeedDetailScreen = () => {
             keyExtractor={(item, index) => `${item.type}-${index}`}
             contentContainerStyle={{ flexGrow: 1, paddingBottom: 60 }}
             ListEmptyComponent={
-            <View className="flex-1 justify-center items-center p-4">
-              <Text className="text-gray-500">Chưa có bình luận nào</Text>
-            </View>
-          }
+              <View className="flex-1 justify-center items-center p-4">
+                <Text className="text-gray-500">Chưa có bình luận nào</Text>
+              </View>
+            }
           />
           <View
             className="absolute bottom-0 left-0 right-0 bg-gray-200 py-2 px-4"
@@ -181,13 +159,20 @@ const FeedDetailScreen = () => {
             <TouchableOpacity
               className="flex-row items-center rounded-full gap-2.5 p-2"
               onPress={() => {
-                if (!thread || (!thread.threadId && !thread.threadid && !thread.id)) {
+                if (!thread || (!thread.threadid && !thread.id)) {
                   console.error('Invalid thread data:', thread);
                   Alert.alert('Lỗi', 'Dữ liệu bài đăng không hợp lệ.');
                   return;
                 }
-                const threadId = thread.threadId || thread.threadid || thread.id;
-                const replyParentId = thread.type === 'comment' ? thread.id : null;
+                if (!rootThreadId) {
+                  console.error('Root thread ID is missing');
+                  Alert.alert('Lỗi', 'Không tìm thấy ID bài đăng gốc.');
+                  return;
+                }
+                const threadId = rootThreadId; // Luôn lấy ID của bài viết gốc
+                const replyParentId = thread.type === 'comment' ? thread.id : null; // ID của bình luận con hoặc null
+                console.log("ThreadId (root):", threadId);
+                console.log("ParentId:", replyParentId);
                 handlePress(threadId, replyParentId);
               }}
             >

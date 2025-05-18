@@ -84,6 +84,7 @@ const Feed = ({ thread, onReply }) => {
       setLiked(false);
     }
   }, [user?.oauthId, threadId]);
+
   useEffect(() => {
     if (user?.oauthId && threadId) {
       const repostsRef = ref(database, `threads/${threadId}/reposts`);
@@ -194,6 +195,7 @@ const Feed = ({ thread, onReply }) => {
       setIsLoading(false);
     }
   }, 300);
+  
   const handleGoProfile = (id) => {
     if (!id) {
       console.error('Cannot navigate to UserProfile: authorId is missing');
@@ -210,7 +212,12 @@ const Feed = ({ thread, onReply }) => {
     console.log('Navigating to FeedDetail with id:', threadId);
     navigation.navigate('FeedDetail', { id: threadId });
   };
-
+  
+  const handleGoMediaFile = (threadid) => {
+    if (threadid){
+      navigation.navigate("MediaFile", {threadid})
+    }
+  }
 
   return (
     <View className="flex-row items-center px-3 py-4 gap-1">
@@ -301,18 +308,18 @@ const Feed = ({ thread, onReply }) => {
   );
 };
 
-Feed.propTypes = {
-  thread: PropTypes.shape({
-    threadid: PropTypes.string,
-    id: PropTypes.string,
-    content: PropTypes.string.isRequired,
-    mediaFiles: PropTypes.object,
-    fullname: PropTypes.string.isRequired,
-    avatar_path: PropTypes.string.isRequired,
-    authorId: PropTypes.string.isRequired,
-    createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  }).isRequired,
-  onReply: PropTypes.func,
-};
+// Feed.propTypes = {
+//   thread: PropTypes.shape({
+//     threadid: PropTypes.string,
+//     id: PropTypes.string,
+//     content: PropTypes.string.isRequired,
+//     mediaFiles: PropTypes.object,
+//     fullname: PropTypes.string.isRequired,
+//     avatar_path: PropTypes.string.isRequired,
+//     authorId: PropTypes.string.isRequired,
+//     createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+//   }).isRequired,
+//   onReply: PropTypes.func,
+// };
 
 export default Feed;

@@ -79,7 +79,7 @@ export const handlePostComment = async (user, content, mediaFiles, threadId, par
       authorId: user.oauthId,
       threadId,
       createdAt: new Date().toISOString(),
-      parentCommentId: parentCommentId || null,
+      parentId: parentCommentId || null,
     };
 
     const result = await createComment(commentData);
