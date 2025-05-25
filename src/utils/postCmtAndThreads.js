@@ -20,6 +20,7 @@ export const handlePostThread = async (user, content, mediaFiles, navigation) =>
     const uploadResults = await Promise.all(
       mediaFiles.map((file, index) => uploadImageToCloudinary(file, index))
     );
+    
     const validMediaFiles = uploadResults.filter(file => file !== null);
 
     if (mediaFiles.length > 0 && validMediaFiles.length === 0) {

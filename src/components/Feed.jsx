@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { Text, Image, TouchableOpacity, View, FlatList } from 'react-native';
-import { Link, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { icons } from '../constants/icons';
 import CustomVideoPlayer from './CustomVideoPlayer';
 import { useAuth } from '../Auth/AuthContext';
@@ -257,7 +256,7 @@ const Feed = ({ thread, onReply }) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: 'row', gap: 14, paddingRight: 40 }}
             data={Object.values(thread.mediaFiles).filter(
-              (media) => media && (media.imageUrl || media.videoUrl)
+              (media) => media && (media.imageUrl || media.videoUrl || media.gifUrl)
             )}
             keyExtractor={(media, index) => media.id || `${threadId}-media-${index}`}
             renderItem={({ item: media }) =>
@@ -271,6 +270,13 @@ const Feed = ({ thread, onReply }) => {
               ) : media.videoUrl ? (
                   <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <CustomVideoPlayer uri={media.videoUrl} />
+                  </TouchableOpacity>
+              ) : media.gifUrl ? (
+                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
+                      <Image
+                        source={{ uri: media.gifUrl }}
+                        className="h-[240px] w-[240px] rounded-xl overflow-hidden mb-3"
+                      />
                   </TouchableOpacity>
               ) : null
             }

@@ -4,7 +4,7 @@ import React from 'react'
 const CreateIcons = ({source}) => {
   return (
     <View>
-        <Image className="w-[25px] h-[25px] " source={source} />
+        <Image className="w-[28px] h-[28px] " source={source} />
     </View>
   )
 }
