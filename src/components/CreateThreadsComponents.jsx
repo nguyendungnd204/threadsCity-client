@@ -25,13 +25,15 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const threadResult = await getThreadById(ThreadId);
-        if (threadResult) {
-          setThread(threadResult);
-        } else {
-          const commentResult = await getCommentById(ThreadId);
-          if (commentResult) {
-            setThread(commentResult);
+        if (ThreadId) {
+          const threadResult = await getThreadById(ThreadId);
+          if (threadResult) {
+            setThread(threadResult);
+          } else {
+            const commentResult = await getCommentById(ThreadId);
+            if (commentResult) {
+              setThread(commentResult);
+            }
           }
         }
       } catch (err) {
@@ -91,7 +93,7 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
     inputRef.current?.clear();
     setContent('');
     setImages([]);
-    // setMediaFiles([]);
+    setMediaFiles([]);
   };
 
   const handleContentChange = (text) => {

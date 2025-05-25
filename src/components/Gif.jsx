@@ -76,7 +76,7 @@ const Gif = ({ onSelectGif }) => {
 
   const renderGifItem = ({ item }) => {
     const gifUrl = item.images.original.url; 
-
+    console.log(gifUrl)
     return (
       <TouchableOpacity
         onPress={() => handleSelectGif(gifUrl)}
