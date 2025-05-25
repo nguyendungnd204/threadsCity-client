@@ -33,7 +33,7 @@ const MediaFile = () => {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           data={Object.values(thread.mediaFiles).filter(
-            (media) => media && (media.imageUrl || media.videoUrl)
+            (media) => media && (media.imageUrl || media.videoUrl || media.gifUrl)
           )}
           keyExtractor={(media, index) => media.id || `${thread.threadid}-media-${index}`}
           renderItem={({ item: media }) =>
@@ -53,6 +53,12 @@ const MediaFile = () => {
                   />
                 </TouchableOpacity>
               </View>
+            ) : media.gifUrl ? (
+                <Image
+                  source={{ uri: media.gifUrl }}
+                  style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}
+                  resizeMode="contain"
+                />
             ) : null
           }
           style={{ flex: 1, }}

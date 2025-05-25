@@ -27,6 +27,7 @@ import success from '../assets/images/success.png';
 import error from '../assets/images/error.png';
 import logout from '../assets/images/log-out.png';
 import back_arrow from '../assets/images/back_arrow.png';
+import gif from '../assets/images/gif.png'
 
 export const icons = {
     back,
@@ -58,4 +59,5 @@ export const icons = {
     error,
     logout,
     back_arrow,
+    gif
 };

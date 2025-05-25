@@ -10,6 +10,8 @@ import { ActivityIndicator } from 'react-native-paper';
 import useFetch from '../services/useFetch';
 import { handlePostThread, handlePostComment } from '../utils/postCmtAndThreads';
 import { getCommentById } from '../services/commentService';
+import { icons } from '../constants/icons';
+import Gif from './Gif';
 
 const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, ThreadId = null, parentId = null }) => {
   const navigation = useNavigation();
@@ -18,35 +20,37 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
   const [images, setImages] = useState([]);
   const [mediaFiles, setMediaFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  // const { data: thread } = useFetch(() => getThreadById(ThreadId), true) || useFetch(() => getCommentById(ThreadId), true);
-  const [thread, setThread] = useState([])
+  const [thread, setThread] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const threadResult = await getThreadById(ThreadId)
-        if(threadResult) {
-          setThread(threadResult)
+        const threadResult = await getThreadById(ThreadId);
+        if (threadResult) {
+          setThread(threadResult);
         } else {
-          const commentResult = await getCommentById(ThreadId)
+          const commentResult = await getCommentById(ThreadId);
           if (commentResult) {
-            setThread(commentResult)
-          } 
+            setThread(commentResult);
+          }
         }
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
-    }
-    
-    fetchData()
-  }, [ThreadId])
+    };
+    fetchData();
+  }, [ThreadId]);
 
   useEffect(() => {
-    console.log("thread in created: " + thread)
+    console.log("thread in created: ", thread);
     handleContentChange(content);
     handleImagesChange(images);
-  }, [content, images, thread]); 
+  }, [content, images, thread]);
 
+  useEffect(() => {
+    console.log('MediaFiles: ',mediaFiles)
+  }, [mediaFiles])
+  
   const selectImage = async (type) => {
     try {
       let result;
@@ -87,6 +91,7 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
     inputRef.current?.clear();
     setContent('');
     setImages([]);
+    // setMediaFiles([]);
   };
 
   const handleContentChange = (text) => {
@@ -94,7 +99,6 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
   };
 
   const handleImagesChange = (newMediaFiles) => {
-    console.log('Selected images:', newMediaFiles);
     const formattedFiles = newMediaFiles.map((file, index) => {
       const path = file.path;
       let type = 'image';
@@ -102,6 +106,8 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
         type = 'video';
       } else if (path && (path.endsWith('.mp4') || path.endsWith('.mov'))) {
         type = 'video';
+      } else if ( path && path.includes('.gif')) {
+        type = 'gif'
       }
       return {
         id: index + 1,
@@ -109,8 +115,17 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
         type,
       };
     });
-    console.log('Formatted mediaFiles:', formattedFiles);
     setMediaFiles(formattedFiles);
+  };
+
+  const handleSelectGif = (gifUrl) => {
+    const newMediaFile = {
+      id: mediaFiles.length + 1,
+      path: gifUrl,
+      type: 'gif',
+    };
+    setMediaFiles((prev) => [...prev, newMediaFile]);
+    setImages((prev) => [...prev, { path: gifUrl }]);
   };
 
   const onPost = async () => {
@@ -180,17 +195,26 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
               style={{ display: images.length > 0 ? 'flex' : 'none' }}
               className="flex-row flex-wrap mb-2"
             >
-              {images.map((image, index) => (
-                <View key={`${image.path}-${index}`} className="relative mr-2 mb-2">
-                  <Image source={{ uri: image.path }} className="w-20 h-20 rounded-lg" />
-                  <TouchableOpacity
-                    onPress={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 bg-red-500 rounded-full w-5 h-5 items-center justify-center"
-                  >
-                    <Text className="text-white text-xs">×</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
+              {images.map((image, index) => {
+                const isGif = mediaFiles.find((file) => file.path === image.path)?.type === 'gif';
+                return (
+                  <View key={`${image.path}-${index}`} className="relative mr-2 mb-2">
+                    <TouchableOpacity>
+                      <Image
+                        source={{ uri: image.path }}
+                        className="w-32 h-32 rounded-lg" // Tăng kích thước lên 128px x 128px
+                      />
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity
+                      onPress={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 rounded-full w-5 h-5 items-center justify-center"
+                    >
+                      <Text className="text-white text-xs">×</Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
             </View>
 
             <View className="flex-row justify-between items-center mt-2">
@@ -202,6 +226,8 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
                 <TouchableOpacity onPress={() => selectImage('camera')} className="mr-4">
                   <CreateIcons source={require('../assets/images/camera.png')} />
                 </TouchableOpacity>
+
+                <Gif onSelectGif={handleSelectGif} />
               </View>
             </View>
           </View>
@@ -215,7 +241,7 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
           </TouchableOpacity>
           {isReply && (
             <TouchableOpacity
-            className="absolute right-0 top-[15px] mt-5 mr-2"
+              className="absolute right-0 top-[15px] mt-5 mr-2"
               onPress={onPost}
               disabled={isUploading || (!content.trim() && mediaFiles.length === 0)}
             >
