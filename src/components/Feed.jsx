@@ -1,3 +1,4 @@
+// Feed.js
 import React, { useEffect, useState } from 'react';
 import { Text, Image, TouchableOpacity, View, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -39,7 +40,7 @@ const formatDate = (date) => {
   return givenDate.toLocaleDateString('vi-VN');
 };
 
-const Feed = ({ thread, onReply }) => {
+const Feed = ({ thread, refetch, followThreadRefetch }) => {
   const [liked, setLiked] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +52,7 @@ const Feed = ({ thread, onReply }) => {
   const [userProfile, setUserProfile] = useState(null);
 
   const userId = thread?.authorId || thread?.userId || thread?.user_id || thread?.userId;
+  
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (userId) {
@@ -60,6 +62,7 @@ const Feed = ({ thread, onReply }) => {
     };
     fetchUserProfile();
   }, [userId]);
+
   if (!thread || (!thread.threadid && !thread.id)) {
     console.error('Invalid thread prop:', thread);
     return (
@@ -136,12 +139,6 @@ const Feed = ({ thread, onReply }) => {
       email: user.email,
       authorName: thread.fullname,
     };
-    console.log('Calling toggleLikeThread with:', {
-      userId: user.oauthId,
-      threadId: threadId,
-      userData,
-    });
-
     setIsLoading(true);
     const previousLiked = liked;
     const previousLikeCount = countLiked;
@@ -173,12 +170,9 @@ const Feed = ({ thread, onReply }) => {
   
     setIsReposted(!isReposted);
     setRepostCount(isReposted ? repostCount - 1 : repostCount + 1);
-    showAlert("success", "Đã đăng lại")
   
     try {
       const response = await toggleRepostThread(threadId, user.oauthId);
-      console.log('toggleRepostThread response:', response);
-  
       if (response.success) {
         showAlert('success', isReposted ? 'Đã hủy đăng lại' : 'Đã đăng lại');
       } else {
@@ -208,7 +202,6 @@ const Feed = ({ thread, onReply }) => {
   };
 
   const handleComment = () => {
-    console.log('Navigating to FeedDetail with id:', threadId);
     navigation.navigate('FeedDetail', { id: threadId });
   };
   
@@ -246,7 +239,11 @@ const Feed = ({ thread, onReply }) => {
             </TouchableOpacity>
             <Text className="text-sm text-gray-500">{formatDate(thread.createdAt)}</Text>
           </View>
-          <ThreadMenu thread={thread} />
+          <ThreadMenu 
+            thread={thread} 
+            refetch={refetch} // Truyền refetch
+            followThreadRefetch={followThreadRefetch} // Truyền followThreadRefetch
+          />
         </View>
         <Text className="text-base mb-3">{thread.content}</Text>
 
@@ -313,19 +310,5 @@ const Feed = ({ thread, onReply }) => {
     </View>
   );
 };
-
-// Feed.propTypes = {
-//   thread: PropTypes.shape({
-//     threadid: PropTypes.string,
-//     id: PropTypes.string,
-//     content: PropTypes.string.isRequired,
-//     mediaFiles: PropTypes.object,
-//     fullname: PropTypes.string.isRequired,
-//     avatar_path: PropTypes.string.isRequired,
-//     authorId: PropTypes.string.isRequired,
-//     createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-//   }).isRequired,
-//   onReply: PropTypes.func,
-// };
 
 export default Feed;

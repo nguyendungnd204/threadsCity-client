@@ -142,3 +142,63 @@ export const getAllCommentsForUser = async (userId) => {
     return [];
   }
 }
+
+export const deleteCommentById = async (commentId, userId, threadId) => {
+  try {
+    if (!commentId || !userId || !threadId) {
+      throw new Error('commentId, userId, and threadId are required');
+    }
+
+    // Kiểm tra quyền sở hữu bình luận
+    const comment = await getCommentById(commentId);
+    if (!comment || comment.authorId !== userId) {
+      throw new Error('User is not authorized to delete this comment');
+    }
+
+    const updates = {};
+
+    // Xóa bình luận chính khỏi node comments
+    updates[`comments/${commentId}`] = null;
+
+    // Xóa tham chiếu bình luận khỏi thread
+    updates[`threads/${threadId}/comments/${commentId}`] = null;
+
+    // Xóa các bình luận con (nếu có)
+    const nestedCommentsRef = ref(database, `comments/${commentId}/comments`);
+    const nestedCommentsSnapshot = await get(nestedCommentsRef);
+    if (nestedCommentsSnapshot.exists()) {
+      nestedCommentsSnapshot.forEach((childSnapshot) => {
+        const nestedCommentId = childSnapshot.key;
+        updates[`comments/${nestedCommentId}`] = null;
+      });
+      updates[`comments/${commentId}/comments`] = null;
+    }
+
+    // Xóa các lượt thích (likes) của bình luận (nếu có)
+    const likesRef = ref(database, `comments/${commentId}/likes`);
+    const likesSnapshot = await get(likesRef);
+    if (likesSnapshot.exists()) {
+      updates[`comments/${commentId}/likes`] = null;
+    }
+
+    // Xóa các repost của bình luận (nếu có)
+    const repostsRef = ref(database, `comments/${commentId}/reposts`);
+    const repostsSnapshot = await get(repostsRef);
+    if (repostsSnapshot.exists()) {
+      repostsSnapshot.forEach((childSnapshot) => {
+        const repostKey = childSnapshot.key;
+        const repostData = childSnapshot.val();
+        const repostUserId = repostData.userId;
+        updates[`users/${repostUserId}/reposts/${repostKey}`] = null;
+      });
+      updates[`comments/${commentId}/reposts`] = null;
+    }
+
+    // Thực hiện cập nhật đồng thời
+    await update(ref(database), updates);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    throw error;
+  }
+};

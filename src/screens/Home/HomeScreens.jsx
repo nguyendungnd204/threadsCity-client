@@ -1,3 +1,4 @@
+// HomScreen.js
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
 import Feed from '../../components/Feed';
@@ -28,21 +29,18 @@ const HomScreen = () => {
       refreshData();
     }, [])
   );
-  // State cho phân trang của tab "Dành cho bạn"
+
   const threadPageSize = 10;
   const [threadCurrentPage, setThreadCurrentPage] = useState(1);
   const [threadRenderedData, setThreadRenderedData] = useState([]);
   const [isThreadLoading, setIsThreadLoading] = useState(false);
 
-  // State cho phân trang của tab "Đang theo dõi"
   const followedPageSize = 10;
   const [followedCurrentPage, setFollowedCurrentPage] = useState(1);
   const [followedRenderedData, setFollowedRenderedData] = useState([]);
   const [isFollowedLoading, setIsFollowedLoading] = useState(false);
 
-  // Hàm phân trang
   const pagination = (database, pageSize, page) => {
-    // Kiểm tra nếu database là null hoặc undefined, trả về mảng rỗng
     if (!database || !Array.isArray(database)) {
       return [];
     }
@@ -95,6 +93,7 @@ const HomScreen = () => {
 
     await Promise.all([refetch(), followThreadRefetch()]);
   };
+
   const getDisplayData = () => {
     if (tab === "Dành cho bạn") {
       return threadRenderedData; 
@@ -155,7 +154,6 @@ const HomScreen = () => {
       setFollowedRenderedData(pagination(followingThread, followedPageSize, 1));
     }
   }, [tab, thread, followingThread]);
-  
 
   return (
     <View className="flex-1 mt-[50px]">
@@ -168,7 +166,12 @@ const HomScreen = () => {
         keyExtractor={(item) => item.threadid.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleThread(item.threadid)}>
-            <Feed thread={item} key={item.threadid} />
+            <Feed 
+              thread={item} 
+              key={item.threadid} 
+              refetch={refetch} // Truyền refetch
+              followThreadRefetch={followThreadRefetch} // Truyền followThreadRefetch
+            />
           </TouchableOpacity>
         )}
         ListHeaderComponent={

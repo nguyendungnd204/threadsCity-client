@@ -205,7 +205,7 @@ const Profile = ({ userId }) => {
         keyExtractor={(item) => item.threadid?.toString() || item.id?.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleThread(item.threadid || item.id)}>
-            <Feed thread={item} key={item.threadid || item.id} />
+            <Feed thread={item} key={item.threadid || item.id} refetch={refetchUserProfile} followThreadRefetch={refetchComment}/>
           </TouchableOpacity>
         )}
         refreshControl={
