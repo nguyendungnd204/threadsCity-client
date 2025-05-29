@@ -26,7 +26,7 @@ const buildCommentTree = (comments) => {
   return roots;
 };
 
-const CommentItem = ({ comment, level = 0, onReply }) => {
+const CommentItem = ({ comment, level = 0, onReply, refetch }) => {
   const isFirstComment = level === 0 && comment.parentId === null;
 
   return (
@@ -36,7 +36,7 @@ const CommentItem = ({ comment, level = 0, onReply }) => {
           <View style={styles.line} />
         </View>
       )} 
-      <Feed thread={comment} onReply={onReply} />
+      <Feed thread={comment} onReply={onReply} refetch={refetch} followThreadRefetch={() => {}}/>
       {comment.replies?.map((reply) => (
         <CommentItem
           key={reply.id}
@@ -108,6 +108,7 @@ const Comments = () => {
         <CommentItem
           comment={item}
           onReply={() => handleReply(item.id)}
+          refetch={refetch}
         />
       )}
       keyExtractor={(item) => item.id}

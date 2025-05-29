@@ -20,18 +20,18 @@ const ActivityScreens = () => {
   const { data: repostThread, loading: repostLoading, refetch: refetchRepostThread } = useFetch(() => getRepostThread(user?.oauthId), true);
   const { data: userProfile, loading: userProfileLoading, refetch: refetchUserProfile } = useFetch(() => getUserFollowersProfile(user?.oauthId), true);
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const refreshData = async () => {
-  //       await Promise.all([
-  //         refetchReply(),
-  //         refetchRepostThread(),
-  //         refetchUserProfile(),
-  //       ]);
-  //     };
-  //     refreshData();
-  //   }, [])
-  // );
+  useFocusEffect(
+    React.useCallback(() => {
+      const refreshData = async () => {
+        await Promise.all([
+          refetchReply(),
+          refetchRepostThread(),
+          refetchUserProfile(),
+        ]);
+      };
+      refreshData();
+    }, [])
+  );
   
   const Tabs = [
     { name: 'Tất cả' },
@@ -157,7 +157,7 @@ const ActivityScreens = () => {
               } else {
                 return (
                   <TouchableOpacity onPress={() => handleThread(item.threadid || item.id)}>
-                    <Feed thread={item} />
+                    <Feed thread={item} refetch={refetchReply} followThreadRefetch={refetchRepostThread}/>
                   </TouchableOpacity>
                 );
               }
