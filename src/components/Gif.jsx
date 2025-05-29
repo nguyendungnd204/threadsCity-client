@@ -52,7 +52,6 @@ const Gif = ({ onSelectGif }) => {
           rating: 'pg',
         },
       });
-     
       setGifs(response.data.data);
     } catch (error) {
       console.error('Error fetching trending GIFs:', error.response || error.message);

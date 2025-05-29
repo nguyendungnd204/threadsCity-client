@@ -198,13 +198,12 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
               className="flex-row flex-wrap mb-2"
             >
               {images.map((image, index) => {
-                const isGif = mediaFiles.find((file) => file.path === image.path)?.type === 'gif';
                 return (
                   <View key={`${image.path}-${index}`} className="relative mr-2 mb-2">
                     <TouchableOpacity>
                       <Image
                         source={{ uri: image.path }}
-                        className="w-32 h-32 rounded-lg" // Tăng kích thước lên 128px x 128px
+                        className="w-32 h-32 rounded-lg" 
                       />
                     </TouchableOpacity>
                     
