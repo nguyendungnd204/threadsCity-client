@@ -11,7 +11,6 @@ import {
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { icons } from "../constants/icons";
 import { useAuth } from "../Auth/AuthContext";
-import auth from "@react-native-firebase/auth";
 import useFetch from '../services/useFetch';
 import { getRepostThread, getUserThreads } from "../services/threadService";
 import Feed from "./Feed";
