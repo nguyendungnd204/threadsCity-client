@@ -14,7 +14,9 @@ import { ref, onValue, off, query, orderByChild, equalTo } from 'firebase/databa
 import { debounce } from 'lodash';
 import { toggleRepostThread } from '../services/threadService';
 import ThreadMenu from './ThreadMenu';
-
+import { createNotification } from '../services/noti'; // Hàm lưu thông báo
+import notifee from '@notifee/react-native';
+import { displayNotification } from './Noti'; // Hàm hiển thị thông báo
 const formatNumber = (num) => {
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
   if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
@@ -84,6 +86,7 @@ const Feed = ({ thread, onReply }) => {
       setLiked(false);
     }
   }, [user?.oauthId, threadId]);
+
   useEffect(() => {
     if (user?.oauthId && threadId) {
       const repostsRef = ref(database, `threads/${threadId}/reposts`);
@@ -128,38 +131,76 @@ const Feed = ({ thread, onReply }) => {
     };
   }, [threadId, user?.oauthId]);
 
-  const handleLike = debounce(async () => {
-    const userData = {
-      userId: user.oauthId,
-      username: user.fullname,
-      avatar: user.avatar,
-      email: user.email,
-      authorName: thread.fullname,
-    };
-    console.log('Calling toggleLikeThread with:', {
-      userId: user.oauthId,
-      threadId: threadId,
-      userData,
-    });
+const handleLike = debounce(async () => {
+  // Kiểm tra dữ liệu đầu vào
+  if (!user || !thread || !threadId) {
+    console.log('Thiếu dữ liệu:', {user, thread, threadId});
+    return;
+  }
 
-    setIsLoading(true);
-    const previousLiked = liked;
-    const previousLikeCount = countLiked;
-    setLiked(!liked);
-    setCountLiked(liked ? countLiked - 1 : countLiked + 1);
-    try {
-      const response = await toggleLikeThread(user.oauthId, threadId, userData);
-      if (!response.success) {
-        setLiked(previousLiked);
-        setCountLiked(previousLikeCount);
-      }
-    } catch (error) {
+  // Chuẩn bị dữ liệu người dùng
+  const userData = {
+    userId: user.oauthId,
+    username: user.fullname,
+    avatar: user.avatar,
+    email: user.email,
+    authorName: thread.fullname,
+  };
+
+  // Cập nhật trạng thái UI (like và số lượt like)
+  setIsLoading(true);
+  const previousLiked = liked;
+  const previousLikeCount = countLiked;
+  setLiked(!liked);
+  setCountLiked(liked ? countLiked - 1 : countLiked + 1);
+
+  try {
+    // Gọi API để toggle like
+    const response = await toggleLikeThread(user.oauthId, threadId, userData);
+
+    if (!response.success) {
+      // Nếu thất bại, hoàn tác trạng thái UI
       setLiked(previousLiked);
       setCountLiked(previousLikeCount);
-    } finally {
-      setIsLoading(false);
+    } else if (!previousLiked) {
+      // Nếu người dùng vừa like (không phải unlike), tạo thông báo
+      const notification = {
+        userId: thread.userId, // Người nhận thông báo (tác giả thread)
+        senderId: user.oauthId, // Người like
+        senderName: user.fullname,
+        type: 'like',
+        threadId: threadId,
+        timestamp: new Date().toISOString(),
+      };
+
+      await createNotification(notification); // Gọi hàm tạo thông báo
+
+      // Hiển thị thông báo đẩy
+      await displayNotification(thread.userId, {
+        title: 'New Like!',
+        body: `${user.fullname} liked your post.`,
+        data: {threadId, type: 'like'},
+      });
     }
-  }, 300);
+  } catch (error) {
+    // Xử lý lỗi, hoàn tác trạng thái UI
+    console.error('Lỗi trong handleLike:', error);
+    setLiked(previousLiked);
+    setCountLiked(previousLikeCount);
+  } finally {
+    setIsLoading(false);
+  }
+}, 300);
+//   useEffect(() => {
+//   return notifee.onForegroundEvent(({ type, detail }) => {
+//     if (type === EventType.PRESS) {
+//       const { threadId, type: actionType } = detail.notification.data;
+//       console.log(`Notification pressed: ${actionType} on thread ${threadId}`);
+//       // Điều hướng đến màn hình chi tiết bài viết
+//       navigation.navigate('FeedDetail', { threadId });
+//     }
+//   });
+// }, []);
 
   const handleRepostThread = debounce(async () => {
     if (!user?.oauthId || !threadId) {
@@ -194,6 +235,7 @@ const Feed = ({ thread, onReply }) => {
       setIsLoading(false);
     }
   }, 300);
+  
   const handleGoProfile = (id) => {
     if (!id) {
       console.error('Cannot navigate to UserProfile: authorId is missing');
@@ -210,7 +252,6 @@ const Feed = ({ thread, onReply }) => {
     console.log('Navigating to FeedDetail with id:', threadId);
     navigation.navigate('FeedDetail', { id: threadId });
   };
-
   const handleGoMediaFile = (threadid) => {
     if (threadid){
       navigation.navigate("MediaFile", {threadid})
@@ -306,18 +347,18 @@ const Feed = ({ thread, onReply }) => {
   );
 };
 
-Feed.propTypes = {
-  thread: PropTypes.shape({
-    threadid: PropTypes.string,
-    id: PropTypes.string,
-    content: PropTypes.string.isRequired,
-    mediaFiles: PropTypes.object,
-    fullname: PropTypes.string.isRequired,
-    avatar_path: PropTypes.string.isRequired,
-    authorId: PropTypes.string.isRequired,
-    createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  }).isRequired,
-  onReply: PropTypes.func,
-};
+// Feed.propTypes = {
+//   thread: PropTypes.shape({
+//     threadid: PropTypes.string,
+//     id: PropTypes.string,
+//     content: PropTypes.string.isRequired,
+//     mediaFiles: PropTypes.object,
+//     fullname: PropTypes.string.isRequired,
+//     avatar_path: PropTypes.string.isRequired,
+//     authorId: PropTypes.string.isRequired,
+//     createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+//   }).isRequired,
+//   onReply: PropTypes.func,
+// };
 
 export default Feed;

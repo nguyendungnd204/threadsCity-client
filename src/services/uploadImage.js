@@ -26,7 +26,7 @@ export const uploadImageToCloudinary = async (file, index) => {
       });
       formData.append('upload_preset', 'Threads-app');
 
-      const response = await fetch(`https://api.cloudinary.com/v1_1/die2sjgsg/upload`, {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/dtwggemew/upload`, {
         method: 'POST',
         body: formData,
       });

@@ -34,8 +34,7 @@ const HomScreen = () => {
   const [threadRenderedData, setThreadRenderedData] = useState([]);
   const [isThreadLoading, setIsThreadLoading] = useState(false);
 
-  // State cho phân trang của tab "Đang theo dõi"
-  const followedPageSize = 8;
+  const followedPageSize = 10;
   const [followedCurrentPage, setFollowedCurrentPage] = useState(1);
   const [followedRenderedData, setFollowedRenderedData] = useState([]);
   const [isFollowedLoading, setIsFollowedLoading] = useState(false);

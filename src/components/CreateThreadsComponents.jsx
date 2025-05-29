@@ -9,6 +9,7 @@ import { getThreadById } from '../services/threadService';
 import { ActivityIndicator } from 'react-native-paper';
 import useFetch from '../services/useFetch';
 import { handlePostThread, handlePostComment } from '../utils/postCmtAndThreads';
+import { getCommentById } from '../services/commentService';
 
 const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, ThreadId = null, parentId = null }) => {
   const navigation = useNavigation();
@@ -17,12 +18,43 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
   const [images, setImages] = useState([]);
   const [mediaFiles, setMediaFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  const { data: thread } = useFetch(() => getThreadById(ThreadId), true);
-  
+  // const { data: thread } = useFetch(() => getThreadById(ThreadId), true) || useFetch(() => getCommentById(ThreadId), true);
+  const [thread, setThread] = useState([])
+
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const threadResult = await getThreadById(ThreadId)
+        if(threadResult) {
+          setThread(threadResult)
+        } else {
+          if(ThreadId) {
+            const threadResult = await getThreadById(ThreadId);
+            if (threadResult) {
+              setThread(threadResult);
+            } else {
+              const commentResult = await getCommentById(ThreadId);
+              if (commentResult) {
+                setThread(commentResult);
+              } else {
+                console.log('No thread or comment found for the given ID');
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    
+    fetchData()
+  }, [ThreadId])
+
+  useEffect(() => {
+    console.log("thread in created: " + thread)
     handleContentChange(content);
     handleImagesChange(images);
-  }, [content, images]); 
+  }, [content, images, thread]); 
 
   const selectImage = async (type) => {
     try {

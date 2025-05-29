@@ -1,22 +1,33 @@
 import { database } from '../../FirebaseConfig';
 import { ref, set, get, update, push, query, orderByChild, equalTo } from 'firebase/database';
+import messaging from '@react-native-firebase/messaging';
 
 export const createUser = async (userId, userData) => {
   try {
     const userRef = ref(database, `users/${userId}`);
     const snapshot = await get(userRef);
+
+    const fcmToken = await messaging().getToken();
     
     if (!snapshot.exists()) {
       await set(userRef, {
         ...userData,
+        fcmToken,
         followers: {},
         following: {},
         createdAt: { '.sv': 'timestamp' },
         updatedAt: { '.sv': 'timestamp' }
       });
       return true;
+    }else {
+      // Cập nhật FCM Token nếu người dùng đã tồn tại
+      await set(userRef, {
+        ...userData,
+        fcmToken,
+        updatedAt: { '.sv': 'timestamp' },
+      });
+      return false;
     }
-    return false;
   } catch (error) {
     console.error(error);
     return false;

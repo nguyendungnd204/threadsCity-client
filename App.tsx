@@ -19,15 +19,29 @@ import { useEffect } from 'react';
 import MediaFile from './src/screens/Home/ImageOrVideoDetail';
 import { icons } from './src/constants/icons';
 import messaging from '@react-native-firebase/messaging';
+
+import notifee from '@notifee/react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
+
+
 const Stack = createNativeStackNavigator();
 const AppContent = () => {
-  const { user, loading, initialized } = useAuth();
-  const requesetNotificationPermission = async () => {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  async function requestNotificationPermission() {
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Notification permission granted');
+    } else {
+      console.log('Notification permission denied');
+    }
   }
+}
+useEffect(() => {
+  requestNotificationPermission();
+}, []);
+  const { user, loading, initialized } = useAuth();
   if (!initialized || loading) {
     return (
       <View style={styles.loadingOverlay}>
