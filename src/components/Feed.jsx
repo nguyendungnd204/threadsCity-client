@@ -14,7 +14,9 @@ import { ref, onValue, off, query, orderByChild, equalTo } from 'firebase/databa
 import { debounce } from 'lodash';
 import { toggleRepostThread } from '../services/threadService';
 import ThreadMenu from './ThreadMenu';
-
+import { createNotification } from '../services/noti'; // Hàm lưu thông báo
+import notifee from '@notifee/react-native';
+import { displayNotification } from './Noti'; // Hàm hiển thị thông báo
 const formatNumber = (num) => {
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
   if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
@@ -153,10 +155,45 @@ const Feed = ({ thread, refetch, followThreadRefetch }) => {
     } catch (error) {
       setLiked(previousLiked);
       setCountLiked(previousLikeCount);
-    } finally {
-      setIsLoading(false);
+    } else if (!previousLiked) {
+      // Nếu người dùng vừa like (không phải unlike), tạo thông báo
+      const notification = {
+        userId: thread.userId, // Người nhận thông báo (tác giả thread)
+        senderId: user.oauthId, // Người like
+        senderName: user.fullname,
+        type: 'like',
+        threadId: threadId,
+        timestamp: new Date().toISOString(),
+      };
+
+      await createNotification(notification); // Gọi hàm tạo thông báo
+
+      // Hiển thị thông báo đẩy
+      await displayNotification(thread.userId, {
+        title: 'New Like!',
+        body: `${user.fullname} liked your post.`,
+        data: {threadId, type: 'like'},
+      });
     }
-  }, 300);
+  } catch (error) {
+    // Xử lý lỗi, hoàn tác trạng thái UI
+    console.error('Lỗi trong handleLike:', error);
+    setLiked(previousLiked);
+    setCountLiked(previousLikeCount);
+  } finally {
+    setIsLoading(false);
+  }
+}, 300);
+//   useEffect(() => {
+//   return notifee.onForegroundEvent(({ type, detail }) => {
+//     if (type === EventType.PRESS) {
+//       const { threadId, type: actionType } = detail.notification.data;
+//       console.log(`Notification pressed: ${actionType} on thread ${threadId}`);
+//       // Điều hướng đến màn hình chi tiết bài viết
+//       navigation.navigate('FeedDetail', { threadId });
+//     }
+//   });
+// }, []);
 
   const handleRepostThread = debounce(async () => {
     if (!user?.oauthId || !threadId) {
@@ -204,7 +241,6 @@ const Feed = ({ thread, refetch, followThreadRefetch }) => {
   const handleComment = () => {
     navigation.navigate('FeedDetail', { id: threadId });
   };
-  
   const handleGoMediaFile = (threadid) => {
     if (threadid){
       navigation.navigate("MediaFile", {threadid})

@@ -13,6 +13,7 @@ const ThreadsLikeMenu = ({ thread, refetch, followThreadRefetch }) => {
 
   const handleOption = (action) => {
     setVisible(false);
+
     Alert.alert(`Bạn chọn: ${action}`);
   };  
 

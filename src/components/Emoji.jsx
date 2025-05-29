@@ -17,7 +17,7 @@ const EmojiModal = ({ isVisible, onClose, onSelectEmoji }) => {
     try {
       const response = await axios.get('https://www.emoji.family/api/emojis', {
         params: {
-          group: 'smileys-emotion', // Lấy emoji nhóm smileys-emotion
+          group: 'smileys-emotion',
         },
       });
       setEmojis(response.data);
@@ -35,8 +35,8 @@ const EmojiModal = ({ isVisible, onClose, onSelectEmoji }) => {
     <TouchableOpacity
       style={styles.emojiItem}
       onPress={() => {
-        onSelectEmoji(item.emoji); // Gọi callback để trả về emoji
-        onClose(); // Đóng modal
+        onSelectEmoji(item.emoji);
+        onClose(); 
       }}
     >
       <Text style={styles.emojiText}>{item.emoji}</Text>

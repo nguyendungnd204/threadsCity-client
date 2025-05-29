@@ -25,6 +25,7 @@ const CreateThreadsComponents = ({ user, isPreview = false, isReply = false, Thr
   useEffect(() => {
     const fetchData = async () => {
       try {
+
         if (ThreadId) {
           const threadResult = await getThreadById(ThreadId);
           if (threadResult) {
