@@ -13,9 +13,6 @@ import EditProfile from './src/screens/UpdateProfle/UpdateProfile';
 import ReplyComment from './src/screens/ReplyComment';
 import UserProfileScreens from './src/screens/Profile/UserProfileScreen';
 import { AlertProvider } from './src/components/Alert';
-// import { useNotification } from './src/notifications/useNotification';
-import { Alert } from 'react-native';
-import { useEffect } from 'react';
 import MediaFile from './src/screens/Home/ImageOrVideoDetail';
 import { icons } from './src/constants/icons';
 import messaging from '@react-native-firebase/messaging';
@@ -56,7 +53,11 @@ useEffect(() => {
             <Stack.Screen
               name="Create"
               component={user ? CreateScreens : LoginRequirement}
-              options={user ? { headerShown: true } : { headerShown: false }}
+              options={() => ({ 
+                  headerShown: user ? true : false,
+                  title: "Tạo Bài Viết",
+                  headerTitleAlign: 'center'
+              })}
             />
             <Stack.Screen
               name="EditProfile"
@@ -69,9 +70,10 @@ useEffect(() => {
               options={({ navigation}) => ({
                 headerLeft: () => (
                   <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Image source={icons.back} style={{width: 20, height: 20}}/>
+                    <Image source={icons.back} style={{ marginLeft: 20, width: 20, height: 20}}/>
                   </TouchableOpacity>
                 ),
+                title: "Bài Viết",
                 headerShown: true,
                 headerTitleAlign: 'center',
               })}
@@ -89,7 +91,7 @@ useEffect(() => {
             <Stack.Screen 
               name="Reply" 
               component={ReplyComment}
-              options={{ headerShown: true }}
+              options={{ headerShown: true, title: "Trả Lời", headerTitleAlign: 'center' }}
             />
             <Stack.Screen
               name="Login"

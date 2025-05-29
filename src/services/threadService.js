@@ -222,17 +222,21 @@ export const getThreadFollowingUser = async (userId)  => {
 
 export const deleteThreadById = async (threadId, userId) => {
   try {
-    const updates = {};
-
-    // Xoá thread chính
-    updates[`threads/${threadId}`] = null;
-
-    // Xoá liên kết thread khỏi user
-    if (userId) {
-      updates[`users/${userId}/threads/${threadId}`] = null;
+    // Kiểm tra quyền sở hữu bài viết
+    const thread = await getThreadById(threadId);
+    if (!thread || thread.authorId !== userId) {
+      throw new Error('Người dùng không có quyền xóa bài viết này');
     }
 
-    // Xoá reposts liên quan nếu có
+    const updates = {};
+
+    // Xóa bài viết chính
+    updates[`threads/${threadId}`] = null;
+
+    // Xóa tham chiếu bài viết khỏi danh sách của người dùng
+    updates[`users/${userId}/threads/${threadId}`] = null;
+
+    // Xóa các repost liên quan
     const repostsRef = ref(database, `threads/${threadId}/reposts`);
     const repostsSnapshot = await get(repostsRef);
 
@@ -243,14 +247,13 @@ export const deleteThreadById = async (threadId, userId) => {
         const repostUserId = repostData.userId;
         updates[`users/${repostUserId}/reposts/${repostKey}`] = null;
       });
-      updates[`threads/${threadId}/reposts`] = null;
+      // updates[`threads/${threadId}/reposts`] = null;
     }
 
     await update(ref(database), updates);
     return { success: true };
   } catch (error) {
-    console.error('Error deleting thread:', error);
+    console.error('Lỗi khi xóa bài viết:', error);
     throw error;
   }
 };
-

@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
+// Feed.js
 import React, { useEffect, useState } from 'react';
 import { Text, Image, TouchableOpacity, View, FlatList } from 'react-native';
-import { Link, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { icons } from '../constants/icons';
 import CustomVideoPlayer from './CustomVideoPlayer';
 import { useAuth } from '../Auth/AuthContext';
@@ -42,7 +42,7 @@ const formatDate = (date) => {
   return givenDate.toLocaleDateString('vi-VN');
 };
 
-const Feed = ({ thread, onReply }) => {
+const Feed = ({ thread, refetch, followThreadRefetch }) => {
   const [liked, setLiked] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +54,7 @@ const Feed = ({ thread, onReply }) => {
   const [userProfile, setUserProfile] = useState(null);
 
   const userId = thread?.authorId || thread?.userId || thread?.user_id || thread?.userId;
+  
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (userId) {
@@ -63,6 +64,7 @@ const Feed = ({ thread, onReply }) => {
     };
     fetchUserProfile();
   }, [userId]);
+
   if (!thread || (!thread.threadid && !thread.id)) {
     console.error('Invalid thread prop:', thread);
     return (
@@ -131,35 +133,26 @@ const Feed = ({ thread, onReply }) => {
     };
   }, [threadId, user?.oauthId]);
 
-const handleLike = debounce(async () => {
-  // Kiểm tra dữ liệu đầu vào
-  if (!user || !thread || !threadId) {
-    console.log('Thiếu dữ liệu:', {user, thread, threadId});
-    return;
-  }
-
-  // Chuẩn bị dữ liệu người dùng
-  const userData = {
-    userId: user.oauthId,
-    username: user.fullname,
-    avatar: user.avatar,
-    email: user.email,
-    authorName: thread.fullname,
-  };
-
-  // Cập nhật trạng thái UI (like và số lượt like)
-  setIsLoading(true);
-  const previousLiked = liked;
-  const previousLikeCount = countLiked;
-  setLiked(!liked);
-  setCountLiked(liked ? countLiked - 1 : countLiked + 1);
-
-  try {
-    // Gọi API để toggle like
-    const response = await toggleLikeThread(user.oauthId, threadId, userData);
-
-    if (!response.success) {
-      // Nếu thất bại, hoàn tác trạng thái UI
+  const handleLike = debounce(async () => {
+    const userData = {
+      userId: user.oauthId,
+      username: user.fullname,
+      avatar: user.avatar,
+      email: user.email,
+      authorName: thread.fullname,
+    };
+    setIsLoading(true);
+    const previousLiked = liked;
+    const previousLikeCount = countLiked;
+    setLiked(!liked);
+    setCountLiked(liked ? countLiked - 1 : countLiked + 1);
+    try {
+      const response = await toggleLikeThread(user.oauthId, threadId, userData);
+      if (!response.success) {
+        setLiked(previousLiked);
+        setCountLiked(previousLikeCount);
+      }
+    } catch (error) {
       setLiked(previousLiked);
       setCountLiked(previousLikeCount);
     } else if (!previousLiked) {
@@ -214,12 +207,9 @@ const handleLike = debounce(async () => {
   
     setIsReposted(!isReposted);
     setRepostCount(isReposted ? repostCount - 1 : repostCount + 1);
-    showAlert("success", "Đã đăng lại")
   
     try {
       const response = await toggleRepostThread(threadId, user.oauthId);
-      console.log('toggleRepostThread response:', response);
-  
       if (response.success) {
         showAlert('success', isReposted ? 'Đã hủy đăng lại' : 'Đã đăng lại');
       } else {
@@ -249,7 +239,6 @@ const handleLike = debounce(async () => {
   };
 
   const handleComment = () => {
-    console.log('Navigating to FeedDetail with id:', threadId);
     navigation.navigate('FeedDetail', { id: threadId });
   };
   const handleGoMediaFile = (threadid) => {
@@ -286,7 +275,11 @@ const handleLike = debounce(async () => {
             </TouchableOpacity>
             <Text className="text-sm text-gray-500">{formatDate(thread.createdAt)}</Text>
           </View>
-          <ThreadMenu thread={thread} />
+          <ThreadMenu 
+            thread={thread} 
+            refetch={refetch} // Truyền refetch
+            followThreadRefetch={followThreadRefetch} // Truyền followThreadRefetch
+          />
         </View>
         <Text className="text-base mb-3">{thread.content}</Text>
 
@@ -296,7 +289,7 @@ const handleLike = debounce(async () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: 'row', gap: 14, paddingRight: 40 }}
             data={Object.values(thread.mediaFiles).filter(
-              (media) => media && (media.imageUrl || media.videoUrl)
+              (media) => media && (media.imageUrl || media.videoUrl || media.gifUrl)
             )}
             keyExtractor={(media, index) => media.id || `${threadId}-media-${index}`}
             renderItem={({ item: media }) =>
@@ -310,6 +303,13 @@ const handleLike = debounce(async () => {
               ) : media.videoUrl ? (
                   <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
                     <CustomVideoPlayer uri={media.videoUrl} />
+                  </TouchableOpacity>
+              ) : media.gifUrl ? (
+                  <TouchableOpacity onPress={() => handleGoMediaFile(threadId)}>
+                      <Image
+                        source={{ uri: media.gifUrl }}
+                        className="h-[240px] w-[240px] rounded-xl overflow-hidden mb-3"
+                      />
                   </TouchableOpacity>
               ) : null
             }
@@ -346,19 +346,5 @@ const handleLike = debounce(async () => {
     </View>
   );
 };
-
-// Feed.propTypes = {
-//   thread: PropTypes.shape({
-//     threadid: PropTypes.string,
-//     id: PropTypes.string,
-//     content: PropTypes.string.isRequired,
-//     mediaFiles: PropTypes.object,
-//     fullname: PropTypes.string.isRequired,
-//     avatar_path: PropTypes.string.isRequired,
-//     authorId: PropTypes.string.isRequired,
-//     createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-//   }).isRequired,
-//   onReply: PropTypes.func,
-// };
 
 export default Feed;
